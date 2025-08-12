@@ -22,15 +22,15 @@ from .configs import (
 
 @configclass
 class ManagerBasedTrackerEnvCfg(ManagerBasedRLEnvCfg):
-    scene = MySceneCfg(num_envs=4096, env_spacing=2.5)
-    rewards = RewardsCfg()
-    commands = CommandsCfg()
-    observations = ObservationsCfg()
-    motion = MotionCfg()
-    actions = ActionsCfg()
-    terminations = TerminationsCfg()
-    curriculum = CurriculumCfg()
-    events = EventCfg()
+    scene:          MySceneCfg = MySceneCfg(num_envs=4096, env_spacing=2.5)
+    rewards:        RewardsCfg = RewardsCfg()
+    commands:       CommandsCfg = CommandsCfg()
+    observations:   ObservationsCfg = ObservationsCfg()
+    motion:         MotionCfg = MotionCfg()
+    actions:        ActionsCfg = ActionsCfg()
+    terminations:   TerminationsCfg = TerminationsCfg()
+    curriculum:     CurriculumCfg = CurriculumCfg()
+    events:         EventCfg = EventCfg()
 
     def __post_init__(self):
         """Post initialization."""

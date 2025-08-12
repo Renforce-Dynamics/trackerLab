@@ -187,6 +187,17 @@ class ObservationsCfg:
             self.joint_pos.history_length = history_len
             self.joint_vel.history_length = history_len
             self.actions.history_length = history_len
+            
+        def set_no_noise(self):
+            def make_zero(tar):
+                tar.noise.n_min = 0
+                tar.noise.n_max = 0
+            make_zero(self.base_lin_vel)
+            make_zero(self.base_ang_vel)
+            make_zero(self.projected_gravity)
+            make_zero(self.joint_pos)
+            make_zero(self.joint_vel)
+            
 
     # observation groups
     policy: PolicyCfg = PolicyCfg()
@@ -343,6 +354,29 @@ class EventCfg:
         interval_range_s=(10.0, 15.0),
         params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
     )
+    
+    def set_event_determine(self):
+        self.reset_base.params = {
+            "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "yaw": (0, 0)},
+            "velocity_range": {
+                "x": (0.0, 0.0),
+                "y": (0.0, 0.0),
+                "z": (0.0, 0.0),
+                "roll": (0.0, 0.0),
+                "pitch": (0.0, 0.0),
+                "yaw": (0.0, 0.0),
+            },
+        }
+        
+        self.reset_robot_joints.params = {
+            "position_range": (1.0, 1.0),
+            "velocity_range": (0.0, 0.0),
+        }
+        
+        self.add_base_mass.params["mass_distribution_params"] = (0.0, 0.0)
+        
+        self.push_robot.params=={"velocity_range": {"x": (0.0, 0.0), "y": (0.0, 0.0)}}
+        
 
 @configclass
 class CurriculumCfg:
