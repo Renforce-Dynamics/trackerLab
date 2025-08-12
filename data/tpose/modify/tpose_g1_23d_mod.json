@@ -1,0 +1,20 @@
+{
+    "mod_seq": [
+        ["left_shoulder_pitch_link", 80.0, [1.0, 0.0, 0.0]],
+        ["right_shoulder_pitch_link", -80.0, [1.0, 0.0, 0.0]],
+        ["left_elbow_link", 90.0, [0.0, 1.0, 0.0]],
+        ["right_elbow_link", 90.0, [0.0, 1.0, 0.0]]
+    ],
+    "node_drop": [
+        "left_hip_roll_link",
+        "left_hip_yaw_link",
+        "left_ankle_roll_link",
+        "right_hip_roll_link",
+        "right_hip_yaw_link",
+        "right_ankle_roll_link",
+        "left_shoulder_roll_link",
+        "left_shoulder_yaw_link",
+        "right_shoulder_roll_link",
+        "right_shoulder_yaw_link"
+    ]
+}

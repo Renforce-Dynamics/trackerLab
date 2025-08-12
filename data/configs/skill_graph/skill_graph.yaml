@@ -1,0 +1,69 @@
+motions:
+  '55_04':
+    description: walk episode
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35_03':
+    description: walk stable
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '104_53':
+    description: stand speed up run
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '104_56':
+    description: run speed down stand
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '35_22':
+    description: run stable
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '75_09':
+    description: Jump once
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '75_11':
+    description: Jump twice, forward
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '105_39':
+    description: Jump long, forward
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '105_43':
+    description: Jump small, backward
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '105_44':
+    description: Jump very small, backward
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+  '105_45':
+    description: Jump high long, backward
+    difficulty: 4
+    trim_beg: -1 
+    trim_end: -1 
+    weight: 1.0
+
+  root: retarget_npy

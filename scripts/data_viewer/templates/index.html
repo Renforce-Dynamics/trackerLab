@@ -1,0 +1,64 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>IsaacLab HDF5 Viewer</title>
+</head>
+<body>
+  <h2>IsaacLab HDF5 Visualization (Mean Curves)</h2>
+  <div>
+    <label>Select file:</label>
+    <select id="file_select"></select>
+    <button onclick="loadKeys()">Load keys</button>
+  </div>
+  <div>
+    <label>Select dataset key:</label>
+    <select id="key_select" style="min-width:500px"></select>
+    <button onclick="plot()">Plot (mean over episodes)</button>
+  </div>
+  <div>
+    <label>Channel (optional, integer, default: mean of all channels):</label>
+    <input id="channel_input" type="number" />
+  </div>
+  <div id="plot_area">
+    <img id="plot_img" src="" alt="plot will appear here" style="max-width:900px;"/>
+  </div>
+
+  <script>
+  async function initFiles(){
+    const res = await fetch('/api/files');
+    const files = await res.json();
+    const sel = document.getElementById('file_select');
+    sel.innerHTML = '';
+    files.forEach(f => {
+      const o = document.createElement('option');
+      o.value = f; o.text = f;
+      sel.appendChild(o);
+    });
+    if(files.length>0) loadKeys();
+  }
+  async function loadKeys(){
+    const f = document.getElementById('file_select').value;
+    const res = await fetch('/api/keys?file=' + encodeURIComponent(f));
+    const keys = await res.json();
+    const sel = document.getElementById('key_select');
+    sel.innerHTML = '';
+    keys.forEach(k => {
+      const o = document.createElement('option');
+      o.value = k; o.text = k;
+      sel.appendChild(o);
+    });
+  }
+  async function plot(){
+    const f = document.getElementById('file_select').value;
+    const k = document.getElementById('key_select').value;
+    const channel = document.getElementById('channel_input').value;
+    let url = `/plot?file=${encodeURIComponent(f)}&key=${encodeURIComponent(k)}`;
+    if(channel !== '') url += '&channel=' + encodeURIComponent(channel);
+    document.getElementById('plot_img').src = url + '&_=' + Date.now();
+  }
+  window.onload = initFiles;
+  </script>
+</body>
+</html>
