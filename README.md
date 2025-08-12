@@ -20,7 +20,9 @@ Whether you're working with **SMPL/FBX motion data**, designing low-level **whol
   <img src="docs/images/features.jpg" width="100%" alt="TrackerLab Features"/>
 </p>
 
----
+| G1 Debug | G1 Running |
+|------|------|
+| <video src="./docs/videos/g1_debug.mp4" width="320" controls></video>  | <video src="./docs/videos/g1_running.mp4" width="320" controls></video> |
 
 ## 🚀 Key Features
 
