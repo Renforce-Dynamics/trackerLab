@@ -10,7 +10,14 @@ import matplotlib.pyplot as plt
 
 from utils import list_hdf5_files, walk_h5_groups
 
-DATA_DIR = "./datasets"  # Folder for HDF5 dataset files
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--logdir")
+
+args = parser.parse_args()
+
+DATA_DIR = args.logdir
 ALLOWED_EXT = (".h5", ".hdf5")
 
 app = Flask(__name__)

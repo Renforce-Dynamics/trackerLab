@@ -16,13 +16,11 @@ Whether you're working with **SMPL/FBX motion data**, designing low-level **whol
 
 > Built to **track**, **compose**, and **control** humanoid motions — seamlessly from dataset to deployment.
 
-<p align="center">
-  <img src="docs/images/features.jpg" width="100%" alt="TrackerLab Features"/>
-</p>
+### Snapshots
 
 | G1 Debug | G1 Running |
 |------|------|
-| <video src="./docs/videos/g1_debug.mp4" width="320" controls></video>  | <video src="./docs/videos/g1_running.mp4" width="320" controls></video> |
+| <video src="./docs/videos/g1_debug.mp4" width="320" controls><a href="./docs/videos/g1_debug.mp4">Video at here</a></video>  | <video src="./docs/videos/g1_running.mp4" width="320" controls><a href="./docs/videos/g1_running.mp4">Video at here</a></video> |
 
 ## 🚀 Key Features
 
@@ -38,7 +36,9 @@ Whether you're working with **SMPL/FBX motion data**, designing low-level **whol
 * 🔀 **Skill Graph via FSM Composition**
   Design complex motion behaviors using FSM-based skill graphs; supports manual triggers, planners, or joystick interfaces.
 
----
+<p align="center">
+  <img src="docs/images/features.jpg" width="100%" alt="TrackerLab Features"/>
+</p>
 
 ## ⚡ Quick Start
 
