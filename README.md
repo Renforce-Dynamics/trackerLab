@@ -18,9 +18,10 @@ Whether you're working with **SMPL/FBX motion data**, designing low-level **whol
 
 ### Snapshots
 
-| G1 Debug | G1 Running |
-|------|------|
-| <video src="./docs/videos/g1_debug.mp4" width="320" controls><a href="./docs/videos/g1_debug.mp4">Video at here</a></video>  | <video src="./docs/videos/g1_running.mp4" width="320" controls><a href="./docs/videos/g1_running.mp4">Video at here</a></video> |
+| G1 Debug | G1 Running | G1 Jump |
+|----------|------------|------------|
+| <video src="./docs/videos/g1_debug.mp4" width="320" controls><a href="./docs/videos/g1_debug.mp4">Video at here</a></video>  | <video src="./docs/videos/g1_running.mp4" width="320" controls><a href="./docs/videos/g1_running.mp4">Video at here</a></video> | <video src="./docs/videos/g1_jump_over.mp4" width="320" controls><a href="./docs/videos/g1_jump_over.mp4">Video at here</a></video> |
+
 
 ## 🚀 Key Features
 
