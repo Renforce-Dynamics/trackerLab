@@ -16,7 +16,7 @@ class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
         self.adjust_contact([
                 "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*", ".*head.*"
             ])
-        self.adjust_external_events(["base_link"])
+        self.adjust_external_events(["torso_link"])
         
 
 

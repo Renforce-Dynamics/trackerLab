@@ -110,7 +110,7 @@ import trackerLab.tasks
 
 We also provide a copy from the orginal repo, for which you could directly run:
 ```bash
-python scripts/rsl_rl/base/train.py --task R2TrackWalk --headless 
+python scripts/rsl_rl/base/train.py --task H1TrackingWalk --headless 
 ```
 
 ---
