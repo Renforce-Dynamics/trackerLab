@@ -19,9 +19,16 @@ Our repo provides retargeting methods for versatile design of robots.
 
 # Asset Download
 
+Assets could be found in git@github.com:unitreerobotics/unitree_ros.git, we also provide a download script.
+
+
+Download: 
+
 ```bash
 bash scripts/tools/download_assets.sh g1 h1
 ```
+
+Convert to usd:
 
 ```bash
 cd trackerLab # Repo dir

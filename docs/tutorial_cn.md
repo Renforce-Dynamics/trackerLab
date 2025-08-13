@@ -61,7 +61,11 @@ data/
 1. 安装 FBX SDK，参见 [issue#61](https://github.com/nv-tlabs/ASE/issues/61)。
 2. 参考 [Expressive Humanoid](https://github.com/chengxuxin/expressive-humanoid) 将 `.fbx` 文件转化为 `.npy` 动作数据。
 
----
+
+### 机器人资产下载
+
+这里用了宇树开源的数据模型，直接的下载脚本见：
+[docs/dataset_download.md](../docs/dataset_download.md)
 
 ## 🔁 Motion Retargeting
 
