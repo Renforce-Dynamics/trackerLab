@@ -63,23 +63,6 @@ class MySceneCfg(InteractiveSceneCfg):
     )
     # robots
     robot: ArticulationCfg = MISSING
-    # sensors
-    height_scanner = RayCasterCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/base",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 20.0)),
-        ray_alignment="yaw",
-        pattern_cfg=patterns.GridPatternCfg(resolution=0.1, size=[1.6, 1.0]),
-        debug_vis=False,
-        mesh_prim_paths=["/World/ground"],
-    )
-    height_scanner_base = RayCasterCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/base",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 20.0)),
-        ray_alignment="yaw",
-        pattern_cfg=patterns.GridPatternCfg(resolution=0.05, size=(0.1, 0.1)),
-        debug_vis=False,
-        mesh_prim_paths=["/World/ground"],
-    )
     contact_forces = ContactSensorCfg(prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True)
     # lights
     sky_light = AssetBaseCfg(
@@ -89,6 +72,37 @@ class MySceneCfg(InteractiveSceneCfg):
             texture_file=f"{ISAAC_NUCLEUS_DIR}/Materials/Textures/Skies/PolyHaven/kloofendal_43d_clear_puresky_4k.hdr",
         ),
     )
+    
+    height_scanner: RayCasterCfg = MISSING
+    height_scanner_base: RayCasterCfg = MISSING
+    
+    def __post_init__(self):
+        self.height_scanner = None
+        self.height_scanner_base = None
+    
+    def setup_scanner(self):
+        try:
+            # sensors
+            self.height_scanner = RayCasterCfg(
+                prim_path="{ENV_REGEX_NS}/Robot/base",
+                offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 20.0)),
+                ray_alignment="yaw",
+                pattern_cfg=patterns.GridPatternCfg(resolution=0.1, size=[1.6, 1.0]),
+                debug_vis=False,
+                mesh_prim_paths=["/World/ground"],
+            )
+            self.height_scanner_base = RayCasterCfg(
+                prim_path="{ENV_REGEX_NS}/Robot/base",
+                offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 20.0)),
+                ray_alignment="yaw",
+                pattern_cfg=patterns.GridPatternCfg(resolution=0.05, size=(0.1, 0.1)),
+                debug_vis=False,
+                mesh_prim_paths=["/World/ground"],
+            )
+        except Exception as e:
+            self.height_scanner = None
+            self.height_scanner_base = None
+            print("[Warning] scanner set fail, check isaaclab version")
 
 @configclass
 class CommandsCfg:

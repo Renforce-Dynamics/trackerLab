@@ -93,6 +93,10 @@ pip install -e ./poselib
 * [🔄 Data Flow](./docs/data_flow.md)
   Learn how data flows through the tracking, retargeting, and control pipeline.
 
+* [🔄 Problems](./docs/problems.md)
+ Problems you may encounter is recorded.
+
+
 ---
 
 ## 🔧 Tasks and Environments

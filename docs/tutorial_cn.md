@@ -215,8 +215,4 @@ class TrackEnvCfg(TrackEnvBaseCfg):
 
 ## 🙋 常见问题
 
-| 问题 | 解决方案 |
-|------|----------|
-| 无法导入 poselib | 确保运行了 `pip install -e ./poselib` |
-| 找不到 retarget_cfg 文件 | 检查路径 `./data/retarget_cfg` 是否存在并填写正确配置 |
-| tpose 文件缺失 | 执行 tpose 生成脚本或手动复制样例 tpose 文件 |
+[problems](./problems.md)
