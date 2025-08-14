@@ -169,14 +169,11 @@ logs
 
 .asset_hash
 
-*.fbx
-
 data/fbx
 data/npy
 data/pkl_buffer
 data/retargeted
 data/amass
-data/amass_results
 data/**/*.png
 data/**/*.bak
 data/assets

@@ -120,6 +120,17 @@ We also provide a copy from the orginal repo, for which you could directly run:
 python scripts/rsl_rl/base/train.py --task H1TrackingWalk --headless 
 ```
 
+For play just directly play it like:
+
+```bash
+# on gui
+python scripts/rsl_rl/base/play.py --task <Your task> --num_envs 32 # In your work space dir
+
+# on saved video
+python scripts/rsl_rl/base/play.py --task <Your task> --num_envs 32 --headless --video --video_length 500 # In your work space dir
+
+```
+
 ---
 
 ## 📜 Citation
