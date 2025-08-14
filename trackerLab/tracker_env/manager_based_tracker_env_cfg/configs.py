@@ -228,11 +228,11 @@ class RewardsCfg:
         weight=0.0
     )
     motion_l1_whb_dof_pos = RewTerm(
-        func=tracker_reward.reward_motion_l1_whb_dof_pos, 
+        func=tracker_reward.reward_motion_l1_whb_dof_pos_subset, 
         weight = -1.0
     )
     motion_exp_whb_dof_pos = RewTerm(
-        func=tracker_reward.reward_motion_exp_whb_dof_pos, 
+        func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
         weight = 20.0,
         params={
             "factor": 0.3

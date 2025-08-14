@@ -48,16 +48,20 @@ class MotionManager(ManagerBase):
     
         
     def init_id_cast(self):
-        from ..joint_id_caster import get_indices
         self.id_caster = JointIdCaster(env = self._env, device = self.device, robot_type = self.cfg.robot_type)
-        # self._buffer2man_cast, self.lab2gym_dof_ids = self.id_caster.get_gym_lab_duel()
-        self.lab_joint_names = self._env.scene.articulations["robot"]._data.joint_names
+        self.lab_joint_names = self.id_caster.lab_joint_names # self._env.scene.articulations["robot"]._data.joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
-        _sim_names = self.lab_joint_names
-        self.gym2lab_dof_ids = torch.tensor(get_indices(self.gym_joint_names, _sim_names, True), 
-                                            dtype=torch.long, device=self.device)
-        self.lab2gym_dof_ids = torch.tensor(get_indices(_sim_names, self.gym_joint_names, True), 
-                                                dtype=torch.long, device=self.device)
+        
+        self.shared_subset_gym = self.id_caster.shared_subset_gym
+        self.shared_subset_lab = self.id_caster.shared_subset_lab
+
+    @property
+    def gym2lab_dof_ids(self):
+        return self.id_caster.gym2lab_dof_ids
+    
+    @property
+    def lab2gym_dof_ids(self):
+        return self.id_caster.lab2gym_dof_ids
 
     def compute(self):
         if self.loc_gen:
@@ -69,9 +73,9 @@ class MotionManager(ManagerBase):
     def calc_current_pose(self, env_ids):
         robot = self._env.scene["robot"]
         
-        root_pos = robot.data.root_pos_w[env_ids]
-        # joint_pos = robot.data.joint_pos[env_ids].clone()
-        # joint_vel = robot.data.joint_vel[env_ids].clone()
+        root_pos = robot.data.root_pos_w[env_ids].clone()
+        joint_pos = robot.data.joint_pos[env_ids].clone()
+        joint_vel = robot.data.joint_vel[env_ids].clone()
         
         # Get current motion state
         root_rot, root_vel, root_ang_vel, demo_root_pos, dof_pos_motion, dof_vel = \
@@ -88,8 +92,8 @@ class MotionManager(ManagerBase):
         self.loc_init_root_pos = root_pos.clone()
         self.loc_init_demo_root_pos = demo_root_pos.clone()
         
-        joint_pos = dof_pos_motion
-        joint_vel = dof_vel
+        joint_pos = self.id_caster.fill_gym2lab(joint_pos, dof_pos_motion)
+        joint_vel = self.id_caster.fill_gym2lab(joint_vel, dof_pos_motion)
         
         state = {
             "articulation": {
@@ -173,17 +177,18 @@ class MotionManager(ManagerBase):
         loc_dof_pos = self.motion_lib._local_rotation_to_dof(loc_local_rot)
         # loc_dof_vel = self.motion_lib._local_rotation_to_dof_vel(terms_0[1], terms_1[1])
 
-        if loc_dof_pos.shape[-1] != loc_dof_vel.shape[-1]:
-            loc_dof_vel = torch.zeros_like(loc_dof_pos)
-            if getattr(self, "__warned_dof_vel_unmatch", True):
-                print("[WARNNING]: the dof vel and dof is unmatched, this is caused by unmatched retargeting cfg.")
-                setattr(self, "__warned_dof_vel_unmatch", False)
+        # if loc_dof_pos.shape[-1] != loc_dof_vel.shape[-1]:
+        #     loc_dof_vel = torch.zeros_like(loc_dof_pos)
+        #     if getattr(self, "__warned_dof_vel_unmatch", True):
+        #         print("[WARNNING]: the dof vel and dof is unmatched, this is caused by unmatched retargeting cfg.")
+        #         setattr(self, "__warned_dof_vel_unmatch", False)
 
         loc_dof_pos, loc_dof_vel = self._motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)
         self.loc_dof_pos, self.loc_dof_vel = loc_dof_pos[:, self.gym2lab_dof_ids], loc_dof_vel[:, self.gym2lab_dof_ids]
         
-    def get_subset_real(self, joint_pos):
-        return joint_pos[:, self.lab2gym_dof_ids][:, self.gym2lab_dof_ids]
+    def get_subset_real(self, source:torch.Tensor):
+        return source[:, self.shared_subset_lab]
+        # return joint_pos[:, self.lab2gym_dof_ids][:, self.gym2lab_dof_ids]
         
     # Super methods
     def _prepare_terms(self):

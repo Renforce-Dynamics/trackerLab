@@ -20,21 +20,6 @@ def get_indices(list1: List[str], list2: List[str], strict=True) -> List[int]:
         return [list1.index(item) for item in list2]
     return [list1.index(item) for item in list2 if item in list1]
 
-class JointMapper(object):
-    def __init__(self, source_joints, target_joints, device, strict=True):
-        self.source_joints = source_joints
-        self.target_joints = target_joints
-        self.device = device
-        self.strict = strict
-        self.init_mapping()
-    
-    def init_mapping(self):
-        self.source_subset = [item for item in self.source_joints if item in self.target_joints]
-        self.source2target = torch.tensor(get_indices(self.source_joints, self.target_joints, self.strict), 
-                                                dtype=torch.long, device=self.device)
-        self.target2source = torch.tensor(get_indices(self.target_joints, self.source_joints, False), 
-                                                dtype=torch.long, device=self.device)
-
 class JointIdCaster(object):
     def __init__(self, env, device, 
                  robot_type="H1"):
@@ -43,7 +28,7 @@ class JointIdCaster(object):
         self.robot_type = robot_type.lower()
         
         self.init_id_names()
-        # self.init_id_cast()
+        self.init_id_cast()
     
     def init_id_names(self):
         # self.robot_skeleton:SkeletonTree = RetargetingProcessor.load_tpose(self.robot_type).skeleton_tree
@@ -54,6 +39,7 @@ class JointIdCaster(object):
         self.valid_joints = self._env.scene.articulations["robot"]._data.joint_names
         
         self.init_gym_motion_offset()
+        self.init_id_cast()
         
     def init_id_cast(self):
         """
@@ -62,9 +48,25 @@ class JointIdCaster(object):
             self.gym2lab_dof_ids = torch.tensor(self.gym2lab_dof_ids, dtype=torch.long, device=self.device)
         """
         # Only using the gym2lab where the contrl model is equal
-        self.gym2lab_map = JointMapper(self.gym_joint_names, self.lab_joint_names, self.device, True)
-        self.lab2gym_map = JointMapper(self.lab_joint_names, self.gym_joint_names, self.device, False)
-        self.labsub_map  = JointMapper(self.lab_joint_names, self.lab2gym_map.source_subset, self.device, False)
+        self.shared_subset_lab = [idx for idx, item in enumerate(self.lab_joint_names)if item in self.gym_joint_names]
+        self.shared_subset_gym = [idx for idx, item in enumerate(self.gym_joint_names)if item in self.lab_joint_names]
+
+        self.shared_subset_lab = torch.tensor(self.shared_subset_lab, dtype=torch.long, device=self.device)
+        self.shared_subset_gym = torch.tensor(self.shared_subset_gym, dtype=torch.long, device=self.device)
+        
+        self.gym2lab_dof_ids = torch.tensor(get_indices(self.gym_joint_names, self.lab_joint_names, False), 
+                                            dtype=torch.long, device=self.device)
+        self.lab2gym_dof_ids = torch.tensor(get_indices(self.lab_joint_names, self.gym_joint_names, True), 
+                                                dtype=torch.long, device=self.device)
+
+
+    def fill_gym2lab(self, source:torch.Tensor, target: torch.Tensor):
+        """
+        Move subset of gym and feed into the lab tensor.
+        """
+        source = source.clone()
+        source[:, self.shared_subset_lab] = target[:, self.gym2lab_dof_ids]
+        return source
 
     def init_gym_motion_offset(self):
         self.align_cfg_path = os.path.join(MOTION_ALIGN_DIR, f"{self.robot_type}.json")

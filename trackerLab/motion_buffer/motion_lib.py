@@ -2,6 +2,8 @@ import numpy as np
 import os
 import yaml
 
+from typing import List
+
 from poselib.skeleton.skeleton3d import SkeletonMotion
 from poselib.core.rotation3d import *
 from poselib import POSELIB_DATA_DIR
@@ -118,13 +120,19 @@ class MotionLib():
         self.load_normed_terms()
 
     def load_terms(self):
-        motions = self._motions
+        motions: List[SkeletonMotion] = self._motions
         self.gts = torch.cat([m.global_translation for m in motions], dim=0).float().to(self._device)
         self.grs = torch.cat([m.global_rotation for m in motions], dim=0).float().to(self._device)
         self.lrs = torch.cat([m.local_rotation for m in motions], dim=0).float().to(self._device)
         self.grvs = torch.cat([m.global_root_velocity for m in motions], dim=0).float().to(self._device)
         self.gravs = torch.cat([m.global_root_angular_velocity for m in motions], dim=0).float().to(self._device)
-        self.dvs = torch.cat([m.dof_vels for m in motions], dim=0).float().to(self._device)
+        # self.dvs = torch.cat([m.dof_vels for m in motions], dim=0).float().to(self._device)
+
+        def lrs2vel(lrs, idx):
+            dof_pos = self._local_rotation_to_dof(lrs)
+            return self._dof_pos_to_dof_vel(dof_pos, self._motion_dt[idx])
+        
+        self.dvs = torch.cat([lrs2vel(m.local_rotation, idx) for idx, m in enumerate(motions)], dim=0).float().to(self._device)
 
     def load_normed_terms(self):
         root_pos = self.gts[:, 0:1, :]
@@ -136,7 +144,6 @@ class MotionLib():
         self.ang_vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
         self.dof_pos = self._local_rotation_to_dof(self.lrs)
-        # self.dof_vel = self._local_rotation_to_dof_vel(self.lrs)
 
     def num_motions(self):
         return len(self._motions)
@@ -439,6 +446,28 @@ class MotionLib():
                 assert(False)
 
         return dof_pos
+
+    def _dof_pos_to_dof_vel(self, local_dof, motion_dt, pad=True):
+        """
+        Convert DOF positions to DOF velocities.
+
+        Args:
+            local_dof (torch.Tensor): Shape [N, dofs], DOF positions over time.
+            motion_dt (float): Time step between frames.
+            pad (bool): Whether to pad the first velocity to maintain the same length.
+
+        Returns:
+            torch.Tensor: Shape [N, dofs], DOF velocities.
+        """
+        # Compute velocity from finite difference
+        vel = (local_dof[1:, :] - local_dof[:-1, :]) / motion_dt.item()
+
+        if pad:
+            # Pad first row with zeros (or repeat first velocity if preferred)
+            first_row = torch.zeros_like(vel[0:1, :])
+            vel = torch.cat([first_row, vel], dim=0)
+
+        return vel
 
     def _local_rotation_to_dof_vel(self, local_rot0, local_rot1, dt):
         body_ids = self._dof_body_ids

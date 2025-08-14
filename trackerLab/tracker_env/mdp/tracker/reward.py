@@ -57,21 +57,21 @@ def reward_motion_exp_whb_dof_pos_subset(
     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
     return torch.exp(-diff_angle * factor)
 
-def reward_motion_l1_whb_dof_pos(
-    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-):
-    asset: Articulation = env.scene[asset_cfg.name]
-    diff_angle = asset.data.joint_pos - env.motion_manager.loc_dof_pos
-    reward = torch.sum(torch.abs(diff_angle), dim=1)
-    return reward
+# def reward_motion_l1_whb_dof_pos(
+#     env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+# ):
+#     # asset: Articulation = env.scene[asset_cfg.name]
+#     diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
+#     reward = torch.sum(torch.abs(diff_angle), dim=1)
+#     return reward
 
-def reward_motion_exp_whb_dof_pos(
-    env, factor = 0.5, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-):
-    asset: Articulation = env.scene[asset_cfg.name]
-    diff_angle = asset.data.joint_pos - env.motion_manager.loc_dof_pos
-    diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
-    return torch.exp(-diff_angle * factor)
+# def reward_motion_exp_whb_dof_pos(
+#     env, factor = 0.5, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+# ):
+#     asset: Articulation = env.scene[asset_cfg.name]
+#     diff_angle = asset.data.joint_pos - env.motion_manager.loc_dof_pos
+#     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
+#     return torch.exp(-diff_angle * factor)
 
 def reward_motion_base_lin_vel(
     env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), vel_scale = 1.0
