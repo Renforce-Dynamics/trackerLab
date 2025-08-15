@@ -90,9 +90,12 @@ class MotionLib():
         self._device = device
         
         print("*"*20 + " Loading motion library " + "*"*20)
+        rela_dir = motion_file.split("/")[:-1]
         yaml_name = motion_file.split("/")[-1].split(".")[0]
         ext = os.path.splitext(motion_file)[1]
-        pkl_file = os.path.abspath(os.path.join(PKL_BUFFER_DIR, yaml_name + ".pkl"))
+        pkl_dir = os.path.join(PKL_BUFFER_DIR, *rela_dir)
+        os.makedirs(pkl_dir, exist_ok=True)
+        pkl_file = os.path.join(pkl_dir, yaml_name + ".pkl")
         
         if not regen_pkl and ext == ".yaml" :
             try:
