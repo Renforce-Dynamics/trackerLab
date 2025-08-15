@@ -51,7 +51,8 @@ class DofposCommand(BaseCommand):
         self.metrics["Total dof pos diff"] = diff_total
         if self.verbose_detail:
             diff_angle = torch.abs(diff_angle)
-            for idx, name in enumerate(self.lab_joint_names):
+            for idx, ptr in enumerate(env.motion_manager.shared_subset_lab) :
+                name = self.lab_joint_names[ptr]
                 self.metrics[f"dof diff: {name}"] = diff_angle[:, idx]
 
     @property

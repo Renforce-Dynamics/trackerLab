@@ -27,12 +27,12 @@ class AMASSLoader:
         self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(TPOSE_DATA_DIR, "smpl_tpose.npy"))
         # self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(TPOSE_DATA_DIR, "smpln_tpose.npy"))
         
-        self.smpl_skeleton_amass = self.create_smpl_skeleton()
+        self.smpl_skeleton_amass = self.smpl_tpose.skeleton_tree # self.create_smpl_skeleton()
         
         self.adjust_skeleton_seq()
 
     def adjust_skeleton_seq(self):
-        amass_nodes:list = self.smpl_skeleton_amass.node_names
+        amass_nodes:list = [node.lower() for node in self.smpl_skeleton_amass.node_names]
         desti_nodes:list = [node.lower() for node in self.smpl_skeleton.node_names]
         self.idcast_amass2desti = [amass_nodes.index(node) for node in desti_nodes]
         self.idcast_desti2amass = [desti_nodes.index(node) for node in amass_nodes]
