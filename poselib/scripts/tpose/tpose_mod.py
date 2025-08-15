@@ -24,6 +24,10 @@ def visualize(source_motion, name):
         interval= 30,
         save_path=f"./results/{name}.mp4")
 
+def verbose_list(tar: list):
+    for idx, item in enumerate(tar):
+        print(f"{idx:02d}:\t{item}")
+
 def load_cfg(robot_type):
     tar_file = os.path.join(TPOSE_MODI_DIR, f"tpose_{robot_type}_mod.json")
     with open(tar_file, "rb") as f:
@@ -77,6 +81,9 @@ if __name__ == "__main__":
     
     tpose = tpose_del_nodes(source, node_drop)
     tpose = tpose_rot_joints(tpose, rot_seq)
+    
+    verbose_list(tpose.skeleton_tree.node_names)
+    
     plot_skeleton_state(tpose)
     
     ret_path = os.path.join(TPOSE_DATA_DIR, f"{target}_tpose.npy")

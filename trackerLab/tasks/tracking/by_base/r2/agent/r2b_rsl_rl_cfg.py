@@ -32,4 +32,8 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
 
 @configclass
 class R2TrackingWalk(PPORunnerCfg):
-    experiment_name = "r2_tracking_walk"
+    experiment_name = "r2b_tracking_walk"
+    
+@configclass
+class R2TrackingRun(PPORunnerCfg):
+    experiment_name = "r2b_tracking_run"

@@ -5,7 +5,7 @@ from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
 from trackerLab import TRACKERLAB_USD_DIR, TRACKERLAB_ASSETS_DIR
 
-JOINT_NAMES = INIT_POS=[
+JOINT_NAMES = [
     "left_hip_pitch_joint",
     "left_hip_roll_joint",
     "left_hip_yaw_joint",
@@ -157,7 +157,7 @@ R2_CFG = ArticulationCfg(
             joint_names_expr=[".*"],
             stiffness=STIFFNESS_REAL,
             damping=DAMPING_REAL,
-            effort_limit=500,
+            effort_limit=EFFORT_REAL,
         ),
     },
 )

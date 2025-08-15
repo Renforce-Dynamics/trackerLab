@@ -14,7 +14,7 @@
         "R_Elbow": "right_arm_pitch_link"
     },
     "rotation": [0.5, 0.5, 0.5, 0.5],
-    "scale": 0.6,
+    "scale": 0.5,
 	"root_height_offset": 0.0,
 	"trim_frame_beg": -1,
 	"trim_frame_end": -1
