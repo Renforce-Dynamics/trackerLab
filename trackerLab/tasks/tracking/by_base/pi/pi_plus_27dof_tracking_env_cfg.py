@@ -7,7 +7,7 @@ from trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
 class PiTrackingEnvCfg(ManagerBasedTrackerEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
-        self.set_plane()
+        # self.set_plane()
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "pi_plus_27dof"
@@ -32,3 +32,27 @@ class PiTrackingWalk(PiTrackingEnvCfg):
         self.events.set_event_determine()
         # self.commands.dofpos_command.verbose_detail = True
         # self.set_test_motion_mode()
+        
+@configclass
+class PiTrackingRun(PiTrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_run.yaml"
+        self.observations.policy.set_no_noise()
+        self.events.set_event_determine()
+        self.commands.dofpos_command.verbose_detail = True
+        # self.set_test_motion_mode()
+        
+        self.rewards.reward_alive.weight = 5
+        
+@configclass
+class PiTrackingJump(PiTrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_jump.yaml"
+        self.observations.policy.set_no_noise()
+        self.events.set_event_determine()
+        # self.commands.dofpos_command.verbose_detail = True
+        # self.set_test_motion_mode()
+        
+        self.rewards.reward_alive.weight = 5

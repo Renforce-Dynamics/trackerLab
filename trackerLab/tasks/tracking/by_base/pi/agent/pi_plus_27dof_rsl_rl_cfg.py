@@ -37,3 +37,7 @@ class PiTrackingWalk(PPORunnerCfg):
 @configclass
 class PiTrackingRun(PPORunnerCfg):
     experiment_name = "pi_plus_27dof_tracking_run"
+    
+@configclass
+class PiTrackingJump(PPORunnerCfg):
+    experiment_name = "pi_plus_27dof_tracking_jump"

@@ -15,3 +15,23 @@ gym.register(
         "rsl_rl_cfg_entry_point": f"{agent.__name__}.pi_plus_27dof_rsl_rl_cfg:PiTrackingWalk",
     },
 )
+
+gym.register(
+    id="PiPlus27DofTrackingRun",
+    entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pi_plus_27dof_tracking_env_cfg:PiTrackingRun",
+        "rsl_rl_cfg_entry_point": f"{agent.__name__}.pi_plus_27dof_rsl_rl_cfg:PiTrackingRun",
+    },
+)
+
+gym.register(
+    id="PiPlus27DofTrackingJump",
+    entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pi_plus_27dof_tracking_env_cfg:PiTrackingJump",
+        "rsl_rl_cfg_entry_point": f"{agent.__name__}.pi_plus_27dof_rsl_rl_cfg:PiTrackingJump",
+    },
+)
