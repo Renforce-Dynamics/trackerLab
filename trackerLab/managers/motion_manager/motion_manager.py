@@ -59,9 +59,9 @@ class MotionManager(ManagerBase):
     def gym2lab_dof_ids(self):
         return self.id_caster.gym2lab_dof_ids
     
-    @property
-    def lab2gym_dof_ids(self):
-        return self.id_caster.lab2gym_dof_ids
+    # @property
+    # def lab2gym_dof_ids(self):
+    #     return self.id_caster.lab2gym_dof_ids
 
     def compute(self):
         if self.loc_gen:
@@ -92,8 +92,8 @@ class MotionManager(ManagerBase):
         self.loc_init_root_pos = root_pos.clone()
         self.loc_init_demo_root_pos = demo_root_pos.clone()
         
-        joint_pos = self.id_caster.fill_gym2lab(joint_pos, dof_pos_motion)
-        joint_vel = self.id_caster.fill_gym2lab(joint_vel, dof_pos_motion)
+        joint_pos = self.id_caster.fill_2lab(joint_pos, dof_pos_motion)
+        joint_vel = self.id_caster.fill_2lab(joint_vel, dof_pos_motion)
         
         state = {
             "articulation": {

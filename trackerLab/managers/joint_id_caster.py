@@ -50,22 +50,28 @@ class JointIdCaster(object):
         # Only using the gym2lab where the contrl model is equal
         self.shared_subset_lab = [idx for idx, item in enumerate(self.lab_joint_names)if item in self.gym_joint_names]
         self.shared_subset_gym = [idx for idx, item in enumerate(self.gym_joint_names)if item in self.lab_joint_names]
+        
+        self.shared_subset_gym_names = [item for idx, item in enumerate(self.gym_joint_names)if item in self.lab_joint_names]
 
         self.shared_subset_lab = torch.tensor(self.shared_subset_lab, dtype=torch.long, device=self.device)
         self.shared_subset_gym = torch.tensor(self.shared_subset_gym, dtype=torch.long, device=self.device)
         
         self.gym2lab_dof_ids = torch.tensor(get_indices(self.gym_joint_names, self.lab_joint_names, False), 
                                             dtype=torch.long, device=self.device)
-        self.lab2gym_dof_ids = torch.tensor(get_indices(self.lab_joint_names, self.gym_joint_names, True), 
+        self.lab2gym_dof_ids = torch.tensor(get_indices(self.lab_joint_names, self.gym_joint_names, False), 
                                                 dtype=torch.long, device=self.device)
+        
+        self.gymsub2lab_dof_ids = torch.tensor(get_indices(self.shared_subset_gym_names, self.lab_joint_names, False), 
+                                            dtype=torch.long, device=self.device)
 
 
-    def fill_gym2lab(self, source:torch.Tensor, target: torch.Tensor):
+    def fill_2lab(self, source:torch.Tensor, target: torch.Tensor):
         """
         Move subset of gym and feed into the lab tensor.
         """
         source = source.clone()
-        source[:, self.shared_subset_lab] = target[:, self.gym2lab_dof_ids]
+        assert self.shared_subset_lab.shape[0] == target.shape[-1], "Cannot fill to lab tensor."
+        source[:, self.shared_subset_lab] = target[:, :]
         return source
 
     def init_gym_motion_offset(self):

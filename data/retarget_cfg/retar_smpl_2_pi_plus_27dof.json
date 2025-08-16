@@ -19,7 +19,7 @@
         "R_Hand": "r_claw_link"
     },
     "rotation": [0.5, 0.5, 0.5, 0.5],
-    "scale": 0.8,
+    "scale": 0.5,
 	"root_height_offset": 0.0,
 	"trim_frame_beg": -1,
 	"trim_frame_end": -1
