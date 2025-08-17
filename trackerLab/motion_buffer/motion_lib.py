@@ -199,9 +199,6 @@ class MotionLib():
         return f0l, f1l, blend
     
     def get_motion_state(self, motion_ids, motion_times, **kwargs):
-        # n = len(motion_ids)
-        # num_bodies = self._get_num_bodies()
-        # num_key_bodies = self._key_body_ids.shape[0]
 
         motion_len = self._motion_lengths[motion_ids]
         num_frames = self._motion_num_frames[motion_ids]

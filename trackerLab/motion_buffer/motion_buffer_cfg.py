@@ -1,4 +1,4 @@
-from isaaclab.utils import configclass
+from trackerLab.utils import configclass
 
 @configclass
 class MotionBufferCfg:
