@@ -2,9 +2,6 @@ import os
 import json
 import torch
 from typing import Dict, List
-from trackerLab.motion_buffer.utils.jit_func import reindex_motion_dof
-from poselib.retarget.retargeting_processor import RetargetingProcessor
-from poselib.skeleton.skeleton3d import SkeletonTree
 from poselib import POSELIB_DATA_DIR
 
 MOTION_ALIGN_DIR = os.path.join(POSELIB_DATA_DIR, "motion_align")
@@ -21,24 +18,15 @@ def get_indices(list1: List[str], list2: List[str], strict=True) -> List[int]:
     return [list1.index(item) for item in list2 if item in list1]
 
 class JointIdCaster(object):
-    def __init__(self, env, device, 
+    def __init__(self, 
+                 device, lab_joint_names,
                  robot_type="H1"):
-        self._env = env
+        self.lab_joint_names = lab_joint_names
         self.device = device
         self.robot_type = robot_type.lower()
         
-        self.init_id_names()
-        self.init_id_cast()
-    
-    def init_id_names(self):
-        # self.robot_skeleton:SkeletonTree = RetargetingProcessor.load_tpose(self.robot_type).skeleton_tree
-        
-        self.lab_joint_names = self._env.scene.articulations["robot"]._data.joint_names
-        # self.lab_joint_names = [item + "_link" for item in self.lab_joint_names]
-        # self.motion_joint_names = self.robot_skeleton.node_names
-        self.valid_joints = self._env.scene.articulations["robot"]._data.joint_names
-        
         self.init_gym_motion_offset()
+        self.init_id_cast()
         self.init_id_cast()
         
     def init_id_cast(self):

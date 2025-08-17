@@ -85,12 +85,6 @@ class MotionBuffer(object):
         #                  self.cfg.interval_demo_steps, device=self.device)
         # self._in_place_flag = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
 
-        # self.dof_term_threshold = 3 * torch.ones(self.num_envs, device=self.device)
-        # self.keybody_term_threshold = 0.3 * torch.ones(self.num_envs, device=self.device)
-        # self.yaw_term_threshold = 0.5 * torch.ones(self.num_envs, device=self.device)
-        # self.height_term_threshold = 0.2 * torch.ones(self.num_envs, device=self.device)
-        # self.step_inplace_ids = self.resample_step_inplace_ids()
-
     def _load_motion(self, motion_file):
         # assert(self._dof_offsets[-1] == self.num_dof + 2)  # +2 for hand dof not used
         self._motion_lib = MotionLib(motion_file=motion_file,
