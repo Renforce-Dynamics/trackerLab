@@ -45,11 +45,13 @@ class MotionManager(ManagerBase):
         
     def init_id_cast(self):
         self.id_caster = JointIdCaster(self.device, self._env.scene.articulations["robot"]._data.joint_names, robot_type = self.cfg.robot_type)
-        self.lab_joint_names = self.id_caster.lab_joint_names # self._env.scene.articulations["robot"]._data.joint_names
+        self.lab_joint_names = self.id_caster.lab_joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
         
         self.shared_subset_gym = self.id_caster.shared_subset_gym
         self.shared_subset_lab = self.id_caster.shared_subset_lab
+        
+        self.id_caster.save_joint_details()
 
     @property
     def gym2lab_dof_ids(self):

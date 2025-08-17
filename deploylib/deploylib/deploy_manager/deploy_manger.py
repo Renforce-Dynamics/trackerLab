@@ -7,7 +7,6 @@ from trackerLab.motion_buffer.motion_buffer import MotionBuffer
 from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 
-
 from deploylib.utils.motion import slerp
 
 class DeployManager(object):
@@ -16,17 +15,23 @@ class DeployManager(object):
     id_caster: JointIdCaster
     motion_lib: MotionLib
     
-    def __init__(self, motion_buffer_cfg: MotionBufferCfg, device):
-        self.cfg = motion_buffer_cfg
+    def __init__(
+            self, motion_buffer_cfg: MotionBufferCfg, 
+            lab_joint_names, robot_type, dt, device
+        ):
+        self.motion_buffer_cfg = motion_buffer_cfg
+        self.lab_joint_names = lab_joint_names
+        self.robot_type = robot_type
+        self.dt = dt
         self.device = device
         
-        self.id_caster = JointIdCaster(device, motion_buffer_cfg.lab_joint_names, robot_type=motion_buffer_cfg.robot_type)
-        self.motion_buffer = MotionBuffer(motion_buffer_cfg, num_envs=1, dt=0.01, device="cpu", id_caster=self.id_caster)
+        self.id_caster = JointIdCaster(device, lab_joint_names, robot_type=robot_type)
+        self.motion_buffer = MotionBuffer(motion_buffer_cfg, num_envs=1, dt=dt, device=device, id_caster=self.id_caster)
         self.motion_lib = self.motion_buffer._motion_lib
         
         self.gym2lab_dof_ids = self.id_caster.gym2lab_dof_ids
         self.lab2gym_dof_ids = self.id_caster.lab2gym_dof_ids
-
+        pass
 
     loc_trans_base: torch.Tensor = None
     loc_root_pos: torch.Tensor = None # This is demo given

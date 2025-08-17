@@ -2,9 +2,7 @@ import os
 import json
 import torch
 from typing import Dict, List
-from poselib import POSELIB_DATA_DIR
-
-MOTION_ALIGN_DIR = os.path.join(POSELIB_DATA_DIR, "motion_align")
+from poselib import POSELIB_MOTION_ALIGN_DIR, POSELIB_LABJOINTS_DIR
 
 # ====================================================================================
 # Following descrips the sim joint subset for control
@@ -26,7 +24,6 @@ class JointIdCaster(object):
         self.robot_type = robot_type.lower()
         
         self.init_gym_motion_offset()
-        self.init_id_cast()
         self.init_id_cast()
         
     def init_id_cast(self):
@@ -63,7 +60,7 @@ class JointIdCaster(object):
         return source
 
     def init_gym_motion_offset(self):
-        self.align_cfg_path = os.path.join(MOTION_ALIGN_DIR, f"{self.robot_type}.json")
+        self.align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
         with open(self.align_cfg_path, 'r') as f:
             config:dict = json.load(f)
         self.align_cfg = config
@@ -81,3 +78,19 @@ class JointIdCaster(object):
         for idx in invalid_dof_id: valid_dof_body_ids[idx] = 0
         
         return gym_joint_names, dof_body_ids, dof_offsets, valid_dof_body_ids, dof_indices_sim, dof_indices_motion
+    
+    def save_joint_details(self):
+        ret_dir = os.path.join(POSELIB_LABJOINTS_DIR, f"{self.robot_type}.json")
+        ret_obj = {
+            "lab_joint_names": self.lab_joint_names,
+            "gym_joint_names": self.gym_joint_names,
+            # "gym2lab_dof_ids": self.gym2lab_dof_ids.tolist(),
+            # "lab2gym_dof_ids": self.lab2gym_dof_ids.tolist(),
+            # "shared_subset_gym": self.shared_subset_gym.tolist(),
+            # "shared_subset_lab": self.shared_subset_lab.tolist(),
+            "shared_subset_gym_names": self.shared_subset_gym_names
+        }
+        with open(ret_dir, 'w') as f:
+            json.dump(ret_obj, f, indent=4)
+            
+        print(f"Joint details saved to {ret_dir}.")
