@@ -33,6 +33,26 @@ class DeployManager(object):
         self.lab2gym_dof_ids = self.id_caster.lab2gym_dof_ids
         pass
 
+    def init_finite_state_machine(self):
+        self.motion_buffer._motion_ids = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.long, device=self.device)
+        self.motion_buffer._motion_times = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.float, device=self.device)        
+        
+    def set_finite_state_machine_motion_ids(self, motion_ids):
+        """
+        Set the motion ids for the finite state machine.
+        """
+        assert motion_ids.shape[0] == self.motion_buffer._motion_ids.shape[0], "Motion ids shape mismatch."
+        self.motion_buffer._motion_ids = motion_ids.to(self.device, dtype=torch.long)
+        self.motion_buffer._motion_times = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.float, device=self.device)
+        
+    def step(self):
+        """
+        Step the motion buffer and update the motion library.
+        """
+        is_update = self.motion_buffer.update_motion_times()
+        self.loc_gen_state(self.motion_buffer._motion_times, self.motion_buffer._motion_ids)
+        return is_update
+
     loc_trans_base: torch.Tensor = None
     loc_root_pos: torch.Tensor = None # This is demo given
     loc_dof_pos: torch.Tensor = None
@@ -83,7 +103,7 @@ class DeployManager(object):
         blend = blend.unsqueeze(-1)
         loc_local_rot = slerp(terms_0[7], terms_1[7], blend)
         loc_dof_pos = self.motion_lib._local_rotation_to_dof(loc_local_rot)
-
+        
         loc_dof_pos, loc_dof_vel = self.motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)
         self.loc_dof_pos, self.loc_dof_vel = loc_dof_pos[:, self.gym2lab_dof_ids], loc_dof_vel[:, self.gym2lab_dof_ids]
         

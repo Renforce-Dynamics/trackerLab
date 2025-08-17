@@ -16,4 +16,4 @@ def get_lab_joint_names(robot_type: str) -> list:
     file_path = os.path.join(POSELIB_LABJOINTS_DIR, f"{robot_type}.json")
     with open(file_path, 'r') as f:
         data = json.load(f)
-    data.get("lab_joint_names")
+    return data.get("lab_joint_names")

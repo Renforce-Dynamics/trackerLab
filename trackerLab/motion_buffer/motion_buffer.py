@@ -115,7 +115,9 @@ class MotionBuffer(object):
     # update functions
     def update_motion_times(self):
         self._motion_times += self._motion_dt
-        self._motion_times[self._motion_times >= self._motion_lengths] = 0.
+        update_flag = self._motion_times >= self._motion_lengths
+        self._motion_times[update_flag] = 0.
+        return update_flag
 
     def reindex_dof_pos_vel(self, dof_pos, dof_vel):
         dof_pos = reindex_motion_dof(dof_pos, self.dof_indices_sim, self.dof_indices_motion, self.valid_dof_body_ids)
