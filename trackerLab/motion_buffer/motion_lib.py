@@ -169,6 +169,8 @@ class MotionLib():
         motion_time = phase * motion_len
         return motion_time
 
+    # Property Terms
+
     def get_motion_difficulty(self, motion_ids):
         return self._motion_difficulty[motion_ids]
     
@@ -198,50 +200,7 @@ class MotionLib():
         f1l = frame_idx1 + self.length_starts[motion_ids]
         return f0l, f1l, blend
     
-    def get_motion_state(self, motion_ids, motion_times, **kwargs):
-
-        motion_len = self._motion_lengths[motion_ids]
-        num_frames = self._motion_num_frames[motion_ids]
-        dt = self._motion_dt[motion_ids]
-
-        frame_idx0, frame_idx1, blend = self._calc_frame_blend(motion_times, motion_len, num_frames, dt)
-
-        f0l = frame_idx0 + self.length_starts[motion_ids]
-        f1l = frame_idx1 + self.length_starts[motion_ids]
-
-        root_pos0 = self.gts[f0l, 0]
-        root_pos1 = self.gts[f1l, 0]
-
-        root_rot0 = self.grs[f0l, 0]
-        root_rot1 = self.grs[f1l, 0]
-
-        local_rot0 = self.lrs[f0l]
-        local_rot1 = self.lrs[f1l]
-
-        root_vel = self.grvs[f0l]
-
-        root_ang_vel = self.gravs[f0l]
-        
-        key_pos0 = self.gts[f0l.unsqueeze(-1), self._key_body_ids.unsqueeze(0)]
-        key_pos1 = self.gts[f1l.unsqueeze(-1), self._key_body_ids.unsqueeze(0)]
-
-        dof_vel = self.dvs[f0l]
-
-        vals = [root_pos0, root_pos1, local_rot0, local_rot1, root_vel, root_ang_vel, key_pos0, key_pos1]
-        for v in vals:
-            assert v.dtype != torch.float64
-
-
-        blend = blend.unsqueeze(-1)
-        root_pos = (1.0 - blend) * root_pos0 + blend * root_pos1
-        root_rot = torch_utils.slerp(root_rot0, root_rot1, blend)
-        blend_exp = blend.unsqueeze(-1)
-        key_pos = (1.0 - blend_exp) * key_pos0 + blend_exp * key_pos1
-        
-        local_rot = torch_utils.slerp(local_rot0, local_rot1, torch.unsqueeze(blend, axis=-1))
-        dof_pos = self._local_rotation_to_dof(local_rot)
-
-        return root_pos, root_rot, dof_pos, root_vel, root_ang_vel, dof_vel, key_pos
+    # Utility functions
     
     def _load_motions(self, motion_file, *args, **kwargs):
         self._motions = []
@@ -440,7 +399,6 @@ class MotionLib():
 
                 joint_theta = normalize_angle(joint_theta)
                 dof_pos[:, joint_offset] = joint_theta
-
             else:
                 print("Unsupported joint type")
                 assert(False)

@@ -93,13 +93,6 @@ class MotionBuffer(object):
                                      device=self.device, 
                                      regen_pkl=self.cfg.regen_pkl)
     
-    # Get values funcs
-    # def get_motion_state(self, motion_ids, motion_times, get_lbp=False):
-    #     root_pos, root_rot, dof_pos, root_vel, root_ang_vel, dof_vel, key_pos = \
-    #         self._motion_lib.get_motion_state(motion_ids, motion_times, get_lbp)
-    #     # dof_pos, dof_vel = self.reindex_dof_pos_vel(dof_pos, dof_vel)
-    #     return root_pos, root_rot, dof_pos, root_vel, root_ang_vel, dof_vel, key_pos
-    
     # resample for reset
     def resample_motion_times(self, env_ids):
         return self._motion_lib.sample_time(self._motion_ids[env_ids])
