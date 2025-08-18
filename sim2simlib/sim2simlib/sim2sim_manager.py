@@ -7,9 +7,9 @@ from trackerLab.motion_buffer.motion_buffer import MotionBuffer
 from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 
-from deploylib.utils.motion import slerp
+from utils import slerp
 
-class DeployManager(object):
+class Motion_Manager(object):
     
     motion_buffer: MotionBuffer
     id_caster: JointIdCaster

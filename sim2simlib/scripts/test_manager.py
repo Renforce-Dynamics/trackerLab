@@ -1,7 +1,8 @@
 import json
 import torch
-from deploylib.deploy_manager import DeployManager, MotionBufferCfg
-from deploylib.utils.configs import get_lab_joint_names
+from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
+from sim2simlab.sim2sim_manager import Motion_Manager
+from sim2simlab.utils import get_lab_joint_names
 
 robot_type="pi_plus_27dof"
 device = "cuda:0"
