@@ -1,6 +1,6 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tracker_env.manager_based_tracker_env_cfg import ManagerBasedTrackerEnvCfg
+from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
 from isaaclab_assets.robots.unitree import H1_MINIMAL_CFG
 
 @configclass
