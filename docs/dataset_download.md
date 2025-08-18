@@ -25,7 +25,7 @@ Assets could be found in git@github.com:unitreerobotics/unitree_ros.git, we also
 Download: 
 
 ```bash
-bash scripts/tools/download_assets.sh g1 h1
+bash scripts/tools/assets/download_assets.sh g1 h1
 ```
 
 Convert to usd:

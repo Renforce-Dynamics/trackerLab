@@ -118,6 +118,7 @@ import trackerLab.tasks
 We also provide a copy from the orginal repo, for which you could directly run:
 ```bash
 python scripts/rsl_rl/base/train.py --task H1TrackingWalk --headless 
+# H1 tasks that do not require generate usd, sine we use the isaaclab's usd, however it ruins the performance.
 ```
 
 For play just directly play it like:
