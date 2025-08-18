@@ -2,7 +2,7 @@ import torch
 from isaaclab.utils import configclass
 from trackerLab.managers import MotionManager, MotionManagerCfg, SkillManager, SkillManagerCfg
 from trackerLab.tracker_action.skill_action import SkillAction, SkillActionCfg
-from .manager_based_tracker_env import ManagerBasedTrackerEnv, ManagerBasedRLEnv
+from ..manager_based_tracker_env import ManagerBasedTrackerEnv, ManagerBasedRLEnv
 from .manager_based_tracker_env_cfg import ManagerBasedTrackerEnvCfg
 
 

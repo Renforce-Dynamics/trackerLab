@@ -85,12 +85,6 @@ class MotionBuffer(object):
         #                  self.cfg.interval_demo_steps, device=self.device)
         # self._in_place_flag = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
 
-        # self.dof_term_threshold = 3 * torch.ones(self.num_envs, device=self.device)
-        # self.keybody_term_threshold = 0.3 * torch.ones(self.num_envs, device=self.device)
-        # self.yaw_term_threshold = 0.5 * torch.ones(self.num_envs, device=self.device)
-        # self.height_term_threshold = 0.2 * torch.ones(self.num_envs, device=self.device)
-        # self.step_inplace_ids = self.resample_step_inplace_ids()
-
     def _load_motion(self, motion_file):
         # assert(self._dof_offsets[-1] == self.num_dof + 2)  # +2 for hand dof not used
         self._motion_lib = MotionLib(motion_file=motion_file,
@@ -98,13 +92,6 @@ class MotionBuffer(object):
                                      dof_offsets=self.dof_offsets,
                                      device=self.device, 
                                      regen_pkl=self.cfg.regen_pkl)
-    
-    # Get values funcs
-    # def get_motion_state(self, motion_ids, motion_times, get_lbp=False):
-    #     root_pos, root_rot, dof_pos, root_vel, root_ang_vel, dof_vel, key_pos = \
-    #         self._motion_lib.get_motion_state(motion_ids, motion_times, get_lbp)
-    #     # dof_pos, dof_vel = self.reindex_dof_pos_vel(dof_pos, dof_vel)
-    #     return root_pos, root_rot, dof_pos, root_vel, root_ang_vel, dof_vel, key_pos
     
     # resample for reset
     def resample_motion_times(self, env_ids):
@@ -121,7 +108,9 @@ class MotionBuffer(object):
     # update functions
     def update_motion_times(self):
         self._motion_times += self._motion_dt
-        self._motion_times[self._motion_times >= self._motion_lengths] = 0.
+        update_flag = self._motion_times >= self._motion_lengths
+        self._motion_times[update_flag] = 0.
+        return update_flag
 
     def reindex_dof_pos_vel(self, dof_pos, dof_vel):
         dof_pos = reindex_motion_dof(dof_pos, self.dof_indices_sim, self.dof_indices_motion, self.valid_dof_body_ids)

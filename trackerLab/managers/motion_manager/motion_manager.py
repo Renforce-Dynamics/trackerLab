@@ -6,10 +6,6 @@ except ModuleNotFoundError:
     ManagerBase = object
 from trackerLab.motion_buffer import MotionBuffer
 from trackerLab.motion_drawer import MotionDrawer
-# from isaaclab.assets import Articulation, RigidObject
-
-# from isaaclab.utils.math import quat_rotate_inverse, quat_rotate
-# from trackerLab.utils.torch_utils import quat_rotate, quat_rotate_inverse, euler_from_quaternion
 from trackerLab.utils.torch_utils import slerp 
 
 from typing import List
@@ -48,20 +44,18 @@ class MotionManager(ManagerBase):
     
         
     def init_id_cast(self):
-        self.id_caster = JointIdCaster(env = self._env, device = self.device, robot_type = self.cfg.robot_type)
-        self.lab_joint_names = self.id_caster.lab_joint_names # self._env.scene.articulations["robot"]._data.joint_names
+        self.id_caster = JointIdCaster(self.device, self._env.scene.articulations["robot"]._data.joint_names, robot_type = self.cfg.robot_type)
+        self.lab_joint_names = self.id_caster.lab_joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
         
         self.shared_subset_gym = self.id_caster.shared_subset_gym
         self.shared_subset_lab = self.id_caster.shared_subset_lab
+        
+        self.id_caster.save_joint_details()
 
     @property
     def gym2lab_dof_ids(self):
         return self.id_caster.gym2lab_dof_ids
-    
-    # @property
-    # def lab2gym_dof_ids(self):
-    #     return self.id_caster.lab2gym_dof_ids
 
     def compute(self):
         if self.loc_gen:
@@ -177,22 +171,13 @@ class MotionManager(ManagerBase):
         loc_dof_pos = self.motion_lib._local_rotation_to_dof(loc_local_rot)
         # loc_dof_vel = self.motion_lib._local_rotation_to_dof_vel(terms_0[1], terms_1[1])
 
-        # if loc_dof_pos.shape[-1] != loc_dof_vel.shape[-1]:
-        #     loc_dof_vel = torch.zeros_like(loc_dof_pos)
-        #     if getattr(self, "__warned_dof_vel_unmatch", True):
-        #         print("[WARNNING]: the dof vel and dof is unmatched, this is caused by unmatched retargeting cfg.")
-        #         setattr(self, "__warned_dof_vel_unmatch", False)
-
         loc_dof_pos, loc_dof_vel = self._motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)
         self.loc_dof_pos, self.loc_dof_vel = loc_dof_pos[:, self.gym2lab_dof_ids], loc_dof_vel[:, self.gym2lab_dof_ids]
         
     def get_subset_real(self, source:torch.Tensor):
         return source[:, self.shared_subset_lab]
-        # return joint_pos[:, self.lab2gym_dof_ids][:, self.gym2lab_dof_ids]
         
-    # Super methods
     def _prepare_terms(self):
-        # self.loc_gen_state()
         pass
     
     @property
