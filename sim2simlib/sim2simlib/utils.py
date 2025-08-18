@@ -2,6 +2,9 @@ import os
 from trackerLab import TRACKERLAB_ASSETS_DIR
 from etils import epath
 import torch
+import json
+
+SIM2SIMLIB_REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def get_assets(robot_name) -> list[str]:
     assets = []
@@ -32,3 +35,35 @@ def slerp(q0: torch.Tensor, q1: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
     new_q = torch.where(torch.abs(cos_half_theta) >= 1, q0, new_q)
 
     return new_q
+
+
+# def get_lab_joint_names(robot_type: str) -> list:
+#     """
+#     Load the lab joint names for a specific robot type.
+    
+#     Args:
+#         robot_type (str): The type of the robot.
+        
+#     Returns:
+#         list: A list of lab joint names.
+#     """
+#     file_path = os.path.join(SIM2SIMLIB_REPO_DIR, "configs", f"{robot_type}.json")
+#     with open(file_path, 'r') as f:
+#         data = json.load(f)
+#     return data.get("lab_joint_names")
+
+
+def get_mujoco_joint_names(robot_type: str) -> list:
+    """
+    Load the MuJoCo joint names for a specific robot type.
+
+    Args:
+        robot_type (str): The type of the robot.
+
+    Returns:
+        list: A list of MuJoCo joint names.
+    """
+    file_path = os.path.join(SIM2SIMLIB_REPO_DIR, "configs", f"{robot_type}.json")
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data.get("mujoco_joint_names")

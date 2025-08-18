@@ -8,7 +8,7 @@ from trackerLab.motion_buffer import MotionBuffer
 from trackerLab.motion_drawer import MotionDrawer
 # from isaaclab.assets import Articulation, RigidObject
 
-from isaaclab.utils.math import quat_rotate_inverse, quat_rotate
+# from isaaclab.utils.math import quat_rotate_inverse, quat_rotate
 # from trackerLab.utils.torch_utils import quat_rotate, quat_rotate_inverse, euler_from_quaternion
 from trackerLab.utils.torch_utils import slerp 
 

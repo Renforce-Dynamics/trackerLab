@@ -1,13 +1,13 @@
 import json
 import torch
-from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
-from sim2simlab.sim2sim_manager import Motion_Manager
-from sim2simlab.utils import get_lab_joint_names
+
+from sim2simlib.sim2sim_manager import Motion_Manager, MotionBufferCfg
+from sim2simlib.utils import get_mujoco_joint_names
 
 robot_type="pi_plus_27dof"
 device = "cuda:0"
 
-lab_joint_names = get_lab_joint_names(robot_type)
+mujoco_joint_names = get_mujoco_joint_names(robot_type)
 
 cfg = MotionBufferCfg(
     regen_pkl=False,
@@ -20,9 +20,9 @@ cfg = MotionBufferCfg(
 
 if __name__ == "__main__":
 
-    manager = DeployManager(
+    manager = Motion_Manager(
         motion_buffer_cfg=cfg,
-        lab_joint_names=lab_joint_names,
+        lab_joint_names=mujoco_joint_names,
         robot_type=robot_type,
         dt=0.01,
         device=device
