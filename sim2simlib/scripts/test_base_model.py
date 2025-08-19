@@ -31,7 +31,7 @@ config = Sim2Sim_Config(
             },
         ),
     action_cfg=Actions_Config(
-        action_clip=(-10.0, 10.0),
+        action_clip=(-100.0, 100.0),
         scale=0.25
     ),
     dc_motor_cfg=DC_Motor_Config(

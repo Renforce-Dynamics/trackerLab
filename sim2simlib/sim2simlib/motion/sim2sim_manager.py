@@ -7,7 +7,7 @@ from trackerLab.motion_buffer.motion_buffer import MotionBuffer
 from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 
-from sim2simlib.utils import slerp
+from sim2simlib.utils.utils import slerp
 
 class Motion_Manager(object):
     

@@ -1,18 +1,9 @@
 import os
 import numpy as np
-from trackerLab import TRACKERLAB_ASSETS_DIR
-from etils import epath
 import torch
 import json
+from sim2simlib import SIM2SIMLIB_REPO_DIR
 
-SIM2SIMLIB_REPO_DIR = os.path.dirname(os.path.abspath(__file__))
-
-def get_assets(robot_name) -> list[str]:
-    assets = []
-    assets_dir = os.path.join(TRACKERLAB_ASSETS_DIR, "data", robot_name)
-    xml_dir = os.path.join(assets_dir, "mjcf")
-    assets = epath.Path(xml_dir).glob("*.xml")
-    return assets
 
 @torch.jit.script
 def slerp(q0: torch.Tensor, q1: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
@@ -50,22 +41,6 @@ def get_gravity_orientation(quaternion: np.ndarray) -> np.ndarray:
     gravity_orientation[2] = 1 - 2 * (qw * qw + qz * qz)
 
     return gravity_orientation
-
-# def get_lab_joint_names(robot_type: str) -> list:
-#     """
-#     Load the lab joint names for a specific robot type.
-    
-#     Args:
-#         robot_type (str): The type of the robot.
-        
-#     Returns:
-#         list: A list of lab joint names.
-#     """
-#     file_path = os.path.join(SIM2SIMLIB_REPO_DIR, "configs", f"{robot_type}.json")
-#     with open(file_path, 'r') as f:
-#         data = json.load(f)
-#     return data.get("lab_joint_names")
-
 
 def get_mujoco_joint_names(robot_type: str) -> list:
     """
