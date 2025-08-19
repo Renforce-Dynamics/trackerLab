@@ -1,6 +1,6 @@
 import torch
 from trackerLab.managers import MotionManager, MotionManagerCfg, SkillManager, SkillManagerCfg
-from .manager_based_rl_env import ManagerBasedRLEnv
+from trackerLab.tracker_env.manager_based_rl_env import ManagerBasedRLEnv
 # from isaaclab.ui.widgets import ManagerLiveVisualizer
 from isaaclab.assets import Articulation, RigidObject
 
