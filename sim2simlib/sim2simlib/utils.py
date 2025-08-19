@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from trackerLab import TRACKERLAB_ASSETS_DIR
 from etils import epath
 import torch
@@ -36,6 +37,19 @@ def slerp(q0: torch.Tensor, q1: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
 
     return new_q
 
+def get_gravity_orientation(quaternion: np.ndarray) -> np.ndarray:
+    qw = quaternion[0]
+    qx = quaternion[1]
+    qy = quaternion[2]
+    qz = quaternion[3]
+
+    gravity_orientation = np.zeros(3)
+
+    gravity_orientation[0] = 2 * (-qz * qx + qw * qy)
+    gravity_orientation[1] = -2 * (qz * qy + qw * qx)
+    gravity_orientation[2] = 1 - 2 * (qw * qw + qz * qz)
+
+    return gravity_orientation
 
 # def get_lab_joint_names(robot_type: str) -> list:
 #     """

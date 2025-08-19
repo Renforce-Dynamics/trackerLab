@@ -5,7 +5,7 @@ from sim2simlib.sim2sim_manager import Motion_Manager, MotionBufferCfg
 from sim2simlib.utils import get_mujoco_joint_names
 
 robot_type="pi_plus_27dof"
-device = "cuda:0"
+device = "cpu"
 
 mujoco_joint_names = get_mujoco_joint_names(robot_type)
 
@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     while True:
         print(manager.loc_dof_pos)
+        print(manager.loc_root_vel)
         is_update = manager.step()
         if torch.any(is_update):
             print("Motion updated.")
