@@ -7,7 +7,7 @@ config = Sim2Sim_Config(
     robot_name='pi_plus_27dof',
     simulation_dt=0.005,
     control_decimation=4,
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/checkpoints/pi_plus_policy.pth",
+    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/pi_plus_27dof_tracking_walk/2025-08-19_15-42-09/exported/policy.pt",
     xml_path=None,
     policy_joint_names=[ 
         "head_yaw_joint",
@@ -54,6 +54,10 @@ config = Sim2Sim_Config(
                 'joint_vel': 1.0,
                 'action': 1.0
             },
+        motion_observations_terms=[
+            'loc_dof_pos',
+            'loc_root_vel'
+            ]
         ),
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0),
@@ -63,7 +67,7 @@ config = Sim2Sim_Config(
         effort_limit=500,
         saturation_effort=500,
         velocity_limit=30.0,
-        stiffness=300,
+        stiffness=30,
         damping=2
     ),
 
@@ -81,4 +85,4 @@ config = Sim2Sim_Config(
 
 mujoco_model = Sim2Sim_Motion_Model(config)
 
-mujoco_model.view_run()
+mujoco_model.motion_view()
