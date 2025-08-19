@@ -55,7 +55,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
 
         return  motion_command | base_observations
 
-    def motion_view(self):
+    def motion_fk_view(self):
         counter = 0
         target_joint_pos = self._cfg.default_angles
         self.mj_model.opt.gravity[:] = [0, 0, 0]
@@ -67,9 +67,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                     is_update = self.motion_manager.step()
                     loc_dof_pos = self.motion_manager.loc_dof_pos.detach().cpu().numpy()[0]
                     loc_dof_pos = np.concatenate([np.array([0], dtype=np.float32), loc_dof_pos])
-                    print("loc_dof_pos:", loc_dof_pos)
-                    target_joint_pos = self._cfg.default_angles + loc_dof_pos
-                    self.mj_data.qpos[self.base_link_id+7:] = target_joint_pos
+                    self.mj_data.qpos[self.base_link_id+7:] = loc_dof_pos[self.act_maps]
                     self.mj_data.qpos[:3] = self._cfg.default_pos
                     
                 mujoco.mj_forward(self.mj_model, self.mj_data)
