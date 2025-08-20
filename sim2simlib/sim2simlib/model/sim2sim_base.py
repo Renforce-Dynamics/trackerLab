@@ -77,7 +77,7 @@ class Sim2Sim_Base_Model:
         self.policy = torch.jit.load(self._cfg.policy_path)
         
     def _init_dc_model(self):
-        self.dc_motor = DC_Motor(self._cfg.dc_motor_cfg)         
+        self.dc_motor = DC_Motor(self._cfg.motor_cfg)         
 
             
     def get_base_observations(self) -> dict[str, np.ndarray]:
@@ -116,7 +116,9 @@ class Sim2Sim_Base_Model:
         obs_dict = self.get_obs()
         obs_np = np.concatenate(list(obs_dict.values()), axis=-1).astype(np.float32)
         obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
+        print(obs_tensor)
         action = self.policy(obs_tensor).detach().numpy().squeeze()
+        print(action)
         self.action[:] = action
         return action
 
@@ -133,6 +135,7 @@ class Sim2Sim_Base_Model:
         return get_gravity_orientation(self.mj_data.qpos[self.base_link_id + 3:self.base_link_id + 7])
     
     def _obs_joint_pos(self) -> np.ndarray:
+        print(f"{self.mj_data.qpos=}")
         return (self.mj_data.qpos - self.init_qpos)[self.qpos_maps]
     
     def _obs_joint_vel(self) -> np.ndarray:

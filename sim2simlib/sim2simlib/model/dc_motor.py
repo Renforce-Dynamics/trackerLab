@@ -1,8 +1,8 @@
 import numpy as np
-from sim2simlib.model.config import Actions, DC_Motor_Config
+from sim2simlib.model.config import Actions, Motor_Config
 
 class DC_Motor():
-    def __init__(self, cfg:DC_Motor_Config):
+    def __init__(self, cfg:Motor_Config):
         self.cfg = cfg
         self._effort_limit = self.cfg.effort_limit
         self._saturation_effort = self.cfg.saturation_effort
@@ -10,7 +10,6 @@ class DC_Motor():
         self._stiffness = self.cfg.stiffness
         self._damping = self.cfg.damping
         self._friction = self.cfg.friction
-
 
     def compute(self, joint_pos:np.ndarray, joint_vel:np.ndarray, action: Actions) -> np.ndarray:
         self._joint_vel = joint_vel
@@ -32,3 +31,29 @@ class DC_Motor():
 
         # clip the torques based on the motor limits
         return np.clip(effort, a_min=min_effort, a_max=max_effort)
+
+"""
+
+"""
+class PID_Motor():
+    def __init__(self, cfg:Motor_Config):
+        self.cfg = cfg
+        self._effort_limit = self.cfg.effort_limit
+        self._saturation_effort = self.cfg.saturation_effort
+        self._velocity_limit = self.cfg.velocity_limit
+        self._stiffness = self.cfg.stiffness
+        self._damping = self.cfg.damping
+        self._friction = self.cfg.friction
+
+
+    def compute(self, joint_pos:np.ndarray, joint_vel:np.ndarray, action: Actions) -> np.ndarray:
+        self._joint_vel = joint_vel
+        error_pos = action.joint_pos - joint_pos
+        error_vel = action.joint_vel - joint_vel
+        computed_effort = self._stiffness * error_pos + self._damping * error_vel + action.joint_efforts
+        applied_effort = self._clip_effort(computed_effort)
+        return applied_effort
+     
+    def _clip_effort(self, effort: np.ndarray) -> np.ndarray:
+        # clip the torques based on the motor limits
+        return np.clip(effort, a_min=-self._effort_limit, a_max=self._effort_limit)

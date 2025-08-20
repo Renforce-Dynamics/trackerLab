@@ -1,5 +1,5 @@
 import numpy as np
-from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, DC_Motor_Config
+from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
 
 config = Sim2Sim_Config(
@@ -34,7 +34,7 @@ config = Sim2Sim_Config(
         action_clip=(-100.0, 100.0),
         scale=0.25
     ),
-    dc_motor_cfg=DC_Motor_Config(
+    motor_cfg=Motor_Config(
         effort_limit=23.5,
         saturation_effort=23.5,
         velocity_limit=30.0,

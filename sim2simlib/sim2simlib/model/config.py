@@ -21,7 +21,7 @@ class Observations_Config:
     motion_observations_terms: list[str] = None
     
 @dataclass
-class DC_Motor_Config():
+class Motor_Config():
     effort_limit: float=23.5
     saturation_effort: float=23.5
     velocity_limit: float=30.0
@@ -42,6 +42,6 @@ class Sim2Sim_Config:
     
     observation_cfg: Observations_Config
     action_cfg: Actions_Config
-    dc_motor_cfg: DC_Motor_Config
+    motor_cfg: Motor_Config
     
     motion_cfg: MotionManagerCfg = None
