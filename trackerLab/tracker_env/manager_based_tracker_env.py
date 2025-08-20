@@ -19,10 +19,10 @@ class ManagerBasedTrackerEnv(ManagerBasedRLEnv):
             self.motion_manager = SkillManager(self.cfg.motion, self, self.device)
         elif isinstance(self.cfg.motion, MotionManagerCfg):
             self.motion_manager = MotionManager(self.cfg.motion, self, self.device)
-        else:
-            raise ValueError("Motion manager not supported: ", self.cfg.motion)
+        # else:
+        #     raise ValueError("Motion manager not supported: ", self.cfg.motion)
         self.motion_manager.compute()
-        print("[INFO] Motion Manager: ", self.motion_manager)
+        # print("[INFO] Motion Manager: ", self.motion_manager)
         super().load_managers()
         
     def _post_dynamic_step(self):

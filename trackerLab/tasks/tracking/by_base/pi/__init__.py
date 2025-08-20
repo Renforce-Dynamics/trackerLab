@@ -17,6 +17,15 @@ gym.register(
 )
 
 gym.register(
+    id="PiPlus27DofAMPTrackingWalk",
+    entry_point="trackerLab.tracker_env:ManagerBasedAMPTrackerEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pi_plus_27dof_tracking_env_cfg:PiAMPTrackingWalk",
+    },
+)
+
+gym.register(
     id="PiPlus27DofTrackingRun",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
