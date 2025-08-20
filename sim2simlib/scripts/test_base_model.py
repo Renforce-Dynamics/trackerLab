@@ -1,6 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
+from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='Go2',
@@ -35,6 +36,7 @@ config = Sim2Sim_Config(
         scale=0.25
     ),
     motor_cfg=Motor_Config(
+        motor_type=DC_Motor,
         effort_limit=23.5,
         saturation_effort=23.5,
         velocity_limit=30.0,

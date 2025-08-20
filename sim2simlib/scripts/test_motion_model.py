@@ -2,6 +2,7 @@ import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
+from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='pi_plus_27dof',
@@ -69,11 +70,12 @@ config = Sim2Sim_Config(
         # velocity_limit=3.0,
         # stiffness=3,
         # damping=2
-        effort_limit=23.5,
-        saturation_effort=23.5,
-        velocity_limit=30.0,
-        stiffness=5.0,
-        damping=0.0
+        motor_type=PID_Motor,
+        effort_limit=500,
+        saturation_effort=500,
+        velocity_limit=300.0,
+        stiffness=300.0,
+        damping=2.0
     ),
 
     default_pos=np.array([0.0, 0.0, 0.4], dtype=np.float32),

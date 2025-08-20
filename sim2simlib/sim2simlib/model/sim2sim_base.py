@@ -9,7 +9,7 @@ import torch
 
 from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 from sim2simlib.utils.utils import get_gravity_orientation
-from sim2simlib.model.dc_motor import DC_Motor
+from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
 from sim2simlib.model.config import Sim2Sim_Config, Actions
 
 class Sim2Sim_Base_Model:
@@ -77,8 +77,8 @@ class Sim2Sim_Base_Model:
         self.policy = torch.jit.load(self._cfg.policy_path)
         
     def _init_dc_model(self):
-        self.dc_motor = DC_Motor(self._cfg.motor_cfg)         
-
+        motor_type = self._cfg.motor_cfg.motor_type
+        self.dc_motor = motor_type(self._cfg.motor_cfg)         
             
     def get_base_observations(self) -> dict[str, np.ndarray]:
         base_observations = {}

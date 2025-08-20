@@ -22,6 +22,7 @@ class Observations_Config:
     
 @dataclass
 class Motor_Config():
+    motor_type: type = None
     effort_limit: float=23.5
     saturation_effort: float=23.5
     velocity_limit: float=30.0
