@@ -34,10 +34,19 @@ PI_PLUS_27DOF_CFG = ArticulationCfg(
     actuators={
         "actuators": ImplicitActuatorCfg(
             joint_names_expr=[".*"],
-            stiffness=300,
-            damping=2,
-            effort_limit=500,
+            stiffness=45.0,
+            damping=1.0,
+            effort_limit=100,
         ),
+        # "actuators": DCMotorCfg(
+        #     joint_names_expr=[".*"],
+        #     effort_limit=100,
+        #     saturation_effort=100,
+        #     velocity_limit=30.0,
+        #     stiffness=25.0,
+        #     damping=0.5,
+        #     friction=0.0,
+        # ),
     },
 )
 
