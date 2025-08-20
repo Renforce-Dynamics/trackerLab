@@ -38,3 +38,11 @@ python scripts/tools/assets/convert_urdf.py --headless data/assets/g1_descriptio
 mkdir -p data/assets/usd/g1_29d_loco
 python scripts/tools/assets/convert_urdf.py --headless data/assets/g1_exbody/g1_29dof_loco.urdf data/assets/usd/g1_29d_loco/g1_29d_loco
 ```
+
+If your robot do not have a mjcf for tpose generation, you could use:
+
+```bash
+pip install urdf2mjcf
+
+urdf2mjcf #<path to your urdf file>
+```

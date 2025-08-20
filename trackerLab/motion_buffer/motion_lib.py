@@ -129,13 +129,10 @@ class MotionLib():
         self.lrs = torch.cat([m.local_rotation for m in motions], dim=0).float().to(self._device)
         self.grvs = torch.cat([m.global_root_velocity for m in motions], dim=0).float().to(self._device)
         self.gravs = torch.cat([m.global_root_angular_velocity for m in motions], dim=0).float().to(self._device)
-        # self.dvs = torch.cat([m.dof_vels for m in motions], dim=0).float().to(self._device)
-
-        def lrs2vel(lrs, idx):
-            dof_pos = self._local_rotation_to_dof(lrs)
-            return self._dof_pos_to_dof_vel(dof_pos, self._motion_dt[idx])
         
-        self.dvs = torch.cat([lrs2vel(m.local_rotation, idx) for idx, m in enumerate(motions)], dim=0).float().to(self._device)
+        # Here we have two ways of calcing dvs:
+        self.dvs = torch.cat([m.dof_vels for m in motions], dim=0).float().to(self._device)
+        self.dps = torch.cat([m.dof_poses for m in motions], dim=0).float().to(self._device)
 
     def load_normed_terms(self):
         root_pos = self.gts[:, 0:1, :]
@@ -146,7 +143,7 @@ class MotionLib():
         self.trans_base = quat_rotate_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
         self.ang_vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
-        self.dof_pos = self._local_rotation_to_dof(self.lrs)
+        # self.dof_pos = self._local_rotation_to_dof(self.lrs)
 
     def num_motions(self):
         return len(self._motions)
@@ -201,6 +198,15 @@ class MotionLib():
         return f0l, f1l, blend
     
     # Utility functions
+    def _fill_motions(self, curr_motion, curr_dt):
+        curr_dof_pos = self._local_rotation_to_dof(curr_motion.local_rotation)
+        curr_motion.dof_poses = curr_dof_pos
+        
+        # Two way of calc pos and vel
+        curr_dof_vels = self._dof_pos_to_dof_vel(curr_dof_pos, curr_dt)
+        # Calc dof vel with old api
+        curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
+        curr_motion.dof_vels = curr_dof_vels
     
     def _load_motions(self, motion_file, *args, **kwargs):
         self._motions = []
@@ -221,7 +227,7 @@ class MotionLib():
         for f in range(num_motion_files):
             curr_file = motion_files[f]
             print("Loading {:d}/{:d} motion files: {:s}".format(f + 1, num_motion_files, curr_file))
-            curr_motion = SkeletonMotion.from_file(curr_file)
+            curr_motion:SkeletonMotion = SkeletonMotion.from_file(curr_file)
 
             motion_fps = int(curr_motion.fps)
             curr_dt = 1.0 / motion_fps
@@ -232,10 +238,9 @@ class MotionLib():
             self._motion_fps.append(motion_fps)
             self._motion_dt.append(curr_dt)
             self._motion_num_frames.append(num_frames)
- 
-            curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
-            curr_motion.dof_vels = curr_dof_vels
-
+            
+            self._fill_motions(curr_motion, curr_dt)
+            
             # Moving motion tensors to the GPU
             if USE_CACHE:
                 curr_motion = DeviceCache(curr_motion, self._device)                
@@ -371,6 +376,7 @@ class MotionLib():
     
     
     # Using local rotation for calcing dof_pos, indicating that the joints are near.
+    # Exbody Mode
     
     def _local_rotation_to_dof(self, local_rot):
         body_ids = self._dof_body_ids
@@ -406,19 +412,8 @@ class MotionLib():
         return dof_pos
 
     def _dof_pos_to_dof_vel(self, local_dof, motion_dt, pad=True):
-        """
-        Convert DOF positions to DOF velocities.
-
-        Args:
-            local_dof (torch.Tensor): Shape [N, dofs], DOF positions over time.
-            motion_dt (float): Time step between frames.
-            pad (bool): Whether to pad the first velocity to maintain the same length.
-
-        Returns:
-            torch.Tensor: Shape [N, dofs], DOF velocities.
-        """
         # Compute velocity from finite difference
-        vel = (local_dof[1:, :] - local_dof[:-1, :]) / motion_dt.item()
+        vel = (local_dof[1:, :] - local_dof[:-1, :]) / motion_dt
 
         if pad:
             # Pad first row with zeros (or repeat first velocity if preferred)
