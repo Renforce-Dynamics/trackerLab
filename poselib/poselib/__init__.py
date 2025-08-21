@@ -43,10 +43,9 @@ POSELIB_REPO_DIR            = os.path.dirname(os.path.abspath(__file__))
 POSELIB_DATA_DIR            = os.path.join(POSELIB_REPO_DIR, "..", "..","data")
 POSELIB_AMASS_DIR           = os.path.join(POSELIB_DATA_DIR, "amass")
 POSELIB_SCRIPT_DIR          = os.path.join(POSELIB_REPO_DIR, "scripts")
-POSELIB_RETARGETED_DATA_DIR = os.path.join(POSELIB_DATA_DIR, "retargeted")
+POSELIB_RETARGETED_DATA_DIR = config_dir(POSELIB_DATA_DIR, "retargeted")
 POSELIB_MOTION_CFG_DIR      = os.path.join(POSELIB_DATA_DIR, "configs")
 POSELIB_BUFFER_DIR          = os.path.join(POSELIB_DATA_DIR, "pkl_buffer")
-POSELIB_LABJOINTS_DIR       = config_dir(  POSELIB_DATA_DIR, "lab_joints")
 
 
 # Dirs that containing poselib configs, where the retarget is using poselib

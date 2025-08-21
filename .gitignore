@@ -177,7 +177,7 @@ data/amass
 data/**/*.png
 data/**/*.bak
 data/assets
-data/skeletons/lab_joints
+data/lab_joints
 
 *.npz
 

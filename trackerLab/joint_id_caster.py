@@ -2,7 +2,8 @@ import os
 import json
 import torch
 from typing import Dict, List
-from poselib import POSELIB_MOTION_ALIGN_DIR, POSELIB_LABJOINTS_DIR
+from poselib import POSELIB_MOTION_ALIGN_DIR
+from trackerLab import TRACKERLAB_LABJOINTS_DIR
 
 # ====================================================================================
 # Following descrips the sim joint subset for control
@@ -101,7 +102,7 @@ class JointIdCaster(object):
         return source
     
     def save_joint_details(self):
-        ret_dir = os.path.join(POSELIB_LABJOINTS_DIR, f"{self.robot_type}.json")
+        ret_dir = os.path.join(TRACKERLAB_LABJOINTS_DIR, f"{self.robot_type}.json")
         ret_obj = {
             "lab_joint_names": self.lab_joint_names,
             "gym_joint_names": self.gym_joint_names,

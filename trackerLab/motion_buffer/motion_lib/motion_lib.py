@@ -10,7 +10,7 @@ from trackerLab.utils.torch_utils.isaacgym import quat_rotate_inverse
 from trackerLab.joint_id_caster import JointIdCaster
 from .transforms.rot_2_dof import _local_rotation_to_dof
 
-from poselib import POSELIB_MOTION_CFG_DIR, POSELIB_BUFFER_DIR, POSELIB_RETARGETED_DATA_DIR, POSELIB_MOTION_CFG_DIR
+from trackerLab import TRACKERLAB_MOTION_CFG_DIR, TRACKERLAB_BUFFER_DIR, TRACKERLAB_RETARGETED_DATA_DIR
 
 def calc_frame_blend(time, len, num_frames, dt):
     """
@@ -92,13 +92,13 @@ class MotionLib():
         self._device = device
         self.regen_pkl = regen_pkl
         
-        motion_file = os.path.join(POSELIB_MOTION_CFG_DIR, motion_file)
+        motion_file = os.path.join(TRACKERLAB_MOTION_CFG_DIR, motion_file)
         
         print("*"*20 + " Loading motion library " + "*"*20)
         rela_dir = motion_file.split("/")[-2]
         yaml_name = motion_file.split("/")[-1].split(".")[0]
         ext = os.path.splitext(motion_file)[1]
-        pkl_dir = os.path.join(POSELIB_BUFFER_DIR, rela_dir)
+        pkl_dir = os.path.join(TRACKERLAB_BUFFER_DIR, rela_dir)
         os.makedirs(pkl_dir, exist_ok=True)
         pkl_file = os.path.join(pkl_dir, yaml_name + ".pkl")
         
@@ -330,7 +330,7 @@ class MotionLib():
         with open(os.path.join(motion_file), 'r') as f:
             motion_config = yaml.load(f, Loader=yaml.SafeLoader)
 
-        dir_name = os.path.join(POSELIB_RETARGETED_DATA_DIR, motion_config['motions']["root"])
+        dir_name = os.path.join(TRACKERLAB_RETARGETED_DATA_DIR, motion_config['motions']["root"])
 
         motion_list = motion_config['motions']
         for motion_entry in motion_list.keys():

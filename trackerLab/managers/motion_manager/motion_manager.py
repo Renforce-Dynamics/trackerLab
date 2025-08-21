@@ -4,12 +4,10 @@ try:
 except ModuleNotFoundError:
     print("ImportError: Unable to import ManagerBase or ManagerTermBase. Please check the module structure.")
     ManagerBase = object
+    
 from trackerLab.motion_buffer import MotionBuffer
-from trackerLab.motion_drawer import MotionDrawer
 from trackerLab.utils.torch_utils import slerp 
-
-from typing import List
-from ...joint_id_caster import JointIdCaster
+from trackerLab.joint_id_caster import JointIdCaster
 
 class MotionManager(ManagerBase):
     """
