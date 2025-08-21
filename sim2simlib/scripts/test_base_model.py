@@ -38,6 +38,11 @@ config = Sim2Sim_Config(
     motor_cfg=Motor_Config(
         motor_type=DC_Motor,
         effort_limit=23.5,
+        # {
+        #         ".*_hip_joint": 23.5,
+        #         ".*_thigh_joint": 23.5,
+        #         ".*_calf_joint": 23.5,
+        # },#23.5,
         saturation_effort=23.5,
         velocity_limit=30.0,
         stiffness=25.0,
