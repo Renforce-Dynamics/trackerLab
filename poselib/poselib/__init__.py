@@ -41,13 +41,23 @@ def config_dir(*args):
 
 POSELIB_REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 POSELIB_DATA_DIR = os.path.join(POSELIB_REPO_DIR, "..", "..","data")
+POSELIB_AMASS_DIR = os.path.join(POSELIB_DATA_DIR, "amass")
 POSELIB_SCRIPT_DIR = os.path.join(POSELIB_REPO_DIR, "scripts")
 
 POSELIB_SKELETON_DIR  = os.path.join(POSELIB_DATA_DIR, "skeletons")
 POSELIB_LABJOINTS_DIR = config_dir(POSELIB_SKELETON_DIR, "lab_joints")
 
 POSELIB_RETARGET_CFG_DIR = os.path.join(POSELIB_DATA_DIR, "retarget_cfg") # TODO, to specify the retarget type
+POSELIB_RETARGETED_DATA_DIR = os.path.join(POSELIB_DATA_DIR, "retargeted")
 
 POSELIB_MOTION_ALIGN_DIR = os.path.join(POSELIB_DATA_DIR, "motion_align")
 
 POSELIB_TPOSE_DIR = os.path.join(POSELIB_DATA_DIR, "tpose")
+
+POSELIB_TPOSE_MIDIFY_DIR = os.path.join(POSELIB_TPOSE_DIR, "modify")
+
+POSELIB_MOTION_CFG_DIR = os.path.join(POSELIB_DATA_DIR, "configs")
+
+POSELIB_BUFFER_DIR = os.path.join(POSELIB_DATA_DIR, "pkl_buffer")
+
+POSELIB_SMPL_SKELETON_PATH = os.path.join(POSELIB_SKELETON_DIR, "skeleton_smpl.json")

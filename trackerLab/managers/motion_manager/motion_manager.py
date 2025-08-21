@@ -9,7 +9,7 @@ from trackerLab.motion_drawer import MotionDrawer
 from trackerLab.utils.torch_utils import slerp 
 
 from typing import List
-from ..joint_id_caster import JointIdCaster
+from ...joint_id_caster import JointIdCaster
 
 class MotionManager(ManagerBase):
     """
@@ -44,7 +44,8 @@ class MotionManager(ManagerBase):
     
         
     def init_id_cast(self):
-        self.id_caster = JointIdCaster(self.device, self._env.scene.articulations["robot"]._data.joint_names, robot_type = self.cfg.robot_type)
+        lab_joint_names = self._env.scene.articulations["robot"]._data.joint_names
+        self.id_caster = JointIdCaster(self.device, lab_joint_names, robot_type = self.cfg.robot_type)
         self.lab_joint_names = self.id_caster.lab_joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
         
@@ -87,7 +88,7 @@ class MotionManager(ManagerBase):
         self.loc_init_demo_root_pos = demo_root_pos.clone()
         
         joint_pos = self.id_caster.fill_2lab(joint_pos, dof_pos_motion)
-        joint_vel = self.id_caster.fill_2lab(joint_vel, dof_pos_motion)
+        joint_vel = self.id_caster.fill_2lab(joint_vel, dof_vel)
         
         state = {
             "articulation": {

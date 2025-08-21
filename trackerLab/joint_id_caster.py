@@ -16,12 +16,19 @@ def get_indices(list1: List[str], list2: List[str], strict=True) -> List[int]:
     return [list1.index(item) for item in list2 if item in list1]
 
 class JointIdCaster(object):
-    def __init__(self, 
-                 device, lab_joint_names,
-                 robot_type="H1"):
+    def __init__(
+            self, 
+            device, lab_joint_names,
+            robot_type="H1"
+        ):
         self.lab_joint_names = lab_joint_names
         self.device = device
         self.robot_type = robot_type.lower()
+        
+        self.align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
+        with open(self.align_cfg_path, 'r') as f:
+            config:dict = json.load(f)
+        self.align_cfg = config
         
         self.init_gym_motion_offset()
         self.init_id_cast()
@@ -49,25 +56,22 @@ class JointIdCaster(object):
         self.gymsub2lab_dof_ids = torch.tensor(get_indices(self.shared_subset_gym_names, self.lab_joint_names, False), 
                                             dtype=torch.long, device=self.device)
 
-
-    def fill_2lab(self, source:torch.Tensor, target: torch.Tensor):
-        """
-        Move subset of gym and feed into the lab tensor.
-        """
-        source = source.clone()
-        assert self.shared_subset_lab.shape[0] == target.shape[-1], "Cannot fill to lab tensor."
-        source[:, self.shared_subset_lab] = target[:, :]
-        return source
+    @property
+    def num_dof(self) -> int:
+        return self.dof_offsets[-1]
+    dof_body_ids       :torch.Tensor = None
+    gym_joint_names    :torch.Tensor = None
+    dof_offsets        :torch.Tensor = None
+    dof_indices_sim    :torch.Tensor = None
+    dof_indices_motion :torch.Tensor = None
+    invalid_dof_id     :torch.Tensor = None
+    valid_dof_body_ids :torch.Tensor = None
 
     def init_gym_motion_offset(self):
-        self.align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
-        with open(self.align_cfg_path, 'r') as f:
-            config:dict = json.load(f)
-        self.align_cfg = config
+        config = self.align_cfg
         dof_body_ids = config["dof_body_ids"]
         
         gym_joint_names = config["gym_joint_names"]
-        self.gym_joint_names = gym_joint_names
         
         dof_offsets = torch.Tensor(config["dof_offsets"]).long().to(self.device)
         dof_indices_sim = torch.Tensor(config["dof_indices_sim"]).long().to(self.device)
@@ -77,7 +81,24 @@ class JointIdCaster(object):
         valid_dof_body_ids = torch.ones(dof_offsets[-1], device=self.device, dtype=torch.bool)
         for idx in invalid_dof_id: valid_dof_body_ids[idx] = 0
         
-        return gym_joint_names, dof_body_ids, dof_offsets, valid_dof_body_ids, dof_indices_sim, dof_indices_motion
+        self.dof_body_ids = dof_body_ids
+        self.gym_joint_names = gym_joint_names
+        self.dof_offsets = dof_offsets
+        self.dof_indices_sim = dof_indices_sim
+        self.dof_indices_motion = dof_indices_motion
+        self.invalid_dof_id = invalid_dof_id
+        self.valid_dof_body_ids = valid_dof_body_ids
+    
+    # Utils
+    
+    def fill_2lab(self, source:torch.Tensor, target: torch.Tensor):
+        """
+        Move subset of gym and feed into the lab tensor.
+        """
+        source = source.clone()
+        assert self.shared_subset_lab.shape[0] == target.shape[-1], "Cannot fill to lab tensor."
+        source[:, self.shared_subset_lab] = target[:, :]
+        return source
     
     def save_joint_details(self):
         ret_dir = os.path.join(POSELIB_LABJOINTS_DIR, f"{self.robot_type}.json")

@@ -1,20 +1,16 @@
 import numpy as np
 import os
 import yaml
-
+import torch
+import pickle
 from typing import List
 
 from poselib.skeleton.skeleton3d import SkeletonMotion
-from poselib.core.rotation3d import *
-from poselib import POSELIB_DATA_DIR
+from trackerLab.utils.torch_utils.isaacgym import quat_rotate_inverse
+from trackerLab.joint_id_caster import JointIdCaster
+from .transforms.rot_2_dof import _local_rotation_to_dof
 
-from trackerLab.utils import torch_utils
-from trackerLab.utils.torch_utils.isaacgym import normalize_angle, quat_rotate_inverse
-import torch
-import pickle
-
-PKL_BUFFER_DIR = os.path.join(POSELIB_DATA_DIR, "pkl_buffer")
-RETARGETED_DATA_DIR = os.path.join(POSELIB_DATA_DIR, "retargeted")
+from poselib import POSELIB_MOTION_CFG_DIR, POSELIB_BUFFER_DIR, POSELIB_RETARGETED_DATA_DIR, POSELIB_MOTION_CFG_DIR
 
 def calc_frame_blend(time, len, num_frames, dt):
     """
@@ -80,35 +76,42 @@ class DeviceCache:
         out = getattr(self.obj, string)
         return out
 
-
 class MotionLib():
-    def __init__(self, motion_file, dof_body_ids, dof_offsets,
-                 device, regen_pkl=False):
-        self._dof_body_ids = dof_body_ids
-        self._dof_offsets = dof_offsets
-        self._num_dof = dof_offsets[-1]
+    def __init__(
+            self, 
+            motion_file, 
+            id_caster: JointIdCaster,
+            device, 
+            regen_pkl=False    
+        ):
+        self.id_caster:JointIdCaster = id_caster
+        self.dof_body_ids = id_caster.dof_body_ids
+        self.dof_offsets = id_caster.dof_offsets
+        self.num_dof = id_caster.num_dof
+        
         self._device = device
+        self.regen_pkl = regen_pkl
+        
+        motion_file = os.path.join(POSELIB_MOTION_CFG_DIR, motion_file)
         
         print("*"*20 + " Loading motion library " + "*"*20)
-        rela_dir = motion_file.split("/")[:-1]
+        rela_dir = motion_file.split("/")[-2]
         yaml_name = motion_file.split("/")[-1].split(".")[0]
         ext = os.path.splitext(motion_file)[1]
-        pkl_dir = os.path.join(PKL_BUFFER_DIR, *rela_dir)
+        pkl_dir = os.path.join(POSELIB_BUFFER_DIR, rela_dir)
         os.makedirs(pkl_dir, exist_ok=True)
         pkl_file = os.path.join(pkl_dir, yaml_name + ".pkl")
         
-        if not regen_pkl and ext == ".yaml" :
+        if not regen_pkl:
             try:
                 self.deserialize_motions(pkl_file)
             except:
-                print("No pkl file found, loading from yaml")
-                print("Setting motion device: cpu")
+                print("No pkl buffer file found, loading from yaml")
                 self._load_motions(motion_file)
                 self.serialize_motions(pkl_file)
         else:
             self._load_motions(motion_file)
-            if regen_pkl:
-                self.serialize_motions(pkl_file)
+            self.serialize_motions(pkl_file)
 
         lengths = self._motion_num_frames
         lengths_shifted = lengths.roll(1)
@@ -199,16 +202,17 @@ class MotionLib():
     
     # Utility functions
     def _fill_motions(self, curr_motion, curr_dt):
-        curr_dof_pos = self._local_rotation_to_dof(curr_motion.local_rotation)
+        # Exbody mode for calc dof pos
+        curr_dof_pos = _local_rotation_to_dof(self.id_caster, curr_motion.local_rotation, self._device)
         curr_motion.dof_poses = curr_dof_pos
         
         # Two way of calc pos and vel
         curr_dof_vels = self._dof_pos_to_dof_vel(curr_dof_pos, curr_dt)
         # Calc dof vel with old api
-        curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
+        # curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
         curr_motion.dof_vels = curr_dof_vels
     
-    def _load_motions(self, motion_file, *args, **kwargs):
+    def _load_motions(self, motion_file):
         self._motions = []
         self._motion_lengths = []
         self._motion_weights = []
@@ -319,97 +323,43 @@ class MotionLib():
         print("Loaded {:d} motions with a total length of {:.3f}s.".format(num_motions, total_len))
     
     def _fetch_motion_files(self, motion_file):
-        ext = os.path.splitext(motion_file)[1]
-        if (ext == ".yaml"):
-            motion_files = []
-            motion_weights = []
-            motion_difficulty = []
-            motion_description = []
-            with open(os.path.join(POSELIB_DATA_DIR, "configs", motion_file), 'r') as f:
-                motion_config = yaml.load(f, Loader=yaml.SafeLoader)
+        motion_files = []
+        motion_weights = []
+        motion_difficulty = []
+        motion_description = []
+        with open(os.path.join(motion_file), 'r') as f:
+            motion_config = yaml.load(f, Loader=yaml.SafeLoader)
 
-            dir_name = os.path.join(RETARGETED_DATA_DIR, motion_config['motions']["root"])
+        dir_name = os.path.join(POSELIB_RETARGETED_DATA_DIR, motion_config['motions']["root"])
 
-            motion_list = motion_config['motions']
-            for motion_entry in motion_list.keys():
-                if motion_entry == "root":
-                    continue
-                curr_file = motion_entry
-                curr_weight = motion_config["motions"][motion_entry]['weight']
-                curr_difficulty = motion_config["motions"][motion_entry]['difficulty']
-                curr_description = motion_config["motions"][motion_entry]['description']
-                assert(curr_weight >= 0)
+        motion_list = motion_config['motions']
+        for motion_entry in motion_list.keys():
+            if motion_entry == "root":
+                continue
+            curr_file = motion_entry
+            curr_weight = motion_config["motions"][motion_entry]['weight']
+            curr_difficulty = motion_config["motions"][motion_entry]['difficulty']
+            curr_description = motion_config["motions"][motion_entry]['description']
+            assert(curr_weight >= 0)
 
-                curr_file = os.path.join(dir_name, curr_file + ".npy")
-                motion_weights.append(curr_weight)
-                motion_files.append(os.path.normpath(curr_file))
-                motion_difficulty.append(curr_difficulty)
-                motion_description.append(curr_description)
-        else:
-            motion_files = [motion_file]
-            motion_weights = [1.0]
-            motion_difficulty = [0]
-            motion_description = ["None"]
+            curr_file = os.path.join(dir_name, curr_file + ".npy")
+            motion_weights.append(curr_weight)
+            motion_files.append(os.path.normpath(curr_file))
+            motion_difficulty.append(curr_difficulty)
+            motion_description.append(curr_description)
+        return motion_files, motion_weights, motion_difficulty, motion_description
+
+    def _fetch_single_motion_file(motion_file):
+        motion_files = [motion_file]
+        motion_weights = [1.0]
+        motion_difficulty = [0]
+        motion_description = ["None"]
         return motion_files, motion_weights, motion_difficulty, motion_description
 
     def _get_num_bodies(self):
         motion = self.get_motion(0)
         num_bodies = motion.num_joints
         return num_bodies
-
-    def _compute_motion_dof_vels(self, motion):
-        num_frames = motion.tensor.shape[0]
-        dt = 1.0 / motion.fps
-        dof_vels = []
-
-        for f in range(num_frames - 1):
-            local_rot0 = motion.local_rotation[f]
-            local_rot1 = motion.local_rotation[f + 1]
-            frame_dof_vel = self._local_rotation_to_dof_vel(local_rot0, local_rot1, dt)
-            frame_dof_vel = frame_dof_vel
-            dof_vels.append(frame_dof_vel)
-        
-        dof_vels.append(dof_vels[-1])
-        dof_vels = torch.stack(dof_vels, dim=0)
-
-        return dof_vels
-    
-    
-    # Using local rotation for calcing dof_pos, indicating that the joints are near.
-    # Exbody Mode
-    
-    def _local_rotation_to_dof(self, local_rot):
-        body_ids = self._dof_body_ids
-        dof_offsets = self._dof_offsets
-
-        n = local_rot.shape[0]
-        dof_pos = torch.zeros((n, self._num_dof), dtype=torch.float, device=self._device)
-
-        for j in range(len(body_ids)):
-            body_id = body_ids[j]
-            joint_offset = dof_offsets[j]
-            joint_size = dof_offsets[j + 1] - joint_offset
-
-            if (joint_size == 3):
-                joint_q = local_rot[:, body_id]
-                joint_exp_map = torch_utils.quat_to_exp_map(joint_q)
-                dof_pos[:, joint_offset:(joint_offset + joint_size)] = joint_exp_map
-            elif (joint_size == 2):
-                joint_q = local_rot[:, body_id]
-                joint_exp_map = torch_utils.quat_to_exp_map(joint_q)
-                dof_pos[:, joint_offset:(joint_offset + joint_size)] = joint_exp_map[:, :2]
-            elif (joint_size == 1):
-                joint_q = local_rot[:, body_id]
-                joint_theta, joint_axis = torch_utils.quat_to_angle_axis(joint_q)
-                joint_theta = joint_theta * joint_axis[..., 1] # assume joint is always along y axis
-
-                joint_theta = normalize_angle(joint_theta)
-                dof_pos[:, joint_offset] = joint_theta
-            else:
-                print("Unsupported joint type")
-                assert(False)
-
-        return dof_pos
 
     def _dof_pos_to_dof_vel(self, local_dof, motion_dt, pad=True):
         # Compute velocity from finite difference
@@ -421,36 +371,6 @@ class MotionLib():
             vel = torch.cat([first_row, vel], dim=0)
 
         return vel
-
-    def _local_rotation_to_dof_vel(self, local_rot0, local_rot1, dt):
-        body_ids = self._dof_body_ids
-        dof_offsets = self._dof_offsets
-
-        dof_vel = torch.zeros([self._num_dof], device=self._device)
-
-        diff_quat_data = quat_mul_norm(quat_inverse(local_rot0), local_rot1)
-        diff_angle, diff_axis = quat_angle_axis(diff_quat_data)
-        local_vel = diff_axis * diff_angle.unsqueeze(-1) / dt
-        local_vel = local_vel
-
-        for j in range(len(body_ids)):
-            body_id = body_ids[j]
-            joint_offset = dof_offsets[j]
-            joint_size = dof_offsets[j + 1] - joint_offset
-
-            if (joint_size == 3):
-                joint_vel = local_vel[body_id]
-                dof_vel[joint_offset:(joint_offset + joint_size)] = joint_vel
-            elif (joint_size == 2):
-                joint_vel = local_vel[body_id]
-                dof_vel[joint_offset:(joint_offset + joint_size)] = joint_vel[:2]
-            elif (joint_size == 1):
-                assert(joint_size == 1)
-                joint_vel = local_vel[body_id]
-                dof_vel[joint_offset] = joint_vel[1] # assume joint is always along y axis
-
-            else:
-                print("Unsupported joint type")
-                assert(False)
-
-        return dof_vel
+    
+    
+    

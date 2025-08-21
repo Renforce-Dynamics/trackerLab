@@ -2,7 +2,7 @@ from poselib.skeleton.skeleton3d import SkeletonTree, SkeletonState
 from poselib.visualization.common import plot_skeleton_state
 import os
 import argparse
-from poselib import POSELIB_DATA_DIR
+from poselib import POSELIB_TPOSE_DIR
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--xml", required=True)
@@ -14,7 +14,7 @@ xml_path = args.xml
 skeleton = SkeletonTree.from_mjcf(xml_path)
 zero_pose = SkeletonState.zero_pose(skeleton)
 
-ret_file = os.path.join(POSELIB_DATA_DIR, f"tpose/{args.robot}_tpose.npy")
+ret_file = os.path.join(POSELIB_TPOSE_DIR, f"{args.robot}_tpose.npy")
 zero_pose.to_file(ret_file)
 
 def verbose_list(tar: list):

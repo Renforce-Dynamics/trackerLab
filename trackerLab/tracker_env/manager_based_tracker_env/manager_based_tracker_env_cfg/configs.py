@@ -123,9 +123,10 @@ class CommandsCfg:
 class MotionCfg(MotionManagerCfg):
     motion_buffer_cfg = MotionBufferCfg(
         motion = MotionBufferCfg.MotionCfg(
-            motion_name = None
+            motion_name = None,
+            regen_pkl=True
         ),
-        regen_pkl=True
+        
     )
     static_motion: bool = False
     obs_from_buffer: bool = False
