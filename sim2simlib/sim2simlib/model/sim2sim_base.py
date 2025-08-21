@@ -49,7 +49,7 @@ class Sim2Sim_Base_Model:
         self.qpos_strat_ids = [self.mj_model.jnt_qposadr[i] for i in range(self.mj_model.njnt)]
         self.qvel_strat_ids = [self.mj_model.jnt_dofadr[i] for i in range(self.mj_model.njnt)]
 
-        # self.mujoco_joint_names = self.mujoco_joint_names[1:]
+        self.actuators_joint_names = self.mujoco_joint_names[1:]
         print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
         print('[INFO] Policy joint names:', self.policy_joint_names)
         
@@ -78,7 +78,7 @@ class Sim2Sim_Base_Model:
         
     def _init_dc_model(self):
         motor_type = self._cfg.motor_cfg.motor_type
-        self._cfg.motor_cfg.joint_names = self.mujoco_joint_names[1:]
+        self._cfg.motor_cfg.joint_names = self.actuators_joint_names
         self.dc_motor = motor_type(self._cfg.motor_cfg)         
             
     def get_base_observations(self) -> dict[str, np.ndarray]:
