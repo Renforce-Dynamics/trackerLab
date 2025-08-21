@@ -23,6 +23,14 @@ class DC_Motor():
         self._stiffness = self._parse_parameter(self.cfg.stiffness)
         self._damping = self._parse_parameter(self.cfg.damping)
         self._friction = self._parse_parameter(self.cfg.friction)
+        
+        print(f"[INFO] Motor parameters for {self.cfg.joint_names}:")
+        print(f"  Effort limit: {self._effort_limit}")
+        print(f"  Saturation effort: {self._saturation_effort}")
+        print(f"  Velocity limit: {self._velocity_limit}")
+        print(f"  Stiffness: {self._stiffness}")
+        print(f"  Damping: {self._damping}")
+        print(f"  Friction: {self._friction}")
 
     def _parse_parameter(self, param: float | dict[str, float]) -> np.ndarray:
         """Parse a parameter that can be either float or dict with regex patterns."""
