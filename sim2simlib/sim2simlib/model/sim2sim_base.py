@@ -78,6 +78,7 @@ class Sim2Sim_Base_Model:
         
     def _init_dc_model(self):
         motor_type = self._cfg.motor_cfg.motor_type
+        self._cfg.motor_cfg.joint_names = self.mujoco_joint_names[1:]
         self.dc_motor = motor_type(self._cfg.motor_cfg)         
             
     def get_base_observations(self) -> dict[str, np.ndarray]:

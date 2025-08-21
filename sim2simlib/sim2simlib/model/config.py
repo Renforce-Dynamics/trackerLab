@@ -21,15 +21,16 @@ class Observations_Config:
     motion_observations_terms: list[str] = None
     
 @dataclass
-class Motor_Config():
+class Motor_Config(): 
     motor_type: type = None
-    joint_names: list[str]
-    effort_limit: float | dict[str, float]
-    saturation_effort: float | dict[str, float]
-    velocity_limit: float | dict[str, float]
-    stiffness: float | dict[str, float]
-    damping: float | dict[str, float]
-    friction: float | dict[str, float]
+    joint_names: list[str] = None
+    effort_limit: float | dict[str, float] = 0.0
+    saturation_effort: float | dict[str, float] = 0.0
+    velocity_limit: float | dict[str, float] = 0.0
+    stiffness: float | dict[str, float] = 0.0
+    damping: float | dict[str, float] = 0.0
+    friction: float | dict[str, float] = 0.0
+    
 
 @dataclass
 class Sim2Sim_Config:
