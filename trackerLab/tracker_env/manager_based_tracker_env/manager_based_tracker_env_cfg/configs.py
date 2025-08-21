@@ -110,11 +110,11 @@ class CommandsCfg:
         debug_vis=True
     )
     dofpos_command = cmd.DofposCommandCfg(
-        debug_vis=False
+        debug_vis=True
     )
     height_command = cmd.HeightCommandCfg()
     root_vel_command = cmd.RootVelCommandCfg(
-        debug_vis=False
+        debug_vis=True
     )
     root_ang_vel_command = cmd.RootAngVelCommandCfg()
 
