@@ -117,6 +117,11 @@ class PID_Motor():
         self._stiffness = self._parse_parameter(self.cfg.stiffness)
         self._damping = self._parse_parameter(self.cfg.damping)
 
+        print(f"[INFO] Motor parameters for {self.cfg.joint_names}:")
+        print(f"  Effort limit: {self._effort_limit}")
+        print(f"  Stiffness: {self._stiffness}")
+        print(f"  Damping: {self._damping}")
+
     def _parse_parameter(self, param: float | dict[str, float]) -> np.ndarray:
         """Parse a parameter that can be either float or dict with regex patterns."""
         num_joints = len(self.cfg.joint_names)
