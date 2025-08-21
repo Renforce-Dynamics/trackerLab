@@ -80,6 +80,7 @@ class Sim2Sim_Base_Model:
                         self.mj_data.qpos[i + 7] = angle
                         break
         self.init_qpos = self.mj_data.qpos.copy()
+        self.init_angles = self.mj_data.qpos[7:].copy()
 
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
@@ -106,7 +107,7 @@ class Sim2Sim_Base_Model:
         action = np.clip(action, *self._cfg.action_cfg.action_clip)
         action *= self._cfg.action_cfg.scale
         ctrl_action = action[self.act_maps]
-        target_joint_pos = ctrl_action + self._cfg.default_angles
+        target_joint_pos = ctrl_action + self.init_angles
         return target_joint_pos
 
     def pid_control(self, target_joint_pos: np.ndarray):
