@@ -23,12 +23,13 @@ class Observations_Config:
 @dataclass
 class Motor_Config():
     motor_type: type = None
-    effort_limit: float=23.5
-    saturation_effort: float=23.5
-    velocity_limit: float=30.0
-    stiffness: float=25.0
-    damping: float=0.5
-    friction: float=0.0
+    joint_names: list[str]
+    effort_limit: float | dict[str, float]
+    saturation_effort: float | dict[str, float]
+    velocity_limit: float | dict[str, float]
+    stiffness: float | dict[str, float]
+    damping: float | dict[str, float]
+    friction: float | dict[str, float]
 
 @dataclass
 class Sim2Sim_Config:
