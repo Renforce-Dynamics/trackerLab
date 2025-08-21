@@ -10,9 +10,9 @@ from skrl.utils import set_seed
 
 from models.amp import Policy, Value, Discriminator, get_amp_cfg
 
-# import trackerLab.tasks
-
 DEBUG = True
+DEBUG = False
+
 RESUME = False
 # RESUME = "/home/star/wangtianhao/minimal_humanoid_amp/runs/torch/HumanoidAMP/25-08-18_12-15-23-834360_AMP/checkpoints/agent_80000.pt"
 set_seed(42)  # e.g. `set_seed(42)` for fixed seed

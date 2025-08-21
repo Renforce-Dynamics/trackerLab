@@ -12,7 +12,7 @@ import gymnasium as gym
 
 # seed for reproducibility
 set_seed(42)  # e.g. `set_seed(42)` for fixed seed
-EXPERIMENT_PATH = "runs/torch/HumanoidAMP/25-08-18_12-15-23-834360_AMP"
+EXPERIMENT_PATH = "runs/torch/HumanoidAMP/25-08-20_22-57-30-238839_AMP"
 CHECK_POINT_NAME = "best_agent.pt"
 
 # try to load find the checkpoint path
@@ -32,7 +32,7 @@ video_kwargs = {
 
 # load and wrap the Isaac Lab environment
 # env = load_isaaclab_env(task_name="Isaac-Humanoid-AMP-Run-Direct-v0", cli_args=["--video", "--headless", "--enable_cameras"],)
-env = load_isaaclab_env(task_name="Isaac-Humanoid-28-AMP-Rough-v0", cli_args=["--video", "--headless", "--enable_cameras"],)
+env = load_isaaclab_env(task_name="PiPlus27DofAMPTrackingWalk", cli_args=["--video", "--headless", "--enable_cameras", "--num_envs", "64"],)
 if VIDEO:
     env = gym.wrappers.RecordVideo(env, **video_kwargs)
 env = wrap_env(env)

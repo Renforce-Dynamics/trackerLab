@@ -72,8 +72,8 @@ def get_amp_cfg(env, device):
     cfg["value_loss_scale"] = 2.5 
     cfg["discriminator_loss_scale"] = 5.0
     cfg["amp_batch_size"] = 512
-    cfg["task_reward_weight"] = 0.0
-    cfg["style_reward_weight"] = 1.0
+    cfg["task_reward_weight"] = 0.5
+    cfg["style_reward_weight"] = 0.5
     cfg["discriminator_batch_size"] = 4096
     cfg["discriminator_reward_scale"] = 2
     cfg["discriminator_logit_regularization_scale"] = 0.05
@@ -91,5 +91,5 @@ def get_amp_cfg(env, device):
     cfg["experiment"]["directory"] = "runs/torch/HumanoidAMP"
     # [Optional] Logging with wandb
     cfg['experiment']["wandb"] = True
-    cfg['experiment']["wandb_kwargs"] = {"project": "skrl"}
+    cfg['experiment']["wandb_kwargs"] = {"project": "trackerLab-AMP"}
     return cfg

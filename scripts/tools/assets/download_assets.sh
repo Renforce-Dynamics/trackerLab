@@ -71,7 +71,8 @@ git pull --depth 1 origin "$BRANCH" >/dev/null
 for ROBOT in "$@"; do
     SRC="robots/${ROBOT}_description"
     DST="${ASSET_DIR}/${ROBOT}_description"
-    echo "✅ Moving ${SRC} → ${DST}"
+    DST_PATH=$(realpath "$DST")
+    echo "✅ Moving ${SRC} → ${DST_PATH}"
     rm -rf "$DST"
     cp -r "$SRC" "$DST"
 done
@@ -81,4 +82,5 @@ cd "$SCRIPT_DIR"
 rm -rf "$TMP_DIR"
 
 echo ""
-echo "🎉 All robot descriptions downloaded into: $SCRIPT_DIR"
+ASSET_DIR=$(realpath $ASSET_DIR)
+echo "🎉 All robot descriptions downloaded into: $ASSET_DIR"

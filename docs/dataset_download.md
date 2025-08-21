@@ -19,7 +19,7 @@ Our repo provides retargeting methods for versatile design of robots.
 
 # Asset Download
 
-Assets could be found in git@github.com:unitreerobotics/unitree_ros.git, we also provide a download script.
+Assets could be found in [unitree_ros](https://github.com/unitreerobotics/unitree_ros), we also provide a download script.
 
 
 Download: 

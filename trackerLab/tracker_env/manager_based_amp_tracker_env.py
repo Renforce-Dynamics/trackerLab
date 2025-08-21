@@ -10,20 +10,18 @@ class ManagerBasedAMPTrackerEnv(ManagerBasedTrackerEnv):
     cfg: ManagerBasedAMPTrackerEnvCfg
     def __init__(self, cfg, render_mode=None, **kwargs):
         super().__init__(cfg, render_mode, **kwargs)
-        # TODO: Should load from cfg
-        self.reference_body = "waist_link"
-        self.key_body_names = ["l_ankle_pitch_link", "r_ankle_pitch_link", "l_claw_link", "r_claw_link"]
-        
         # motion的body_names
-        self._body_names = self.motion_manager.motion_lib._motions[0].skeleton_tree.node_names
-        
-        # TODO: 跑起来
-        self.motion_dof_indexes = [ i for i in range(27)]
-        self.motion_ref_body_index = self.get_body_index([self.reference_body])[0]
-        self.motion_key_body_indexes = self.get_body_index(self.key_body_names)
+        # self._body_names = self.motion_manager.lab_joint_names
+        self._body_names = self.scene['robot'].data.body_names
 
-        self.num_amp_observations = 2
-        self.num_amp_observation_space = 79
+        
+        # # self.motion_dof_indexes = [ i for i in range(27)]
+        self.motion_ref_body_index = self.get_body_index([self.cfg.reference_body])[0]
+        # self.motion_key_body_indexes = self.get_body_index(self.cfg.key_body_names)
+
+        self.num_amp_observations = self.cfg.num_amp_observations
+        # same with the amp_obs size
+        self.num_amp_observation_space = self.cfg.num_amp_observation_space
         
         
         self.amp_observation_size = self.num_amp_observations * self.num_amp_observation_space
@@ -60,14 +58,23 @@ class ManagerBasedAMPTrackerEnv(ManagerBasedTrackerEnv):
             body_angular_velocities,
         ) = self.motion_manager.sample(num_samples=num_samples, times=times)
         # compute AMP observation
+        # amp_observation = compute_obs(
+        #     dof_positions[:, self.motion_dof_indexes],
+        #     dof_velocities[:, self.motion_dof_indexes],
+        #     body_positions[:, self.motion_ref_body_index],
+        #     body_rotations[:, self.motion_ref_body_index],
+        #     body_linear_velocities,
+        #     body_angular_velocities,
+        #     body_positions[:, self.motion_key_body_indexes],
+        # )
         amp_observation = compute_obs(
-            dof_positions[:, self.motion_dof_indexes],
-            dof_velocities[:, self.motion_dof_indexes],
+            dof_positions,
+            dof_velocities,
             body_positions[:, self.motion_ref_body_index],
             body_rotations[:, self.motion_ref_body_index],
             body_linear_velocities,
             body_angular_velocities,
-            body_positions[:, self.motion_key_body_indexes],
+            # body_positions,
         )
 
         return amp_observation.view(-1, self.amp_observation_size)

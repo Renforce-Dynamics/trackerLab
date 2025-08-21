@@ -110,11 +110,11 @@ class CommandsCfg:
         debug_vis=True
     )
     dofpos_command = cmd.DofposCommandCfg(
-        debug_vis=True
+        debug_vis=False
     )
     height_command = cmd.HeightCommandCfg()
     root_vel_command = cmd.RootVelCommandCfg(
-        debug_vis=True
+        debug_vis=False
     )
     root_ang_vel_command = cmd.RootAngVelCommandCfg()
 
@@ -125,7 +125,7 @@ class MotionCfg(MotionManagerCfg):
         motion = MotionBufferCfg.MotionCfg(
             motion_name = None
         ),
-        regen_pkl=True
+        regen_pkl=False
     )
     static_motion: bool = False
     obs_from_buffer: bool = False

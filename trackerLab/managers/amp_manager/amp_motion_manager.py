@@ -61,13 +61,24 @@ class AMPMotionManager(MotionManager):
         index_0, index_1, blend = self.motion_lib._calc_frame_blend(time = times, len=self.duration, num_frames=num_frames, dt=self.dt)
         blend = torch.tensor(blend, dtype=torch.float32, device=self.device)
 
+        dof_pos = self._interpolate(self.motion_lib.dps, blend=blend, start=index_0, end=index_1)
+        dof_vel = self._interpolate(self.motion_lib.dvs, blend=blend, start=index_0, end=index_1)
+        body_pos = self._interpolate(self.motion_lib.gts, blend=blend, start=index_0, end=index_1)
+        body_rot = self._slerp(self.motion_lib.grs, blend=blend, start=index_0, end=index_1)
+        body_vel = self._interpolate(self.motion_lib.vels_base, blend=blend, start=index_0, end=index_1)
+        body_ang_vel = self._interpolate(self.motion_lib.ang_vels_base, blend=blend, start=index_0, end=index_1)
+
+        dof_pos, dof_vel = self._motion_buffer.reindex_dof_pos_vel(dof_pos, dof_vel)
+        _dof_pos = dof_pos[:, self.gym2lab_dof_ids]
+        _dof_vel = dof_vel[:, self.gym2lab_dof_ids]
+
         return (
-            self._interpolate(self.motion_lib.dof_pos, blend=blend, start=index_0, end=index_1),
-            self._interpolate(self.motion_lib.dvs, blend=blend, start=index_0, end=index_1),
-            self._interpolate(self.motion_lib.gts, blend=blend, start=index_0, end=index_1),
-            self._slerp(self.motion_lib.grs, blend=blend, start=index_0, end=index_1),
-            self._interpolate(self.motion_lib.vels_base, blend=blend, start=index_0, end=index_1),
-            self._interpolate(self.motion_lib.ang_vels_base, blend=blend, start=index_0, end=index_1),
+            _dof_pos,
+            _dof_vel,
+            body_pos,
+            body_rot,
+            body_vel,
+            body_ang_vel
         )
         
     def _interpolate(

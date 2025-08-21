@@ -1,6 +1,6 @@
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
-from trackerLab.tracker_env.manager_based_tracker_env_cfg import ObservationsCfg, MotionCfg
+from trackerLab.tracker_env.manager_based_tracker_env.manager_based_tracker_env_cfg import ObservationsCfg, MotionCfg
 from isaaclab.utils import configclass
 
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
@@ -13,13 +13,13 @@ class AMPObservationsCfg(ObservationsCfg):
     @configclass
     class AmpCfg(ObsGroup):
         """Observations for the policy."""
-        dof_positions = ObsTerm(func=mdp.joint_pos)
-        dof_velocities = ObsTerm(func=mdp.joint_vel)
+        dof_positions = ObsTerm(func=amp_mdp.joint_pos)
+        dof_velocities = ObsTerm(func=amp_mdp.joint_vel)
         root_positions = ObsTerm(func=amp_mdp.body_pos_w)
         root_rotations =ObsTerm(func=amp_mdp.body_quat_w)
         root_linear_velocities =ObsTerm(func=amp_mdp.body_lin_vel_w)
         root_angular_velocities =ObsTerm(func=amp_mdp.body_ang_vel_w)
-        key_body_positions =ObsTerm(func=amp_mdp.key_body_pos_w)
+        # key_body_positions =ObsTerm(func=amp_mdp.key_body_pos_w)
         
         def __post_init__(self):
             self.enable_corruption = False
