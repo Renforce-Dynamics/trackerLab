@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from glob import glob
 import numpy as np
 import torch
+import re
 
 from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 from sim2simlib.utils.utils import get_gravity_orientation
@@ -34,15 +35,10 @@ class Sim2Sim_Base_Model:
         self.cmd = [0, 0, 0]
         
         # 
-        self._init_default_pos_angles()
         self._init_joint_names()
+        self._init_default_pos_angles()
         self._init_load_policy()
         self._init_dc_model()
-
-    def _init_default_pos_angles(self):
-        self.mj_data.qpos[:3] = self._cfg.default_pos
-        self.mj_data.qpos[7:] = self._cfg.default_angles
-        self.init_qpos = self.mj_data.qpos.copy()
 
     def _init_joint_names(self):
         self.mujoco_joint_names = [self.mj_model.jnt(i).name for i in range(self.mj_model.njnt)]
@@ -72,6 +68,18 @@ class Sim2Sim_Base_Model:
                 self.act_maps.append(idx)
 
         print("[INFO] Action maps:", self.act_maps)
+    
+    def _init_default_pos_angles(self):
+        self.mj_data.qpos[:3] = self._cfg.default_pos
+        if isinstance(self._cfg.default_angles, np.ndarray):
+            self.mj_data.qpos[7:] = self._cfg.default_angles
+        elif isinstance(self._cfg.default_angles, dict):
+            for joint_name, angle in self._cfg.default_angles.items():
+                for i, name in enumerate(self.actuators_joint_names):
+                    if re.match(joint_name, name):
+                        self.mj_data.qpos[i + 7] = angle
+                        break
+        self.init_qpos = self.mj_data.qpos.copy()
 
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)

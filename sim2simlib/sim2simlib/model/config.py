@@ -41,7 +41,7 @@ class Sim2Sim_Config:
     policy_path: str
     policy_joint_names: list[str]
     default_pos: np.ndarray
-    default_angles: np.ndarray
+    default_angles: np.ndarray | dict[str, float]
     
     observation_cfg: Observations_Config
     action_cfg: Actions_Config
