@@ -8,7 +8,7 @@ config = Sim2Sim_Config(
     robot_name='pi_plus_27dof',
     simulation_dt=0.005,
     control_decimation=4,
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/pi_plus_27dof_tracking_walk/2025-08-19_23-29-05/exported/policy.pt",
+    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/pi_plus_27dof_tracking_walk/2025-08-20_16-53-07/exported/policy.pt",
     xml_path=None,
     policy_joint_names=[ 
         "head_yaw_joint",
@@ -48,11 +48,10 @@ config = Sim2Sim_Config(
                                  'action'],
         scale={ 
                 'base_lin_vel': 1.0,
-                'base_ang_vel': 1.0,
-                'cmd': 1.0,
+                'base_ang_vel': 0.25,
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
-                'joint_vel': 1.0,
+                'joint_vel': 0.05,
                 'action': 1.0
             },
         motion_observations_terms=[
@@ -62,7 +61,7 @@ config = Sim2Sim_Config(
         ),
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0),
-        scale=0.5
+        scale=0.000025
     ),            
     motor_cfg=Motor_Config(
         # effort_limit=50,
@@ -71,11 +70,11 @@ config = Sim2Sim_Config(
         # stiffness=3,
         # damping=2
         motor_type=PID_Motor,
-        effort_limit=500,
-        saturation_effort=500,
+        effort_limit=1,
+        saturation_effort=10,
         velocity_limit=300.0,
-        stiffness=300.0,
-        damping=2.0
+        stiffness=45.0,
+        damping=1.0
     ),
 
     default_pos=np.array([0.0, 0.0, 0.4], dtype=np.float32),

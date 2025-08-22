@@ -6,6 +6,7 @@ from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
 config = Sim2Sim_Config(
     robot_name='Go2',
     simulation_dt=0.005,
+    slowdown_factor=10.0,
     control_decimation=4,
     xml_path="/home/ac/Desktop/2025/project_isaac/IsaacLab/source/mujoco_menagerie/unitree_go2/scene.xml",
     policy_path="/home/ac/Desktop/2025/project_isaac/IsaacLab/source/labBundle/factoryIsaac/logs/exp1/Go2_doublehand_flat_action_nonoise/2025-08-06_13-55-54_a0.15_seed423/exported/policy.pt",

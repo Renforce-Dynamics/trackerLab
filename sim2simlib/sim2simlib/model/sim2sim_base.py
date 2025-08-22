@@ -33,8 +33,12 @@ class Sim2Sim_Base_Model:
         self.qpos_maps = []
         self.qvel_maps = []
         self.act_maps = []
-        self.cmd = [0, 0, 0]
         
+        if cfg.cmd is not None:
+            self.cmd = cfg.cmd
+        else:
+            self.cmd = [0, 0, 0]
+
         # Initialize observation history
         self.base_obs_history = {}        
         # 
@@ -82,9 +86,11 @@ class Sim2Sim_Base_Model:
                 for i, name in enumerate(self.actuators_joint_names):
                     if re.match(joint_name, name):
                         self.mj_data.qpos[i + 7] = angle
-                        break
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
+        print("[INFO] Initial qpos:", self.init_qpos)
+        print("[INFO] Initial angles:", self.init_angles)
+        print(self.qpos_maped)
 
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
@@ -153,6 +159,14 @@ class Sim2Sim_Base_Model:
         
         return base_observations
     
+    @property
+    def qvel_maped(self) -> np.ndarray:
+        return self.mj_data.qvel[self.qvel_maps]
+    
+    @property
+    def qpos_maped(self) -> np.ndarray:
+        return self.mj_data.qpos[self.qpos_maps]
+
     def get_obs(self) -> dict[str, np.ndarray]:
         base_observations = self.get_base_observations()
         return base_observations
@@ -165,6 +179,7 @@ class Sim2Sim_Base_Model:
         return target_joint_pos
 
     def pid_control(self, target_joint_pos: np.ndarray):
+        # print(f"{target_joint_pos=}")
         tau = self.dc_motor.compute(
                 joint_pos=self.mj_data.qpos[self.base_link_id + 7:],
                 joint_vel=self.mj_data.qvel[self.base_link_id + 6:],
@@ -174,15 +189,17 @@ class Sim2Sim_Base_Model:
                     joint_efforts=np.zeros_like(target_joint_pos)
                 )
             )
+        # print(tau)
         self.mj_data.ctrl[:] = tau
 
     def act(self) -> np.ndarray:
         obs_dict = self.get_obs()
+        # print(f"{obs_dict=}")
         obs_np = np.concatenate(list(obs_dict.values()), axis=-1).astype(np.float32)
         obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
-        print(obs_tensor)
+        # print(obs_tensor.shape)
         action = self.policy(obs_tensor).detach().numpy().squeeze()
-        print(action)
+        # print(action)
         self.action[:] = action
         return action
 
@@ -199,7 +216,8 @@ class Sim2Sim_Base_Model:
         return get_gravity_orientation(self.mj_data.qpos[self.base_link_id + 3:self.base_link_id + 7])
     
     def _obs_joint_pos(self) -> np.ndarray:
-        print(f"{self.mj_data.qpos=}")
+        # print(f"{self.mj_data.qpos=}")
+        # print(f"{self.mj_data.qvel=}")
         return (self.mj_data.qpos - self.init_qpos)[self.qpos_maps]
     
     def _obs_joint_vel(self) -> np.ndarray:

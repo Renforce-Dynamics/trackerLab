@@ -55,4 +55,5 @@ class Sim2Sim_Config:
     action_cfg: Actions_Config
     motor_cfg: Motor_Config
     
+    cmd: list[float] = None
     motion_cfg: MotionManagerCfg = None
