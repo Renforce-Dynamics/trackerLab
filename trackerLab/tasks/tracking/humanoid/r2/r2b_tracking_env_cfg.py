@@ -1,10 +1,10 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
+from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.r2 import R2_CFG
 
 @configclass
-class R2TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
+class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
         self.set_plane()

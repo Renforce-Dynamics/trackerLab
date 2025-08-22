@@ -1,10 +1,10 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
+from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.g1 import G1_29D_LOCO_CFG
 
 @configclass
-class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
+class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
         self.set_plane()
@@ -18,7 +18,6 @@ class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
             ])
         self.adjust_external_events(["torso_link"])
         
-
 
 @configclass
 class G1TrackingWalk(G1TrackingEnvCfg):

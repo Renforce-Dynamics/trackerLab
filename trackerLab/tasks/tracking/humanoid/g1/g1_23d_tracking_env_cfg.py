@@ -1,10 +1,10 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
+from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.g1 import G1_23D_CFG
 
 @configclass
-class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
+class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
         self.set_plane()
@@ -18,8 +18,7 @@ class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
         self.observations.policy.joint_pos.scale = 1.0
         self.observations.policy.joint_vel.scale = 0.05
         self.observations.policy.actions.scale = 1.0
-        
-        self.observations.policy.history_length = 5
+        # self.observations.policy.history_length = 5
         
         self.actions.joint_pos.scale = 0.25
 

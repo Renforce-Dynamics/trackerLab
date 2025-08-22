@@ -185,3 +185,5 @@ data/lab_joints
 
 outputs
 results
+
+MUJOCO_LOG.TXT

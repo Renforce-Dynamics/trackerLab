@@ -18,7 +18,7 @@ try:
     # TODO: These imports may need to be adapted for CPU version
     from trackerLab.motion_buffer import MotionBuffer
     from trackerLab.motion_buffer.motion_lib import MotionLib
-    from trackerLab.managers.joint_id_caster import JointIdCaster
+    from trackerLab.joint_id_caster import JointIdCaster
     from trackerLab.utils.torch_utils import slerp
     from poselib import POSELIB_DATA_DIR
 except ImportError as e:
