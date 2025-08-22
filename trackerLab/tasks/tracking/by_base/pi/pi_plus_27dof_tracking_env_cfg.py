@@ -7,10 +7,19 @@ from trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
 class PiTrackingEnvCfg(ManagerBasedTrackerEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
-        # self.set_plane()
+        self.set_plane()
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "pi_plus_27dof"
+        
+        self.observations.policy.base_lin_vel.scale = 1.0
+        self.observations.policy.base_ang_vel.scale = 0.25
+        self.observations.policy.projected_gravity.scale = 1.0
+        self.observations.policy.joint_pos.scale = 1.0
+        self.observations.policy.joint_vel.scale = 0.05
+        self.observations.policy.actions.scale = 1.0
+        
+        self.actions.joint_pos.scale = 0.25
 
         self.scene.robot = PI_PLUS_27DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([

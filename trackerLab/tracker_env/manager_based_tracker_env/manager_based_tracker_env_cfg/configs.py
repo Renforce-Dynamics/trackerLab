@@ -150,7 +150,11 @@ class RecordsCfg(RecorderManagerBaseCfg):
 class ActionsCfg:
     """Action specifications for the MDP."""
 
-    joint_pos = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5, use_default_offset=True)
+    joint_pos = mdp.JointPositionActionCfg(asset_name="robot", 
+                                           joint_names=[".*"], 
+                                           scale=0.5, 
+                                           use_default_offset=True,
+                                           clip={".*": (-6.0, 6.0)})
 
 
 @configclass
@@ -277,16 +281,58 @@ class RewardsCfg:
     )
 
     # -- penalties
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
-    action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.01)
+    # dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    # dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    # action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
     undesired_contacts = RewTerm(
         func=mdp.undesired_contacts,
         weight=-1.0,
         params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*THIGH"), "threshold": 1.0},
     )
     # -- optional penalties
-    dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=0.0)
+    # dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=0.0)
+    
+    
+    alive = RewTerm(func=mdp.is_alive, weight=0.15)
+    joint_vel = RewTerm(func=mdp.joint_vel_l2, weight=-0.001)
+    joint_acc = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    action_rate = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
+    dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
+    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    energy = RewTerm(func=tracker_reward.energy, weight=-2e-5)
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
+    
+    joint_deviation_arms = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                joint_names=[
+                    ".*_shoulder_.*_joint",
+                    ".*_elbow_joint",
+                    ".*_wrist_.*",
+                ],
+            )
+        },
+    )
+    joint_deviation_waists = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-1,
+        params={
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                joint_names=[
+                    "waist.*",
+                ],
+            )
+        },
+    )
+    joint_deviation_legs = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-1.0,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*_hip_roll_joint", ".*_hip_yaw_joint"])},
+    )
 
 
 @configclass

@@ -27,6 +27,14 @@ def feet_slide(env, sensor_cfg: SceneEntityCfg, asset_cfg: SceneEntityCfg = Scen
     reward = torch.sum(body_vel.norm(dim=-1) * contacts, dim=1)
     return reward
 
+def energy(env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """Penalize the energy used by the robot's joints."""
+    asset: Articulation = env.scene[asset_cfg.name]
+
+    qvel = asset.data.joint_vel[:, asset_cfg.joint_ids]
+    qfrc = asset.data.applied_torque[:, asset_cfg.joint_ids]
+    return torch.sum(torch.abs(qvel) * torch.abs(qfrc), dim=-1)
+
 def reward_alive(env):
     """
     Will only return true, for making the policy live as long as possible.

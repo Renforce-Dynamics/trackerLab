@@ -23,7 +23,7 @@ G1_29D_LOCO_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.74),
+        pos=(0.0, 0.0, 0.8),
         joint_pos={
             ".*_hip_pitch_joint": -0.20,
             ".*_knee_joint": 0.42,
@@ -112,7 +112,7 @@ G1_23D_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.74),
+        pos=(0.0, 0.0, 0.8),
         joint_pos={
             ".*_hip_pitch_joint": -0.20,
             ".*_knee_joint": 0.42,
@@ -135,6 +135,8 @@ G1_23D_CFG = ArticulationCfg(
                 ".*_knee_joint",
             ],
             effort_limit_sim=300,
+            # saturation_effort=300,
+            # velocity_limit=1000.0,
             stiffness={
                 ".*_hip_yaw_joint": 150.0,
                 ".*_hip_roll_joint": 150.0,
@@ -154,6 +156,8 @@ G1_23D_CFG = ArticulationCfg(
         ),
         "feet": ImplicitActuatorCfg(
             effort_limit_sim=20,
+            # saturation_effort=20,
+            # velocity_limit=300.0,
             joint_names_expr=[".*_ankle_pitch_joint", ".*_ankle_roll_joint"],
             stiffness=20.0,
             damping=2.0,
@@ -167,6 +171,8 @@ G1_23D_CFG = ArticulationCfg(
                 ".*_elbow_joint",
             ],
             effort_limit_sim=300,
+            # saturation_effort=300,
+            # velocity_limit=1000.0,
             stiffness=40.0,
             damping=10.0,
             # armature={
