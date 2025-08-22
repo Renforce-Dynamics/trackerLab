@@ -102,11 +102,11 @@ class Sim2Sim(ABC):
         pass
     
     @property
-    def qvel_maped(self) -> np.ndarray:
+    def maped_qvel(self) -> np.ndarray:
         return self.mj_data.qvel[self.qvel_maps]
     
     @property
-    def qpos_maped(self) -> np.ndarray:
+    def maped_qpos(self) -> np.ndarray:
         return self.mj_data.qpos[self.qpos_maps]
     
     def headless_run(self):
@@ -201,8 +201,8 @@ class Sim2Sim_Base_Model(Sim2Sim):
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
         print(f"[INFO] Initial qpos: [{', '.join([f'{x:.2f}' for x in self.init_qpos])}]")
-        print(f"[INFO] Initial angles: {np.array2string(self.init_angles, separator=', ', max_line_width=np.inf)}")
-        print(f"[INFO] Initial angles mapped: {np.array2string(self.qpos_maped, separator=', ', max_line_width=np.inf)}")
+        print(f"[INFO] Initial angles: [{', '.join([f'{x:.2f}' for x in self.init_angles])}]")
+        print(f"[INFO] Initial angles mapped: [{', '.join([f'{x:.2f}' for x in self.maped_qpos])}]")
 
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
