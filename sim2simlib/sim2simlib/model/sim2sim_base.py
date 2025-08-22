@@ -284,7 +284,8 @@ class Sim2Sim_Base_Model(Sim2Sim):
         return action
     
     def process_action(self, policy_action: np.ndarray) -> np.ndarray:
-        action = np.clip(policy_action, *self._cfg.action_cfg.action_clip) * self._cfg.action_cfg.scale
+        action = policy_action * self._cfg.action_cfg.scale
+        action = np.clip(action, *self._cfg.action_cfg.action_clip) 
         action = action[self.act_maps]
         joint_pos_action = action + self.init_angles
         return joint_pos_action

@@ -5,9 +5,9 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof',
-    simulation_dt=0.005,
+    simulation_dt=0.001,
     slowdown_factor=1.0,
-    control_decimation=4,
+    control_decimation=20,
     xml_path="/home/ac/Desktop/2025/project_3/unitree_mujoco/unitree_robots/g1/scene_29dof.xml",
     policy_path="/home/ac/Desktop/2025/project_3/unitree_rl_lab/logs/rsl_rl/unitree_g1_29dof_velocity/2025-08-21_20-26-11/exported/policy.pt",
     policy_joint_names=['left_hip_pitch_joint', 
