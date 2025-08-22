@@ -37,6 +37,7 @@ class JointIdCaster(object):
         self.shared_subset_gym = [idx for idx, item in enumerate(self.gym_joint_names)if item in self.lab_joint_names]
         
         self.shared_subset_gym_names = [item for idx, item in enumerate(self.gym_joint_names)if item in self.lab_joint_names]
+        self.shared_subset_lab_names = [item for idx, item in enumerate(self.lab_joint_names)if item in self.gym_joint_names]
 
         self.shared_subset_lab = torch.tensor(self.shared_subset_lab, dtype=torch.long, device=self.device)
         self.shared_subset_gym = torch.tensor(self.shared_subset_gym, dtype=torch.long, device=self.device)
