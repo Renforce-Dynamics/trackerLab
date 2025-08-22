@@ -24,6 +24,7 @@ class Sim2Sim_Base_Model:
         self.mj_model = mujoco.MjModel.from_xml_path(self.xml_path)
         self.mj_data = mujoco.MjData(self.mj_model)
         self.mj_model.opt.timestep = cfg.simulation_dt
+        self.slowdown_factor = self._cfg.slowdown_factor
         
         #
         self.action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
@@ -241,6 +242,7 @@ class Sim2Sim_Base_Model:
                 viewer.sync()  
 
                 counter += 1
-                time_until_next_step = self.mj_model.opt.timestep - (time.time() - step_start)
+                
+                time_until_next_step = self.mj_model.opt.timestep*self.slowdown_factor - (time.time() - step_start)
                 if time_until_next_step > 0:
                     time.sleep(time_until_next_step)
