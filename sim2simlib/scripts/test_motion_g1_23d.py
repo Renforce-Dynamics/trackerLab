@@ -7,7 +7,7 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 config = Sim2Sim_Config(
     robot_name='g1_23d',
     simulation_dt=0.01,
-    slowdown_factor=100.0,
+    slowdown_factor=1.0,
     control_decimation=5,
     policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/g1_23d_tracking_walk/2025-08-21_14-36-18/exported/policy.pt",
     xml_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/data/assets/g1_description/g1_23dof.xml",
@@ -34,7 +34,7 @@ config = Sim2Sim_Config(
         "left_ankle_roll_joint",
         "right_ankle_roll_joint",
         "left_wrist_roll_joint",
-        "right_wrist_roll_joint"  
+        "right_wrist_roll_joint"
         ],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_lin_vel', 
@@ -109,7 +109,7 @@ config = Sim2Sim_Config(
         },
     ),
 
-    default_pos=np.array([0.0, 0.0, 0.74], dtype=np.float32),
+    default_pos=np.array([0.0, 0.0, 0.8], dtype=np.float32),
     default_angles={
         ".*_hip_pitch_joint": -0.20,
         ".*_knee_joint": 0.42,
@@ -132,5 +132,5 @@ config = Sim2Sim_Config(
 
 mujoco_model = Sim2Sim_Motion_Model(config)
 
-# mujoco_model.motion_fk_view()
-mujoco_model.view_run()
+mujoco_model.motion_fk_view()
+# mujoco_model.view_run()
