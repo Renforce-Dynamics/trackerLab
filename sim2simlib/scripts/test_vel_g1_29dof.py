@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
-from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
+from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof',
@@ -45,7 +45,7 @@ config = Sim2Sim_Config(
                              'cmd', 
                              'joint_pos', 
                              'joint_vel',
-                             'action'],
+                             'last_action'],
         using_base_obs_history=True,
         base_obs_his_length=5,
         scale={
@@ -54,7 +54,7 @@ config = Sim2Sim_Config(
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
                 'joint_vel': 0.05,
-                'action': 1.0
+                'last_action': 1.0
             },
         ),
     cmd=[1,0,0],

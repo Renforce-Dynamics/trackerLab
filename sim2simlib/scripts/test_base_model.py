@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
-from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
+from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='Go2',
@@ -22,14 +22,14 @@ config = Sim2Sim_Config(
                              'cmd', 
                              'joint_pos', 
                              'joint_vel',
-                             'action'],
+                             'last_action'],
         scale={
                 'base_ang_vel': 0.25,
                 'cmd': 1.0,
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
                 'joint_vel': 0.05,
-                'action': 1.0
+                'last_action': 1.0
             },
         ),
     action_cfg=Actions_Config(
@@ -39,11 +39,6 @@ config = Sim2Sim_Config(
     motor_cfg=Motor_Config(
         motor_type=DC_Motor,
         effort_limit=23.5,
-        # {
-        #         ".*_hip_joint": 23.5,
-        #         ".*_thigh_joint": 23.5,
-        #         ".*_calf_joint": 23.5,
-        # },#23.5,
         saturation_effort=23.5,
         velocity_limit=30.0,
         stiffness=25.0,

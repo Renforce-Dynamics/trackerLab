@@ -2,7 +2,7 @@ import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
-from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
+from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(
     robot_name='g1_23d',

@@ -7,45 +7,157 @@ from glob import glob
 import numpy as np
 import torch
 import re
+from abc import ABC, abstractmethod
 
 from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 from sim2simlib.utils.utils import get_gravity_orientation
-from sim2simlib.model.dc_motor import DC_Motor, PID_Motor
 from sim2simlib.model.config import Sim2Sim_Config, Actions
 
-class Sim2Sim_Base_Model:
+
+class Sim2Sim(ABC):
+    qpos_maps: list[int] = []
+    qvel_maps: list[int] = []
+    act_maps: list[int] = []
     
+    init_qpos: np.ndarray
+    init_angles: np.ndarray
+    
+    base_link_id: int = 0
+    base_obs_history: dict[str, list[np.ndarray]] = {}
+    cmd: list[float]
+    last_action: np.ndarray
+
     def __init__(self, cfg: Sim2Sim_Config):
         self._cfg = cfg
-        if cfg.xml_path is None:
-            self.xml_path = glob(os.path.join(SIM2SIMLIB_ASSETS_DIR, cfg.robot_name, "mjcf", "*.xml"))[0]
-        else:
-            self.xml_path = cfg.xml_path
+        self.xml_path = cfg.xml_path
         self.mj_model = mujoco.MjModel.from_xml_path(self.xml_path)
         self.mj_data = mujoco.MjData(self.mj_model)
         self.mj_model.opt.timestep = cfg.simulation_dt
         self.slowdown_factor = self._cfg.slowdown_factor
-        
-        #
-        self.action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
-        self.base_link_id = 0
         self.policy_joint_names = self._cfg.policy_joint_names
-        self.qpos_maps = []
-        self.qvel_maps = []
-        self.act_maps = []
-        
-        if cfg.cmd is not None:
-            self.cmd = cfg.cmd
-        else:
-            self.cmd = [0, 0, 0]
+        self.last_action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
+        self.cmd = cfg.cmd if cfg.cmd is not None else [0, 0, 0]
 
-        # Initialize observation history
-        self.base_obs_history = {}        
-        # 
+        
+    def _init_joint_names(self):
+        self.mujoco_joint_names = [self.mj_model.jnt(i).name for i in range(self.mj_model.njnt)]
+        self.qpos_strat_ids = [self.mj_model.jnt_qposadr[i] for i in range(self.mj_model.njnt)]
+        self.qvel_strat_ids = [self.mj_model.jnt_dofadr[i] for i in range(self.mj_model.njnt)]
+
+        self.actuators_joint_names = self.mujoco_joint_names[1:]
+        print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
+        print('[INFO] Policy joint names:', self.policy_joint_names)
+        
+        # mujoco order -> policy order
+        for joint_name in self.policy_joint_names:
+            if joint_name in self.mujoco_joint_names:
+                idx = self.mujoco_joint_names.index(joint_name)
+                self.qpos_maps.append(self.qpos_strat_ids[idx])
+                self.qvel_maps.append(self.qvel_strat_ids[idx])
+            else:
+                raise ValueError(f"Joint name {joint_name} not found in MuJoCo model.")
+
+        print("[INFO] qpos maps:", self.qpos_maps)
+        print("[INFO] qvel maps:", self.qvel_maps)
+
+        # policy order -> mujoco order
+        for joint_name in self.mujoco_joint_names:
+            if joint_name in self.policy_joint_names:
+                idx = self.policy_joint_names.index(joint_name)
+                self.act_maps.append(idx)
+
+        print("[INFO] Action maps:", self.act_maps)    
+        
+    def _obs_base_lin_vel(self) -> np.ndarray:
+        return self.mj_data.qvel[self.base_link_id : self.base_link_id + 3]
+    
+    def _obs_base_ang_vel(self) -> np.ndarray:
+        return self.mj_data.qvel[self.base_link_id + 3 : self.base_link_id + 6]
+    
+    def _obs_cmd(self) -> np.ndarray:
+        return np.array(self.cmd, dtype=np.float32)
+    
+    def _obs_gravity_orientation(self) -> np.ndarray:
+        return get_gravity_orientation(self.mj_data.qpos[self.base_link_id + 3:self.base_link_id + 7])
+    
+    def _obs_joint_pos(self) -> np.ndarray:
+        return (self.mj_data.qpos - self.init_qpos)[self.qpos_maps]
+    
+    def _obs_joint_vel(self) -> np.ndarray:
+        return self.mj_data.qvel[self.qvel_maps]
+    
+    def _obs_last_action(self) -> np.ndarray:
+        return self.last_action
+
+    @abstractmethod
+    def act(self) -> np.ndarray:
+        pass
+
+    @abstractmethod
+    def process_action(self, policy_action: np.ndarray) -> np.ndarray:
+        pass
+    
+    @abstractmethod
+    def apply_action(self, joint_pos_action: np.ndarray):
+        pass
+    
+    @property
+    def qvel_maped(self) -> np.ndarray:
+        return self.mj_data.qvel[self.qvel_maps]
+    
+    @property
+    def qpos_maped(self) -> np.ndarray:
+        return self.mj_data.qpos[self.qpos_maps]
+    
+    def headless_run(self):
+        counter = 0
+        joint_pos_action = self.init_angles
+        while True:
+            step_start = time.time()
+            
+            if counter % self._cfg.control_decimation == 0:
+                action = self.act()
+                joint_pos_action = self.process_action(action)
+                    
+            self.apply_action(joint_pos_action)
+            mujoco.mj_step(self.mj_model, self.mj_data)
+            
+            counter += 1
+            time_until_next_step = self.mj_data.opt.timestep - (time.time() - step_start)
+            if time_until_next_step > 0:
+                time.sleep(time_until_next_step)
+            
+    
+    def view_run(self):
+        counter = 0
+        joint_pos_action = self.init_angles
+        with mujoco.viewer.launch_passive(self.mj_model, self.mj_data) as viewer:
+            while viewer.is_running():
+                step_start = time.time()
+
+                if counter % self._cfg.control_decimation == 0:
+                    action = self.act()
+                    joint_pos_action = self.process_action(action)
+                    
+                self.apply_action(joint_pos_action)
+                mujoco.mj_step(self.mj_model, self.mj_data)
+                viewer.sync()  
+
+                counter += 1
+                time_until_next_step = self.mj_model.opt.timestep*self.slowdown_factor - (time.time() - step_start)
+                if time_until_next_step > 0:
+                    time.sleep(time_until_next_step)
+
+class Sim2Sim_Base_Model(Sim2Sim):
+    
+    def __init__(self, cfg: Sim2Sim_Config):
+        super().__init__(cfg)  # Call parent constructor
+        
+        # Initialize functions
         self._init_joint_names()
         self._init_default_pos_angles()
         self._init_load_policy()
-        self._init_dc_model()
+        self._init_actuator_motor()
         self._init_observation_history()
 
     def _init_joint_names(self):
@@ -88,14 +200,14 @@ class Sim2Sim_Base_Model:
                         self.mj_data.qpos[i + 7] = angle
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
-        print("[INFO] Initial qpos:", self.init_qpos)
-        print("[INFO] Initial angles:", self.init_angles)
-        print(self.qpos_maped)
+        print(f"[INFO] Initial qpos: [{', '.join([f'{x:.2f}' for x in self.init_qpos])}]")
+        print(f"[INFO] Initial angles: {np.array2string(self.init_angles, separator=', ', max_line_width=np.inf)}")
+        print(f"[INFO] Initial angles mapped: {np.array2string(self.qpos_maped, separator=', ', max_line_width=np.inf)}")
 
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
         
-    def _init_dc_model(self):
+    def _init_actuator_motor(self):
         motor_type = self._cfg.motor_cfg.motor_type
         self._cfg.motor_cfg.joint_names = self.actuators_joint_names
         self.dc_motor = motor_type(self._cfg.motor_cfg)         
@@ -158,109 +270,34 @@ class Sim2Sim_Base_Model:
                     raise ValueError(f"Observation term {term} not implemented.")
         
         return base_observations
-    
-    @property
-    def qvel_maped(self) -> np.ndarray:
-        return self.mj_data.qvel[self.qvel_maps]
-    
-    @property
-    def qpos_maped(self) -> np.ndarray:
-        return self.mj_data.qpos[self.qpos_maps]
 
     def get_obs(self) -> dict[str, np.ndarray]:
         base_observations = self.get_base_observations()
         return base_observations
 
-    def process_action(self, action: np.ndarray) -> np.ndarray:
-        action = np.clip(action, *self._cfg.action_cfg.action_clip)
-        action *= self._cfg.action_cfg.scale
-        ctrl_action = action[self.act_maps]
-        target_joint_pos = ctrl_action + self.init_angles
-        return target_joint_pos
+    def act(self) -> np.ndarray:
+        obs_dict = self.get_obs()
+        obs_np = np.concatenate(list(obs_dict.values()), axis=-1).astype(np.float32)
+        obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
+        action = self.policy(obs_tensor).detach().numpy().squeeze()
+        self.last_action[:] = action
+        return action
+    
+    def process_action(self, policy_action: np.ndarray) -> np.ndarray:
+        action = np.clip(policy_action, *self._cfg.action_cfg.action_clip) * self._cfg.action_cfg.scale
+        action = action[self.act_maps]
+        joint_pos_action = action + self.init_angles
+        return joint_pos_action
 
-    def pid_control(self, target_joint_pos: np.ndarray):
-        # print(f"{target_joint_pos=}")
+    def apply_action(self, joint_pos_action: np.ndarray):
         tau = self.dc_motor.compute(
                 joint_pos=self.mj_data.qpos[self.base_link_id + 7:],
                 joint_vel=self.mj_data.qvel[self.base_link_id + 6:],
                 action=Actions(
-                    joint_pos=target_joint_pos,
-                    joint_vel=np.zeros_like(target_joint_pos),
-                    joint_efforts=np.zeros_like(target_joint_pos)
+                    joint_pos=joint_pos_action,
+                    joint_vel=np.zeros_like(joint_pos_action),
+                    joint_efforts=np.zeros_like(joint_pos_action)
                 )
             )
-        # print(tau)
         self.mj_data.ctrl[:] = tau
 
-    def act(self) -> np.ndarray:
-        obs_dict = self.get_obs()
-        # print(f"{obs_dict=}")
-        obs_np = np.concatenate(list(obs_dict.values()), axis=-1).astype(np.float32)
-        obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
-        # print(obs_tensor.shape)
-        action = self.policy(obs_tensor).detach().numpy().squeeze()
-        # print(action)
-        self.action[:] = action
-        return action
-
-    def _obs_base_lin_vel(self) -> np.ndarray:
-        return self.mj_data.qvel[self.base_link_id : self.base_link_id + 3]
-    
-    def _obs_base_ang_vel(self) -> np.ndarray:
-        return self.mj_data.qvel[self.base_link_id + 3 : self.base_link_id + 6]
-    
-    def _obs_cmd(self) -> np.ndarray:
-        return np.array(self.cmd, dtype=np.float32)
-    
-    def _obs_gravity_orientation(self) -> np.ndarray:
-        return get_gravity_orientation(self.mj_data.qpos[self.base_link_id + 3:self.base_link_id + 7])
-    
-    def _obs_joint_pos(self) -> np.ndarray:
-        # print(f"{self.mj_data.qpos=}")
-        # print(f"{self.mj_data.qvel=}")
-        return (self.mj_data.qpos - self.init_qpos)[self.qpos_maps]
-    
-    def _obs_joint_vel(self) -> np.ndarray:
-        return self.mj_data.qvel[self.qvel_maps]
-    
-    def _obs_action(self) -> np.ndarray:
-        return self.action
-    
-    def headless_run(self):
-        counter = 0
-        target_joint_pos = self._cfg.default_angles
-        while True:
-            step_start = time.time()
-            if counter % self._cfg.control_decimation == 0:
-                action = self.act()
-                target_joint_pos = self.process_action(action)
-                    
-            self.pid_control(target_joint_pos)
-            mujoco.mj_step(self.mj_model, self.mj_data)
-            
-            counter += 1
-            time_until_next_step = self.mj_data.opt.timestep - (time.time() - step_start)
-            if time_until_next_step > 0:
-                time.sleep(time_until_next_step)
-            
-    
-    def view_run(self):
-        counter = 0
-        target_joint_pos = self._cfg.default_angles
-        with mujoco.viewer.launch_passive(self.mj_model, self.mj_data) as viewer:
-            while viewer.is_running():
-                step_start = time.time()
-
-                if counter % self._cfg.control_decimation == 0:
-                    action = self.act()
-                    target_joint_pos = self.process_action(action)
-                    
-                self.pid_control(target_joint_pos)
-                mujoco.mj_step(self.mj_model, self.mj_data)
-                viewer.sync()  
-
-                counter += 1
-                
-                time_until_next_step = self.mj_model.opt.timestep*self.slowdown_factor - (time.time() - step_start)
-                if time_until_next_step > 0:
-                    time.sleep(time_until_next_step)
