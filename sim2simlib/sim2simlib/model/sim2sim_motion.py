@@ -65,7 +65,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                     term_data = term_data.detach().cpu().numpy()[0]
                 motion_observations[term] = term_data.astype(np.float32)
             else:
-                raise ValueError(f"Motion observation term {term} not implemented.")
+                raise ValueError(f"Motion observation term '{term}' not implemented.")
         return motion_observations
     
     def get_obs(self) -> dict[str, np.ndarray]:

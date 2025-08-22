@@ -11,6 +11,17 @@ class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "g1_23d"
+        
+        self.observations.policy.base_lin_vel.scale = 1.0
+        self.observations.policy.base_ang_vel.scale = 0.25
+        self.observations.policy.projected_gravity.scale = 1.0
+        self.observations.policy.joint_pos.scale = 1.0
+        self.observations.policy.joint_vel.scale = 0.05
+        self.observations.policy.actions.scale = 1.0
+        
+        self.observations.policy.history_length = 5
+        
+        self.actions.joint_pos.scale = 0.25
 
         self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([

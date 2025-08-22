@@ -9,7 +9,7 @@ config = Sim2Sim_Config(
     simulation_dt=0.01,
     slowdown_factor=1.0,
     control_decimation=5,
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/g1_23d_tracking_walk/2025-08-21_14-36-18/exported/policy.pt",
+    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/g1_23d_tracking_walk/2025-08-22_13-27-52/exported/policy.pt",
     xml_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/data/assets/g1_description/g1_23dof.xml",
     policy_joint_names=[ 
         "left_hip_pitch_joint",
@@ -42,14 +42,14 @@ config = Sim2Sim_Config(
                                  'gravity_orientation', 
                                  'joint_pos', 
                                  'joint_vel',
-                                 'action'],
+                                 'last_action'],
         scale={ 
                 'base_lin_vel': 1.0,
                 'base_ang_vel': 1.0,
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
                 'joint_vel': 1.0,
-                'action': 1.0
+                'last_action': 1.0
             },
         motion_observations_terms=[
             'loc_dof_pos',
@@ -132,4 +132,5 @@ config = Sim2Sim_Config(
 
 mujoco_model = Sim2Sim_Motion_Model(config)
 
-mujoco_model.motion_fk_view()
+# mujoco_model.motion_fk_view()
+mujoco_model.view_run()
