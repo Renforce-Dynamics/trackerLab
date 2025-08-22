@@ -133,4 +133,3 @@ config = Sim2Sim_Config(
 mujoco_model = Sim2Sim_Motion_Model(config)
 
 mujoco_model.motion_fk_view()
-# mujoco_model.view_run()
