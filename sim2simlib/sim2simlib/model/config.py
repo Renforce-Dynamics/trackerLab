@@ -18,8 +18,15 @@ class Actions():
 class Observations_Config:
     base_observations_terms: list[str]
     scale: dict[str, float]
-    motion_observations_terms: list[str] = None
+    using_base_obs_history: bool = False
+    base_obs_flatten: bool = True
+    base_obs_his_length: int = 1
     
+    motion_observations_terms: list[str] = None
+    motion_obs_history: bool = False
+    motion_obs_flatten: bool = True
+    motion_obs_his_length: int = 1
+
 @dataclass
 class Motor_Config(): 
     motor_type: type = None
@@ -36,6 +43,7 @@ class Motor_Config():
 class Sim2Sim_Config:
     robot_name: str
     simulation_dt: float
+    slowdown_factor: float
     control_decimation: int
     xml_path: str
     policy_path: str

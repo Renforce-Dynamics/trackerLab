@@ -34,11 +34,14 @@ class Sim2Sim_Base_Model:
         self.act_maps = []
         self.cmd = [0, 0, 0]
         
+        # Initialize observation history
+        self.base_obs_history = {}        
         # 
         self._init_joint_names()
         self._init_default_pos_angles()
         self._init_load_policy()
         self._init_dc_model()
+        self._init_observation_history()
 
     def _init_joint_names(self):
         self.mujoco_joint_names = [self.mj_model.jnt(i).name for i in range(self.mj_model.njnt)]
@@ -89,14 +92,64 @@ class Sim2Sim_Base_Model:
         motor_type = self._cfg.motor_cfg.motor_type
         self._cfg.motor_cfg.joint_names = self.actuators_joint_names
         self.dc_motor = motor_type(self._cfg.motor_cfg)         
+    
+    def _init_observation_history(self):
+        """Initialize observation history buffers."""
+        if self._cfg.observation_cfg.using_base_obs_history:
+            # Get initial observations to determine sizes
+            initial_obs = self._get_current_base_observations()
             
-    def get_base_observations(self) -> dict[str, np.ndarray]:
+            # Initialize history buffers for each observation term
+            for term, obs_value in initial_obs.items():
+                self.base_obs_history[term] = [obs_value.copy() for _ in range(self._cfg.observation_cfg.base_obs_his_length)]
+
+    def _get_current_base_observations(self) -> dict[str, np.ndarray]:
+        """Get current observations without history processing."""
         base_observations = {}
         for term in self._cfg.observation_cfg.base_observations_terms:
             if hasattr(self, f"_obs_{term}"):
-                base_observations[term] = getattr(self, f"_obs_{term}")() * self._cfg.observation_cfg.scale[term] # obs scale
+                base_observations[term] = getattr(self, f"_obs_{term}")() * self._cfg.observation_cfg.scale[term]
             else:
                 raise ValueError(f"Observation term {term} not implemented.")
+        return base_observations
+    
+    def _update_observation_history(self):
+        """Update observation history with current observations."""
+        if self._cfg.observation_cfg.using_base_obs_history:
+            current_obs = self._get_current_base_observations()
+            
+            for term, obs_value in current_obs.items():
+                # Shift history (remove oldest, add newest)
+                self.base_obs_history[term] = self.base_obs_history[term][1:] + [obs_value.copy()]         
+            
+    def get_base_observations(self) -> dict[str, np.ndarray]:
+        """Get base observations with optional history."""
+        # Update history before getting observations
+        if self._cfg.observation_cfg.using_base_obs_history:
+            self._update_observation_history()
+            
+        base_observations = {}
+        
+        if self._cfg.observation_cfg.using_base_obs_history:
+            # Return historical observations
+            for term in self._cfg.observation_cfg.base_observations_terms:
+                if term in self.base_obs_history:
+                    if self._cfg.observation_cfg.base_obs_flatten:
+                        # Flatten history: [t-2, t-1, t] -> concatenated array
+                        base_observations[term] = np.concatenate(self.base_obs_history[term], axis=-1)
+                    else:
+                        # Keep as separate timesteps: shape (history_length, obs_dim)
+                        base_observations[term] = np.stack(self.base_obs_history[term], axis=0)
+                else:
+                    raise ValueError(f"Observation term {term} not found in history.")
+        else:
+            # Return current observations without history
+            for term in self._cfg.observation_cfg.base_observations_terms:
+                if hasattr(self, f"_obs_{term}"):
+                    base_observations[term] = getattr(self, f"_obs_{term}")() * self._cfg.observation_cfg.scale[term]
+                else:
+                    raise ValueError(f"Observation term {term} not implemented.")
+        
         return base_observations
     
     def get_obs(self) -> dict[str, np.ndarray]:
