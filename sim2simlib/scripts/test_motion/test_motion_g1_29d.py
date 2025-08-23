@@ -3,38 +3,39 @@ from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
 
 config = Sim2Sim_Config(
-    robot_name='g1_23d',
+    robot_name='g1_29d_loco',
     simulation_dt=0.001,
     slowdown_factor=1.0,
     control_decimation=20,
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/g1_23d_tracking_walk/2025-08-22_19-41-43/exported/policy.pt",
-    xml_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/data/assets/g1_description/g1_23dof.xml",
+    policy_path=None, # CHECK your path
+    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof.xml",
     policy_joint_names=[ 
         "left_hip_pitch_joint",
         "right_hip_pitch_joint",
         "waist_yaw_joint",
         "left_hip_roll_joint",
         "right_hip_roll_joint",
-        "left_shoulder_pitch_joint",
-        "right_shoulder_pitch_joint",
+        "waist_roll_joint",
         "left_hip_yaw_joint",
         "right_hip_yaw_joint",
-        "left_shoulder_roll_joint",
-        "right_shoulder_roll_joint",
+        "waist_pitch_joint",
         "left_knee_joint",
         "right_knee_joint",
-        "left_shoulder_yaw_joint",
-        "right_shoulder_yaw_joint",
+        "left_shoulder_pitch_joint",
+        "right_shoulder_pitch_joint",
         "left_ankle_pitch_joint",
         "right_ankle_pitch_joint",
-        "left_elbow_joint",
-        "right_elbow_joint",
+        "left_shoulder_roll_joint",
+        "right_shoulder_roll_joint",
         "left_ankle_roll_joint",
         "right_ankle_roll_joint",
-        "left_wrist_roll_joint",
-        "right_wrist_roll_joint"
+        "left_shoulder_yaw_joint",
+        "right_shoulder_yaw_joint",
+        "left_elbow_joint",
+        "right_elbow_joint"
         ],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_lin_vel', 
@@ -45,10 +46,10 @@ config = Sim2Sim_Config(
                                  'last_action'],
         scale={ 
                 'base_lin_vel': 1.0,
-                'base_ang_vel': 0.25,
+                'base_ang_vel': 0.25, # CHECK
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
-                'joint_vel': 0.05,
+                'joint_vel': 0.05, # CHECK
                 'last_action': 1.0
             },
         motion_observations_terms=[
@@ -57,8 +58,8 @@ config = Sim2Sim_Config(
             ]
         ),
     action_cfg=Actions_Config(
-        action_clip=(-100.0, 100.0),
-        scale=0.25
+        action_clip=(-100.0, 100.0), # CHECK
+        scale=0.5 # CHECK
     ),            
     motor_cfg=Motor_Config(
         motor_type=PID_Motor,
@@ -68,6 +69,7 @@ config = Sim2Sim_Config(
             ".*_hip_roll_joint": 300,
             ".*_hip_pitch_joint": 300,
             ".*_knee_joint": 300,
+            "waist_.*_joint": 300,
             # "arms"
             ".*_shoulder_pitch_joint": 300,
             ".*_shoulder_roll_joint": 300,
@@ -83,6 +85,7 @@ config = Sim2Sim_Config(
             ".*_hip_roll_joint": 150.0,
             ".*_hip_pitch_joint": 200.0,
             ".*_knee_joint": 200.0,
+            "waist_.*_joint": 200.0,
             # "arms"
             ".*_shoulder_pitch_joint": 40.0,
             ".*_shoulder_roll_joint": 40.0,
@@ -98,6 +101,7 @@ config = Sim2Sim_Config(
             ".*_hip_roll_joint": 5.0,
             ".*_hip_pitch_joint": 5.0,
             ".*_knee_joint": 5.0,
+            "waist_.*_joint": 5.0,
             # "arms"
             ".*_shoulder_pitch_joint": 10.0,
             ".*_shoulder_roll_joint": 10.0,
@@ -122,10 +126,9 @@ config = Sim2Sim_Config(
     },
     
     motion_cfg=MotionBufferCfg(
-        regen_pkl=False,
         motion=MotionBufferCfg.MotionCfg(
-            motion_type="yaml",
-            motion_name="amass/g1_23d/simple_walk.yaml"
+            motion_name="amass/g1_29d_loco/simple_walk.yaml",
+            regen_pkl=False,
         )
     )
 )

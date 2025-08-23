@@ -8,7 +8,7 @@ config = Sim2Sim_Config(
     robot_name='pi_plus_27dof',
     simulation_dt=0.005,
     control_decimation=4,
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/pi_plus_27dof_tracking_walk/2025-08-20_16-53-07/exported/policy.pt",
+    policy_path=None,
     xml_path=None,
     policy_joint_names=[ 
         "head_yaw_joint",
@@ -64,11 +64,6 @@ config = Sim2Sim_Config(
         scale=0.000025
     ),            
     motor_cfg=Motor_Config(
-        # effort_limit=50,
-        # saturation_effort=50,
-        # velocity_limit=3.0,
-        # stiffness=3,
-        # damping=2
         motor_type=PID_Motor,
         effort_limit=1,
         saturation_effort=10,

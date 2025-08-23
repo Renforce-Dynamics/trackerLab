@@ -8,8 +8,8 @@ config = Sim2Sim_Config(
     simulation_dt=0.0001,
     slowdown_factor=10.0,
     control_decimation=200,
-    xml_path="/home/ac/Desktop/2025/project_isaac/IsaacLab/source/mujoco_menagerie/unitree_go2/scene.xml",
-    policy_path="/home/ac/Desktop/2025/project_isaac/IsaacLab/source/labBundle/factoryIsaac/logs/exp1/Go2_doublehand_flat_action_nonoise/2025-08-06_13-55-54_a0.15_seed423/exported/policy.pt",
+    xml_path="",
+    policy_path="",
     policy_joint_names=[ 
             "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
             "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
