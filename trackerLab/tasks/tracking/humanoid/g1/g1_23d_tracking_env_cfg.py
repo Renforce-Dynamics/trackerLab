@@ -21,6 +21,8 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         # self.observations.policy.history_length = 5
         
         self.actions.joint_pos.scale = 0.25
+        
+        self.rewards.reward_alive.weight = 5.0
 
         self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
