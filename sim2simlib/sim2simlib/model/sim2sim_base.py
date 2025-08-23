@@ -54,19 +54,21 @@ class Sim2Sim(ABC):
                 idx = self.mujoco_joint_names.index(joint_name)
                 self.qpos_maps.append(self.qpos_strat_ids[idx])
                 self.qvel_maps.append(self.qvel_strat_ids[idx])
+                self.act_maps.append(idx-1)
             else:
                 raise ValueError(f"Joint name {joint_name} not found in MuJoCo model.")
 
         print("[INFO] qpos maps:", self.qpos_maps)
         print("[INFO] qvel maps:", self.qvel_maps)
-
-        # policy order -> mujoco order
-        for joint_name in self.mujoco_joint_names:
-            if joint_name in self.policy_joint_names:
-                idx = self.policy_joint_names.index(joint_name)
-                self.act_maps.append(idx)
-
-        print("[INFO] Action maps:", self.act_maps)    
+        print("[INFO] Action maps:", self.act_maps) 
+        
+    def _init_load_policy(self):
+        self.policy = torch.jit.load(self._cfg.policy_path)
+        
+    def _init_actuator_motor(self):
+        motor_type = self._cfg.motor_cfg.motor_type
+        self._cfg.motor_cfg.joint_names = self.actuators_joint_names
+        self.dc_motor = motor_type(self._cfg.motor_cfg)  
         
     def _obs_base_lin_vel(self) -> np.ndarray:
         return self.mj_data.qvel[self.base_link_id : self.base_link_id + 3]
@@ -159,35 +161,6 @@ class Sim2Sim_Base_Model(Sim2Sim):
         self._init_load_policy()
         self._init_actuator_motor()
         self._init_observation_history()
-
-    def _init_joint_names(self):
-        self.mujoco_joint_names = [self.mj_model.jnt(i).name for i in range(self.mj_model.njnt)]
-        self.qpos_strat_ids = [self.mj_model.jnt_qposadr[i] for i in range(self.mj_model.njnt)]
-        self.qvel_strat_ids = [self.mj_model.jnt_dofadr[i] for i in range(self.mj_model.njnt)]
-
-        self.actuators_joint_names = self.mujoco_joint_names[1:]
-        print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
-        print('[INFO] Policy joint names:', self.policy_joint_names)
-        
-        # mujoco order -> policy order
-        for joint_name in self.policy_joint_names:
-            if joint_name in self.mujoco_joint_names:
-                idx = self.mujoco_joint_names.index(joint_name)
-                self.qpos_maps.append(self.qpos_strat_ids[idx])
-                self.qvel_maps.append(self.qvel_strat_ids[idx])
-            else:
-                raise ValueError(f"Joint name {joint_name} not found in MuJoCo model.")
-
-        print("[INFO] qpos maps:", self.qpos_maps)
-        print("[INFO] qvel maps:", self.qvel_maps)
-
-        # policy order -> mujoco order
-        for joint_name in self.mujoco_joint_names:
-            if joint_name in self.policy_joint_names:
-                idx = self.policy_joint_names.index(joint_name)
-                self.act_maps.append(idx)
-
-        print("[INFO] Action maps:", self.act_maps)
     
     def _init_default_pos_angles(self):
         self.mj_data.qpos[:3] = self._cfg.default_pos
@@ -203,14 +176,6 @@ class Sim2Sim_Base_Model(Sim2Sim):
         print(f"[INFO] Initial qpos: [{', '.join([f'{x:.2f}' for x in self.init_qpos])}]")
         print(f"[INFO] Initial angles: [{', '.join([f'{x:.2f}' for x in self.init_angles])}]")
         print(f"[INFO] Initial angles mapped: [{', '.join([f'{x:.2f}' for x in self.maped_qpos])}]")
-
-    def _init_load_policy(self):
-        self.policy = torch.jit.load(self._cfg.policy_path)
-        
-    def _init_actuator_motor(self):
-        motor_type = self._cfg.motor_cfg.motor_type
-        self._cfg.motor_cfg.joint_names = self.actuators_joint_names
-        self.dc_motor = motor_type(self._cfg.motor_cfg)         
     
     def _init_observation_history(self):
         """Initialize observation history buffers."""
@@ -286,8 +251,10 @@ class Sim2Sim_Base_Model(Sim2Sim):
     def process_action(self, policy_action: np.ndarray) -> np.ndarray:
         action = policy_action * self._cfg.action_cfg.scale
         action = np.clip(action, *self._cfg.action_cfg.action_clip) 
-        action = action[self.act_maps]
-        joint_pos_action = action + self.init_angles
+        
+        joint_pos_action = np.zeros_like(self.init_angles, dtype=np.float32)
+        joint_pos_action[self.act_maps] = action
+        joint_pos_action += self.init_angles
         return joint_pos_action
 
     def apply_action(self, joint_pos_action: np.ndarray):
