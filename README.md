@@ -156,7 +156,12 @@ If you find TrackerLab helpful for your work or research, please consider citing
 
 > Looking for collaborators and contributors — feel free to reach out or open an issue!
 
----
+### Contact
+
+You can join the Wechat group for detialed contact!
+
+![Wechat Group](https://youke1.picui.cn/s1/2025/08/20/68a568770e11f.jpg)
+
 
 ## 📄 License
 

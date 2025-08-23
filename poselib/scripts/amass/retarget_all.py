@@ -6,12 +6,9 @@ from multiprocessing import Pool, cpu_count
 
 from poselib.retarget.amass_loader import AMASSLoader
 from poselib.retarget.retargeting_processor import RetargetingProcessor
-from poselib import POSELIB_DATA_DIR
+from poselib import POSELIB_AMASS_DIR, POSELIB_RETARGETED_DATA_DIR
 
 from trackerLab.utils.animation import animate_skeleton
-
-
-AMASS_DATA_DIR = os.path.join(POSELIB_DATA_DIR, "amass")
 
 
 def visualize(source_motion, name):
@@ -47,12 +44,12 @@ def process_all(folders: list[str], robot, max_frames: int = 1000, num_workers: 
 
     amass_files = []
     for folder in folders:
-        folder_path = Path(AMASS_DATA_DIR) / folder
+        folder_path = Path(POSELIB_AMASS_DIR) / folder
         if not folder_path.exists():
             print(f"[WARN] Folder not found: {folder_path}")
             continue
         for npz_file in folder_path.rglob("*.npz"):
-            rel_path = npz_file.relative_to(AMASS_DATA_DIR)
+            rel_path = npz_file.relative_to(POSELIB_AMASS_DIR)
             output_path = RESULTS_DIR / rel_path.with_suffix(".npy")
             amass_files.append([str(npz_file), output_path] + [loader, retargetor])
 
@@ -83,12 +80,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     robot = args.robot
-    RESULTS_DIR = Path(POSELIB_DATA_DIR, "retargeted", "amass_results", robot)
+    RESULTS_DIR = Path(POSELIB_RETARGETED_DATA_DIR, "amass_results", robot)
     REPORT_FILE = RESULTS_DIR / "report.txt"
 
     folders = args.folders
-    folders = [
-        f"CMU/{tar}" for tar in ["127", "02", "01", "75", "55", "35"]
-    ]
+    # folders = [
+    #     f"CMU/{tar}" for tar in ["127", "02", "01", "75", "55", "35"]
+    # ]
 
     process_all(folders, robot, max_frames=args.max_frames, num_workers=args.workers)

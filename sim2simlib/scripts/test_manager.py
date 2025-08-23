@@ -24,20 +24,19 @@ def test():
     import numpy as np
     import time
 
-    # 1. 加载模型
     model = mujoco.MjModel.from_xml_path("your_model.xml")
     data = mujoco.MjData(model)
 
-    # 假设 motion_data shape = (T, nq)
-    motion_data = np.load("motion.npy")  # 例如保存的qpos序列
-    fps = 30  # 播放帧率
+    # assume motion_data shape = (T, nq)
+    motion_data = np.load("motion.npy")
+    fps = 30
 
     with mujoco.viewer.launch_passive(model, data) as viewer:
         for qpos in motion_data:
-            data.qpos[:] = qpos  # 设置关节位置
-            mujoco.mj_forward(model, data)  # 前向计算（更新几何）
+            data.qpos[:] = qpos
+            mujoco.mj_forward(model, data)
             viewer.sync()
-            time.sleep(1.0 / fps)  # 控制播放速度
+            time.sleep(1.0 / fps)
 
 
 if __name__ == "__main__":

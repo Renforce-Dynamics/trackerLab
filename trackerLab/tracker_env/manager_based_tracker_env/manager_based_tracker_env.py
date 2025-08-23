@@ -13,16 +13,19 @@ class ManagerBasedTrackerEnv(ManagerBasedRLEnv):
         self.robot:Articulation = self.scene["robot"]
 
     def load_managers(self):
-        # prepare the managers
-        # -- motion manager
-        if isinstance(self.cfg.motion, SkillManagerCfg):
+
+        if hasattr(self, "motion_manager"):
+            pass
+        elif isinstance(self.cfg.motion, SkillManagerCfg):
             self.motion_manager = SkillManager(self.cfg.motion, self, self.device)
+            print("[INFO] Motion Manager: ", self.motion_manager)
         elif isinstance(self.cfg.motion, MotionManagerCfg):
             self.motion_manager = MotionManager(self.cfg.motion, self, self.device)
+            print("[INFO] Motion Manager: ", self.motion_manager)
         else:
             raise ValueError("Motion manager not supported: ", self.cfg.motion)
         self.motion_manager.compute()
-        print("[INFO] Motion Manager: ", self.motion_manager)
+        
         super().load_managers()
         
     def _post_dynamic_step(self):

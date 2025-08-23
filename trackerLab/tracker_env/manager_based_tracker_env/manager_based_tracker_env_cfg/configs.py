@@ -125,9 +125,10 @@ class CommandsCfg:
 class MotionCfg(MotionManagerCfg):
     motion_buffer_cfg = MotionBufferCfg(
         motion = MotionBufferCfg.MotionCfg(
-            motion_name = None
+            motion_name = None,
+            regen_pkl=True
         ),
-        regen_pkl=True
+        
     )
     static_motion: bool = False
     obs_from_buffer: bool = False
@@ -145,7 +146,8 @@ class RecordsCfg(RecorderManagerBaseCfg):
     joint_effort_target = RecorderTermCfg(class_type=tracker_record.RecordJointEffortTarget)
     joint_acc = RecorderTermCfg(class_type=tracker_record.RecordJointAcc)
     joint_pos = RecorderTermCfg(class_type=tracker_record.RecordJointPos)
-    joint_vel = RecorderTermCfg(class_type=tracker_record.RecordJointVel)    
+    joint_vel = RecorderTermCfg(class_type=tracker_record.RecordJointVel)
+    action = RecorderTermCfg(class_type=tracker_record.PreStepActionsRecorder)
 
 @configclass
 class ActionsCfg:
@@ -228,7 +230,6 @@ class RewardsCfg:
     """Reward terms for the MDP."""
 
     # Task
-
     demo_height = RewTerm(
         func=tracker_reward.reward_tracking_demo_height, 
         weight=0.0
@@ -239,7 +240,7 @@ class RewardsCfg:
     )
     motion_exp_whb_dof_pos = RewTerm(
         func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
-        weight = 20.0,
+        weight = 10.0,
         params={
             "factor": 0.3
         }
@@ -261,12 +262,9 @@ class RewardsCfg:
     
     motion_base_ang_vel = RewTerm(
         func=tracker_reward.reward_motion_base_ang_vel, 
-        weight=0.0
+        weight=0.5
     )
-    # punish_base_ang_vel = RewTerm(
-    #     func=tracker_reward.punish_base_ang_vel, 
-    #     weight= 1.0
-    # )
+    
     reward_alive = RewTerm(
         func = tracker_reward.reward_alive,
         weight = 1.0
@@ -282,58 +280,25 @@ class RewardsCfg:
     )
 
     # -- penalties
-    # dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    # dof_acc_l2 = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
-    # action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
+    dof_torques_l2          = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
+    dof_acc_l2              = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    action_rate_l2          = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
     undesired_contacts = RewTerm(
         func=mdp.undesired_contacts,
         weight=-1.0,
         params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*THIGH"), "threshold": 1.0},
     )
+    
     # -- optional penalties
-    # dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=0.0)
+    dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=0.0)
     
     
-    alive = RewTerm(func=mdp.is_alive, weight=0.15)
-    joint_vel = RewTerm(func=mdp.joint_vel_l2, weight=-0.001)
-    joint_acc = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
-    action_rate = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
-    dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-10.0)
-    dof_torques_l2 = RewTerm(func=mdp.joint_torques_l2, weight=-1.0e-5)
-    energy = RewTerm(func=tracker_reward.energy, weight=-2e-5)
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    
-    # joint_deviation_arms = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-0.1,
-    #     params={
-    #         "asset_cfg": SceneEntityCfg(
-    #             "robot",
-    #             joint_names=[
-    #                 ".*_shoulder_.*_joint",
-    #                 ".*_elbow_joint",
-    #                 ".*_wrist_.*",
-    #             ],
-    #         )
-    #     },
-    # )
-    # joint_deviation_waists = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-1,
-    #     params={
-    #         "asset_cfg": SceneEntityCfg(
-    #             "robot",
-    #             joint_names=[
-    #                 "waist.*",
-    #             ],
-    #         )
-    #     },
-    # )
-    # joint_deviation_legs = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-1.0,
-    #     params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*_hip_roll_joint", ".*_hip_yaw_joint"])},
-    # )
+    alive                   = RewTerm(func=mdp.is_alive, weight=0.15)
+    joint_vel               = RewTerm(func=mdp.joint_vel_l2, weight=-0.001)
+    joint_acc               = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
+    energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
+    # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
 
 
 @configclass

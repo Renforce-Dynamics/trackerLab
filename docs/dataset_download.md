@@ -19,7 +19,7 @@ Our repo provides retargeting methods for versatile design of robots.
 
 # Asset Download
 
-Assets could be found in git@github.com:unitreerobotics/unitree_ros.git, we also provide a download script.
+Assets could be found in [unitree_ros](https://github.com/unitreerobotics/unitree_ros), we also provide a download script.
 
 
 Download: 
@@ -37,4 +37,12 @@ python scripts/tools/assets/convert_urdf.py --headless data/assets/g1_descriptio
 
 mkdir -p data/assets/usd/g1_29d_loco
 python scripts/tools/assets/convert_urdf.py --headless data/assets/g1_exbody/g1_29dof_loco.urdf data/assets/usd/g1_29d_loco/g1_29d_loco
+```
+
+If your robot do not have a mjcf for tpose generation, you could use:
+
+```bash
+pip install urdf2mjcf
+
+urdf2mjcf #<path to your urdf file>
 ```

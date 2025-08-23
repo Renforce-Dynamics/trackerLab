@@ -4,12 +4,10 @@ try:
 except ModuleNotFoundError:
     print("ImportError: Unable to import ManagerBase or ManagerTermBase. Please check the module structure.")
     ManagerBase = object
+    
 from trackerLab.motion_buffer import MotionBuffer
-from trackerLab.motion_drawer import MotionDrawer
 from trackerLab.utils.torch_utils import slerp 
-
-from typing import List
-from ..joint_id_caster import JointIdCaster
+from trackerLab.joint_id_caster import JointIdCaster
 
 class MotionManager(ManagerBase):
     """
@@ -44,7 +42,8 @@ class MotionManager(ManagerBase):
     
         
     def init_id_cast(self):
-        self.id_caster = JointIdCaster(self.device, self._env.scene.articulations["robot"]._data.joint_names, robot_type = self.cfg.robot_type)
+        lab_joint_names = self._env.scene.articulations["robot"]._data.joint_names
+        self.id_caster = JointIdCaster(self.device, lab_joint_names, robot_type = self.cfg.robot_type)
         self.lab_joint_names = self.id_caster.lab_joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
         
@@ -87,7 +86,7 @@ class MotionManager(ManagerBase):
         self.loc_init_demo_root_pos = demo_root_pos.clone()
         
         joint_pos = self.id_caster.fill_2lab(joint_pos, dof_pos_motion)
-        joint_vel = self.id_caster.fill_2lab(joint_vel, dof_pos_motion)
+        joint_vel = self.id_caster.fill_2lab(joint_vel, dof_vel)
         
         state = {
             "articulation": {
@@ -140,7 +139,7 @@ class MotionManager(ManagerBase):
         loc_root_pos    = self.motion_lib.gts[frame, 0]
         loc_local_rot   = self.motion_lib.lrs[frame]
         loc_dof_vel     = self.motion_lib.dvs[frame]
-        loc_dof_pos     = self.motion_lib.dof_pos[frame]
+        loc_dof_pos     = self.motion_lib.dps[frame]
         loc_root_vel    = self.motion_lib.vels_base[frame]
         loc_ang_vel     = self.motion_lib.ang_vels_base[frame]
         return loc_trans_base, loc_root_rot, loc_root_pos, \
@@ -162,14 +161,14 @@ class MotionManager(ManagerBase):
                 terms.append(term0)
         
         self.loc_trans_base, _, self.loc_root_pos, \
-            _, loc_dof_vel, self.loc_root_vel, self.loc_ang_vel, _ = terms
+            _, _, self.loc_root_vel, self.loc_ang_vel, _ = terms
         
         blend = blend.unsqueeze(-1)
         self.loc_root_rot = slerp(terms_0[1], terms_1[1], blend)
-        blend = blend.unsqueeze(-1)
-        loc_local_rot = slerp(terms_0[7], terms_1[7], blend)
-        loc_dof_pos = self.motion_lib._local_rotation_to_dof(loc_local_rot)
-        # loc_dof_vel = self.motion_lib._local_rotation_to_dof_vel(terms_0[1], terms_1[1])
+        # blend = blend
+        loc_dof_pos = slerp(terms_0[3], terms_1[3], blend)
+        loc_dof_vel = slerp(terms_0[4], terms_1[4], blend)
+        # loc_local_rot = slerp(terms_0[7], terms_1[7], blend)
 
         loc_dof_pos, loc_dof_vel = self._motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)
         self.loc_dof_pos, self.loc_dof_vel = loc_dof_pos[:, self.gym2lab_dof_ids], loc_dof_vel[:, self.gym2lab_dof_ids]

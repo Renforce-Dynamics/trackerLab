@@ -5,30 +5,16 @@ import torch
 from scipy.spatial.transform import Rotation as sRot
 
 from poselib.skeleton.skeleton3d import SkeletonTree, SkeletonMotion, SkeletonState
-from .utils.math import axis_angle_to_quaternion_xyzw, batch_axis_angle_to_quaternion
 from poselib.core.rotation3d import quat_mul, quat_inverse, quat_from_angle_axis
 
-from poselib import POSELIB_DATA_DIR
-TPOSE_DATA_DIR = os.path.join(POSELIB_DATA_DIR, "tpose")
-
-LOGGING = False
-
-def log(*args, **kwargs):
-    if LOGGING:
-        print(*args, **kwargs)
+from poselib import POSELIB_TPOSE_DIR, POSELIB_SMPL_SKELETON_PATH
 
 class AMASSLoader:
     def __init__(self, max_frames: int = 2751):
         self.max_frames = max_frames
-        self.smpl_config_path = os.path.join(
-            POSELIB_DATA_DIR, "skeletons", "skeleton_smpl.json"
-        )
-        # self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(TPOSE_DATA_DIR, "smplh_tpose.npy"))
-        self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(TPOSE_DATA_DIR, "smpl_tpose.npy"))
-        # self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(TPOSE_DATA_DIR, "smpln_tpose.npy"))
-        
+        self.smpl_config_path = POSELIB_SMPL_SKELETON_PATH
+        self.smpl_tpose:SkeletonState = SkeletonState.from_file(os.path.join(POSELIB_TPOSE_DIR, "smpl_tpose.npy"))
         self.smpl_skeleton_amass = self.create_smpl_skeleton()
-        
         self.adjust_skeleton_seq()
 
     def adjust_skeleton_seq(self):
@@ -55,33 +41,17 @@ class AMASSLoader:
     def load(self, npz_file: str):
         data = np.load(npz_file)
         available_keys = list(data.keys())
-        log(f"Available keys: {available_keys}")
         if 'poses' not in data:
             raise ValueError("No poses data found in file")
-        # if data['poses'].shape[1] == 156: 
-        #     log("SMPL-H format (156 dimensions)")
-        #     poses = data['poses'][:, :156]
-        # else:
-        #     log("SMPL format (72 dimensions)")
-        #     poses = data['poses'][:, :72]
         
         poses = data['poses'][:, :66]
         poses = np.concatenate([poses, np.zeros((poses.shape[0], 6))], axis=-1)
-        # poses = data['poses'][:, :72]
-        
         
         trans = data.get('trans', np.zeros((poses.shape[0], 3)))
         fps = data.get('mocap_framerate', 30.0)
-        
-        log(f"AMASS data information:")
-        log(f"  Original poses shape: {data['poses'].shape}")
-        log(f"  Extracted poses shape: {poses.shape}")
-        log(f"  Trans shape: {trans.shape}")
-        log(f"  FPS: {fps}fps")
-        log(f"  Duration: {poses.shape[0] / fps:.2f} seconds")
 
         if poses.shape[0] > self.max_frames:
-            log(f"Limiting to first {self.max_frames} frames")
+            print(f"Limiting to first {self.max_frames} frames")
             poses = poses[:self.max_frames]
             trans = trans[:self.max_frames]
         
