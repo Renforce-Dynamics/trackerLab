@@ -19,9 +19,6 @@ class G1TrackingEnvCfg(ManagerBasedTrackerEnvCfg):
         self.observations.policy.joint_vel.scale = 0.05
         self.observations.policy.actions.scale = 1.0
         
-        self.observations.policy.history_length = 5
-        
-        self.actions.joint_pos.scale = 0.25
 
         self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
