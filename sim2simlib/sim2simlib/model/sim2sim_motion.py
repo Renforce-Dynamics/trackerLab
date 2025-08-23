@@ -72,6 +72,10 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         is_update = self.motion_manager.step()
         base_observations = self.get_base_observations()
         motion_command = self.get_motion_command()
+        
+        # dummy motion with zero
+        for key in motion_command.keys():
+            motion_command[key].fill(0)
 
         if torch.any(is_update):
             print("Motion updated.")

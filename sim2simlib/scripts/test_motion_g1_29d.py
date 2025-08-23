@@ -6,12 +6,14 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
 
 config = Sim2Sim_Config(
+    debug=True,
     robot_name='g1_29d_loco',
     simulation_dt=0.001,
     slowdown_factor=1.0,
     control_decimation=20,
-    policy_path=f"{LOGS_DIR}/rsl_rl/g1_23d_tracking_walk/2025-08-22_19-41-43/exported/policy.pt", # CHECK
-    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof.xml",
+    policy_path=f"{LOGS_DIR}/rsl_rl/g1_29d_loco_tracking_walk/2025-08-22_21-49-04/exported/policy.pt", # CHECK
+    # xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof.xml",
+    xml_path="/home/ac/Desktop/2025/project_3/unitree_mujoco/unitree_robots/g1/scene_29dof.xml",
     policy_joint_names=[ 
         "left_hip_pitch_joint",
         "right_hip_pitch_joint",
@@ -58,8 +60,8 @@ config = Sim2Sim_Config(
             ]
         ),
     action_cfg=Actions_Config(
-        action_clip=(-100.0, 100.0), # CHECK
-        scale=0.5 # CHECK
+        action_clip= (-3.14, 3.14), # CHECK
+        scale=1.0 # CHECK
     ),            
     motor_cfg=Motor_Config(
         motor_type=PID_Motor,

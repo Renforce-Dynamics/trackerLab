@@ -149,6 +149,10 @@ class Sim2Sim(ABC):
                 time_until_next_step = self.mj_model.opt.timestep*self.slowdown_factor - (time.time() - step_start)
                 if time_until_next_step > 0:
                     time.sleep(time_until_next_step)
+                    
+    def debug(self, *args):
+        if self._cfg.debug:
+            print(*args)
 
 class Sim2Sim_Base_Model(Sim2Sim):
     
@@ -243,8 +247,10 @@ class Sim2Sim_Base_Model(Sim2Sim):
     def act(self) -> np.ndarray:
         obs_dict = self.get_obs()
         obs_np = np.concatenate(list(obs_dict.values()), axis=-1).astype(np.float32)
+        # self.debug("[DEBUG] Observation:", obs_np)
         obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
         action = self.policy(obs_tensor).detach().numpy().squeeze()
+        self.debug("[DEBUG] action:", action)
         self.last_action[:] = action
         return action
     
