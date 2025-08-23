@@ -144,7 +144,8 @@ class RecordsCfg(RecorderManagerBaseCfg):
     joint_effort_target = RecorderTermCfg(class_type=tracker_record.RecordJointEffortTarget)
     joint_acc = RecorderTermCfg(class_type=tracker_record.RecordJointAcc)
     joint_pos = RecorderTermCfg(class_type=tracker_record.RecordJointPos)
-    joint_vel = RecorderTermCfg(class_type=tracker_record.RecordJointVel)    
+    joint_vel = RecorderTermCfg(class_type=tracker_record.RecordJointVel)
+    action = RecorderTermCfg(class_type=tracker_record.PreStepActionsRecorder)
 
 @configclass
 class ActionsCfg:

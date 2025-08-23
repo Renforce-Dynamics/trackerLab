@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 import os
-from trackerLab.managers.joint_id_caster import JointIdCaster
+from trackerLab.joint_id_caster import JointIdCaster
 from trackerLab.motion_buffer.motion_buffer import MotionBuffer
 from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
