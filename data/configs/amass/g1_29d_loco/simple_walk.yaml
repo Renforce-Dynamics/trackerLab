@@ -1,6 +1,6 @@
 motions:
   '35/35_22_poses':
-    description: "walk episode"
+    description: "run"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
