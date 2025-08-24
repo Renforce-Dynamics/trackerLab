@@ -34,7 +34,7 @@ class Motion_Manager(object):
         pass
 
     def init_finite_state_machine(self):
-        self.motion_buffer._motion_ids = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.long, device=self.device)
+        self.motion_buffer._motion_ids = torch.zeros_like(self.motion_buffer._motion_ids, dtype=torch.long, device=self.device)
         self.motion_buffer._motion_times = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.float, device=self.device)        
         
     def set_finite_state_machine_motion_ids(self, motion_ids):
