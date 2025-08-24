@@ -18,7 +18,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
-from trackerLab.assets.humanoids.g1 import G1_29D_CFG as UNITREE_G1_29DOF_CFG
+from trackerLab.assets.humanoids.g1 import UNITREE_G1_29DOF_CFG
 from trackerLab.tasks.velocity import mdp
 from trackerLab.tracker_env.manager_based_tracker_env.manager_based_tracker_env_cfg.configs import MotionCfg
 
@@ -204,7 +204,7 @@ class ObservationsCfg:
         # gait_phase = ObsTerm(func=mdp.gait_phase, params={"period": 0.8})
 
         def __post_init__(self):
-            self.history_length = 5
+            # self.history_length = 5
             self.enable_corruption = True
             self.concatenate_terms = True
 
@@ -228,8 +228,8 @@ class ObservationsCfg:
         #     clip=(-1.0, 5.0),
         # )
 
-        def __post_init__(self):
-            self.history_length = 5
+        # def __post_init__(self):
+        #     self.history_length = 5
 
     # privileged observations
     critic: CriticCfg = CriticCfg()

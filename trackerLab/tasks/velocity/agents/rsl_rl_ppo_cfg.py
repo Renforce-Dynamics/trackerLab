@@ -34,3 +34,13 @@ class BasePPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+
+
+@configclass
+class G1_Velocity_PPORunnerCfg(BasePPORunnerCfg):
+    experiment_name = "unitree_g1_29dof_velocity"
+    
+    
+@configclass
+class Go2_Velocity_PPORunnerCfg(BasePPORunnerCfg):
+    experiment_name = "unitree_go2_velocity"

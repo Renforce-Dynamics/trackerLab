@@ -6,7 +6,7 @@ gym.register(
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": f"{__name__}.velocity_env_cfg:RobotEnvCfg",
-        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.velocity.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
+        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.velocity.agents.rsl_rl_ppo_cfg:Go2_Velocity_PPORunnerCfg",
     },
 )
 
@@ -16,6 +16,6 @@ gym.register(
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": f"{__name__}.velocity_env_cfg:RobotPlayEnvCfg",
-        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.velocity.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
+        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.velocity.agents.rsl_rl_ppo_cfg:Go2_Velocity_PPORunnerCfg",
     },
 )
