@@ -473,3 +473,19 @@ def euclidean_to_transform(transformation_matrix):
         t=euclidean_translation(transformation_matrix),
     )
 
+@torch.jit.script
+def dof_to_axis_angle(dof_pos: torch.Tensor, dof_axis: torch.Tensor) -> torch.Tensor:
+    """
+    Convert scalar DOF positions to axis-angle representation.
+
+    Args:
+        dof_pos: [T, J] tensor of joint positions (radians)
+        dof_axis: [J, 3] tensor of DOF axes in local frame
+
+    Returns:
+        axis_angle: [T, J, 4] tensor, (axis_x, axis_y, axis_z, angle)
+    """
+    axis = dof_axis.unsqueeze(0).expand(dof_pos.shape[0], -1, -1)  # [T, J, 3]
+    angle = dof_pos.unsqueeze(-1)  # [T, J, 1]
+    axis_angle = torch.cat([axis, angle], dim=-1)
+    return axis_angle
