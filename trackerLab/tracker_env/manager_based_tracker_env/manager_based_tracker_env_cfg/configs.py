@@ -298,7 +298,7 @@ class RewardsCfg:
     joint_acc               = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
     dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
-    # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
+    flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=0.0)
 
 
 @configclass
