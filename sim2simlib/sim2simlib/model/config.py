@@ -90,5 +90,6 @@ class Sim2Sim_Config:
     cmd: list[float] = None
     """base sim2sim command for velocity task"""
     
+    motion_float_grav: bool = False
     motion_cfg: MotionManagerCfg = None
     """motion manager configuration"""
