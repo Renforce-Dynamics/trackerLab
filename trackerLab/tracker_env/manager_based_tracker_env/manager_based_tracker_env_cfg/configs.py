@@ -131,7 +131,7 @@ class MotionCfg(MotionManagerCfg):
         
     )
     static_motion: bool = False
-    obs_from_buffer: bool = False
+    # obs_from_buffer: bool = False
     loc_gen: bool = True
     speed_scale: float = 1.0
     robot_type: str = None
@@ -344,8 +344,8 @@ class EventCfg:
         mode="reset",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names="base"),
-            "force_range": (0.0, 0.0),
-            "torque_range": (-0.0, 0.0),
+            "force_range": (-1.0, 1.0),
+            "torque_range": (-1.0, 1.0),
         },
     )
 

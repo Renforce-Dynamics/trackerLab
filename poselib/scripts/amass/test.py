@@ -4,7 +4,6 @@ import argparse
 from pathlib import Path
 
 from poselib.retarget.amass_loader import AMASSLoader
-from poselib.retarget.pose_generator import PoseGenerator
 from poselib.retarget.retargeting_processor import RetargetingProcessor
 from poselib import POSELIB_DATA_DIR
 from poselib.visualization.common import plot_skeleton_state, plot_skeleton_motion_interactive
