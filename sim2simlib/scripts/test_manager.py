@@ -1,7 +1,7 @@
 import json
 import torch
 
-from sim2simlib.motion.sim2sim_manager import Motion_Manager, MotionBufferCfg
+from sim2simlib.motion.motion_manager import Motion_Manager, MotionBufferCfg
 from sim2simlib.utils.utils import get_mujoco_joint_names
 
 robot_type="pi_plus_27dof"
