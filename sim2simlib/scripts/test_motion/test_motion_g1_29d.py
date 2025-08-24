@@ -3,7 +3,7 @@ from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
-from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
+from sim2simlib import LOGS_DIR
 
 config = Sim2Sim_Config(
     debug=True,
@@ -12,7 +12,6 @@ config = Sim2Sim_Config(
     slowdown_factor=1.0,
     control_decimation=4,
     policy_path=f"{LOGS_DIR}/rsl_rl/g1_29d_tracking_walk/2025-08-23_19-05-52/exported/policy.pt", # CHECK
-    # xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof.xml",
     xml_path="/home/ac/Desktop/2025/project_3/unitree_mujoco/unitree_robots/g1/scene_29dof.xml",
     policy_joint_names=['left_hip_pitch_joint', 'right_hip_pitch_joint', 'waist_yaw_joint', 'left_hip_roll_joint', 'right_hip_roll_joint', 'waist_roll_joint', 'left_hip_yaw_joint', 'right_hip_yaw_joint', 'waist_pitch_joint', 'left_knee_joint', 'right_knee_joint', 'left_shoulder_pitch_joint', 'right_shoulder_pitch_joint', 'left_ankle_pitch_joint', 'right_ankle_pitch_joint', 'left_shoulder_roll_joint', 'right_shoulder_roll_joint', 'left_ankle_roll_joint', 'right_ankle_roll_joint', 'left_shoulder_yaw_joint', 'right_shoulder_yaw_joint', 'left_elbow_joint', 'right_elbow_joint', 'left_wrist_roll_joint', 'right_wrist_roll_joint', 'left_wrist_pitch_joint', 'right_wrist_pitch_joint', 'left_wrist_yaw_joint', 'right_wrist_yaw_joint'],
     observation_cfg=Observations_Config(

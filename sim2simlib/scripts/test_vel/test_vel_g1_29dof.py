@@ -2,14 +2,15 @@ import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof',
-    simulation_dt=0.001,
+    simulation_dt=0.005,
     slowdown_factor=1.0,
-    control_decimation=20,
-    xml_path="/home/ac/Desktop/2025/project_3/unitree_mujoco/unitree_robots/g1/scene_29dof.xml",
-    policy_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/unitree_g1_29dof_velocity/2025-08-24_01-01-58/exported/policy.pt",
+    control_decimation=4,
+    xml_path=str(MUJOCO_ASSETS["unitree_g1_29dof"]),
+    policy_path=str(LOGS_DIR/"checkpoints/g1_29dof_vel/policy.pt"),
     policy_joint_names=['left_hip_pitch_joint', 'right_hip_pitch_joint', 'waist_yaw_joint', 'left_hip_roll_joint', 'right_hip_roll_joint', 'waist_roll_joint', 'left_hip_yaw_joint', 'right_hip_yaw_joint', 'waist_pitch_joint', 'left_knee_joint', 'right_knee_joint', 'left_shoulder_pitch_joint', 'right_shoulder_pitch_joint', 'left_ankle_pitch_joint', 'right_ankle_pitch_joint', 'left_shoulder_roll_joint', 'right_shoulder_roll_joint', 'left_ankle_roll_joint', 'right_ankle_roll_joint', 'left_shoulder_yaw_joint', 'right_shoulder_yaw_joint', 'left_elbow_joint', 'right_elbow_joint', 'left_wrist_roll_joint', 'right_wrist_roll_joint', 'left_wrist_pitch_joint', 'right_wrist_pitch_joint', 'left_wrist_yaw_joint', 'right_wrist_yaw_joint'],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_ang_vel', 
