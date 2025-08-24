@@ -1,0 +1,3 @@
+[submodule "sim2simlib/mujoco_menagerie"]
+	path = sim2simlib/mujoco_menagerie
+	url = https://github.com/google-deepmind/mujoco_menagerie.git
