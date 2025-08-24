@@ -3,3 +3,4 @@ from .manager_based_tracker_env.manager_based_tracker_env_cfg import ManagerBase
 from .manager_based_skill_env.manager_based_skill_env import ManagerBasedSkillEnv
 from .manager_based_amp_env.manager_based_amp_env import ManagerBasedAMPEnv
 from .manager_based_amp_env import ManagerBasedAMPEnv
+from .manager_based_rl_env import ManagerBasedRLEnv
