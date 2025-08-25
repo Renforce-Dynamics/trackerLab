@@ -6,11 +6,11 @@ from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_23dof',
-    simulation_dt=0.005,
+    simulation_dt=0.001,
     slowdown_factor=1.0,
-    control_decimation=4,
+    control_decimation=20,
     xml_path=MUJOCO_ASSETS["unitree_g1_23dof"],
-    policy_path=f"{LOGS_DIR}/rsl_rl/unitree_g1_23dof_velocity/2025-08-25_15-14-19/exported/policy.pt",
+    policy_path=f"{LOGS_DIR}/rsl_rl/unitree_g1_23dof_velocity/2025-08-25_21-46-18/exported/policy.pt",
     policy_joint_names=['left_hip_pitch_joint', 'right_hip_pitch_joint', 'waist_yaw_joint', 'left_hip_roll_joint', 'right_hip_roll_joint', 'left_shoulder_pitch_joint', 'right_shoulder_pitch_joint', 'left_hip_yaw_joint', 'right_hip_yaw_joint', 'left_shoulder_roll_joint', 'right_shoulder_roll_joint', 'left_knee_joint', 'right_knee_joint', 'left_shoulder_yaw_joint', 'right_shoulder_yaw_joint', 'left_ankle_pitch_joint', 'right_ankle_pitch_joint', 'left_elbow_joint', 'right_elbow_joint', 'left_ankle_roll_joint', 'right_ankle_roll_joint', 'left_wrist_roll_joint', 'right_wrist_roll_joint'],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_ang_vel', 
@@ -19,8 +19,8 @@ config = Sim2Sim_Config(
                              'joint_pos', 
                              'joint_vel',
                              'last_action'],
-        using_base_obs_history=True,
-        base_obs_his_length=5,
+        using_base_obs_history=False,
+        base_obs_his_length=1,
         scale={
                 'base_ang_vel': 0.2,
                 'cmd': 1.0,
@@ -30,7 +30,7 @@ config = Sim2Sim_Config(
                 'last_action': 1.0
             },
         ),
-    cmd=[1,0,0],
+    cmd=[0,0,0],
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0),
         scale=0.25
