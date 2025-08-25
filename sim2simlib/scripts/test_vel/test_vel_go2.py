@@ -7,16 +7,11 @@ from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 config = Sim2Sim_Config(
     robot_name='Go2',
     simulation_dt=0.005,
-    slowdown_factor=5.0,
+    slowdown_factor=1.0,
     control_decimation=4,
     xml_path=MUJOCO_ASSETS["unitree_go2"],
-    policy_path=f"{LOGS_DIR}/checkpoints/go2_handstand/policy.pt",
-    policy_joint_names=[ 
-            "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
-            "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
-            "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
-            "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",   
-        ],
+    policy_path=f"{LOGS_DIR}/rsl_rl/unitree_go2_velocity/2025-08-25_12-51-48/exported/policy.pt",
+    policy_joint_names=['FL_hip_joint', 'FR_hip_joint', 'RL_hip_joint', 'RR_hip_joint', 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint', 'FL_calf_joint', 'FR_calf_joint', 'RL_calf_joint', 'RR_calf_joint'],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_ang_vel', 
                              'gravity_orientation', 
@@ -25,7 +20,7 @@ config = Sim2Sim_Config(
                              'joint_vel',
                              'last_action'],
         scale={
-                'base_ang_vel': 0.25,
+                'base_ang_vel': 0.2,
                 'cmd': 1.0,
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
@@ -46,8 +41,14 @@ config = Sim2Sim_Config(
         damping=0.5
     ),
 
-    default_pos=np.array([0.0, 0.0, 0.27], dtype=np.float32),
-    default_angles=np.array([ 0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8 ], dtype=np.float32),
+    default_pos=np.array([0.0, 0.0, 0.4], dtype=np.float32),
+    default_angles={
+        ".*R_hip_joint": -0.1,
+        ".*L_hip_joint": 0.1,
+        "F[L,R]_thigh_joint": 0.8,
+        "R[L,R]_thigh_joint": 1.0,
+        ".*_calf_joint": -1.5,
+        },
 )
 
 mujoco_model = Sim2Sim_Base_Model(config)

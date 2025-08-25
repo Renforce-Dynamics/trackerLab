@@ -2,14 +2,15 @@ import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof',
-    simulation_dt=0.001,
+    simulation_dt=0.005,
     slowdown_factor=1.0,
-    control_decimation=20,
-    xml_path="",
-    policy_path="",
+    control_decimation=4,
+    xml_path=MUJOCO_ASSETS["unitree_g1_29dof"],
+    policy_path=f"{LOGS_DIR}/checkpoints/g1_29dof_vel_his/policy.pt",
     policy_joint_names=['left_hip_pitch_joint', 
                         'right_hip_pitch_joint', 
                         'waist_yaw_joint', 
@@ -64,7 +65,7 @@ config = Sim2Sim_Config(
     ),
     motor_cfg=Motor_Config(
         motor_type=PID_Motor,
-                effort_limit={
+        effort_limit={
             # "legs"
             ".*_hip_roll_joint": 300,
             ".*_hip_yaw_joint": 300,
