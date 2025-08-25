@@ -103,7 +103,7 @@ UNITREE_GO2W_CFG = UnitreeArticulationCfg(
     actuators={
         "GO2HV": IdealPDActuatorCfg(
             joint_names_expr=[".*"],
-            effort_limit=23.5,
+            effort_limit_sim=23.5,
             velocity_limit=30.0,
             stiffness={
                 ".*_hip_.*": 25.0,
@@ -157,7 +157,7 @@ UNITREE_B2_CFG = UnitreeArticulationCfg(
     actuators={
         "M107-24-2": IdealPDActuatorCfg(
             joint_names_expr=[".*_hip_.*", ".*_thigh_.*"],
-            effort_limit=200,
+            effort_limit_sim=200,
             velocity_limit=23,
             stiffness=160.0,
             damping=5.0,
@@ -165,7 +165,7 @@ UNITREE_B2_CFG = UnitreeArticulationCfg(
         ),
         "2": IdealPDActuatorCfg(
             joint_names_expr=[".*_calf_.*"],
-            effort_limit=320,
+            effort_limit_sim=320,
             velocity_limit=14,
             stiffness=160.0,
             damping=5.0,
@@ -206,7 +206,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
     actuators={
         "GO2HV-1": IdealPDActuatorCfg(
             joint_names_expr=[".*ankle.*", ".*_shoulder_pitch_.*", ".*_shoulder_roll_.*"],
-            effort_limit=40,
+            effort_limit_sim=40,
             velocity_limit=9,
             stiffness={
                 ".*ankle.*": 40.0,
@@ -217,7 +217,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
         ),
         "GO2HV-2": IdealPDActuatorCfg(
             joint_names_expr=[".*_shoulder_yaw_.*", ".*_elbow_.*"],
-            effort_limit=18,
+            effort_limit_sim=18,
             velocity_limit=20,
             stiffness=50,
             damping=2.0,
@@ -225,7 +225,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
         ),
         "M107-24-1": IdealPDActuatorCfg(
             joint_names_expr=[".*_knee_.*"],
-            effort_limit=300.0,
+            effort_limit_sim=300.0,
             velocity_limit=14.0,
             stiffness=200.0,
             damping=4.0,
@@ -233,7 +233,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
         ),
         "M107-24-2": IdealPDActuatorCfg(
             joint_names_expr=[".*_hip_.*", "torso_joint"],
-            effort_limit=200,
+            effort_limit_sim=200,
             velocity_limit=23.0,
             stiffness={
                 ".*_hip_.*": 150.0,
@@ -307,7 +307,7 @@ UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
     actuators={
         "N7520-14.3": ImplicitActuatorCfg(
             joint_names_expr=[".*_hip_pitch_.*", ".*_hip_yaw_.*", "waist_yaw_joint"],  # 5
-            effort_limit=88,
+            effort_limit_sim=88,
             velocity_limit=32.0,
             stiffness={
                 ".*_hip_.*": 100.0,
@@ -321,7 +321,7 @@ UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
         ),
         "N7520-22.5": ImplicitActuatorCfg(
             joint_names_expr=[".*_hip_roll_.*", ".*_knee_.*"],  # 4
-            effort_limit=139,
+            effort_limit_sim=139,
             velocity_limit=20.0,
             stiffness={
                 ".*_hip_roll_.*": 100.0,
@@ -335,7 +335,7 @@ UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
         ),
         "N5020-16": ImplicitActuatorCfg(
             joint_names_expr=[".*_shoulder_.*", ".*_elbow_.*", ".*_wrist_roll_.*"],  # 10
-            effort_limit=25,
+            effort_limit_sim=25,
             velocity_limit=37,
             stiffness=40.0,
             damping=10.0,
@@ -343,7 +343,7 @@ UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
         ),
         "N5020-16-parallel": ImplicitActuatorCfg(
             joint_names_expr=[".*ankle.*"],  # 4
-            effort_limit=35,
+            effort_limit_sim=35,
             velocity_limit=30,
             stiffness=40.0,
             damping=10.0,

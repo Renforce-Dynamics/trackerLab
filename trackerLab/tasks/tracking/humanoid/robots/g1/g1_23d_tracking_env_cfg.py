@@ -1,7 +1,7 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-from trackerLab.assets.humanoids.g1 import G1_23D_CFG
+from trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
 
 @configclass
 class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -24,9 +24,9 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         
         self.rewards.reward_alive.weight = 5.0
 
-        self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = UNITREE_G1_23DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
-                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*", ".*head.*"
+                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*"
             ])
         self.adjust_external_events(["torso_link"])
         
