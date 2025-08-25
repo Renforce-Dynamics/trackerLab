@@ -18,7 +18,8 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.observations.policy.joint_pos.scale = 1.0
         self.observations.policy.joint_vel.scale = 0.05
         self.observations.policy.actions.scale = 1.0
-        # self.observations.policy.history_length = 5
+        
+        self.observations.policy.history_length = 5
         
         self.actions.joint_pos.scale = 0.25
         

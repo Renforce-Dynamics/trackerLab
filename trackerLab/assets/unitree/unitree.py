@@ -26,8 +26,10 @@ class UnitreeArticulationCfg(ArticulationCfg):
 
     soft_joint_pos_limit_factor = 0.9
 
+import os
+from trackerLab import TRACKERLAB_USD_DIR
 
-UNITREE_MODEL_DIR = "/home/ununtu/code/trackerLab/data/assets/usd/unitree_model"
+UNITREE_MODEL_DIR = TRACKERLAB_USD_DIR
 
 UNITREE_GO2_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
@@ -274,7 +276,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
 
 UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{UNITREE_MODEL_DIR}/G1/23dof/usd/g1_23dof_rev_1_0/g1_23dof_rev_1_0.usd",
+        usd_path=f"{UNITREE_MODEL_DIR}/g1_23d/rev/g1_23d.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

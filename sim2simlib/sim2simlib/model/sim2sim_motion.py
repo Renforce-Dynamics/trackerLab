@@ -25,7 +25,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                                 motion_buffer_cfg=self._cfg.motion_cfg,
                                 lab_joint_names=self.policy_joint_names,
                                 robot_type=self._cfg.robot_name,
-                                dt=self._cfg.simulation_dt,
+                                dt=self._cfg.simulation_dt * self._cfg.control_decimation,
                                 device="cpu"
                             )
         self.motion_manager.init_finite_state_machine()
@@ -76,7 +76,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         if torch.any(is_update):
             print("Motion updated.")
             self.motion_manager.set_finite_state_machine_motion_ids(
-                motion_ids=torch.tensor([1], device="cpu", dtype=torch.long))
+                motion_ids=torch.tensor([0], device="cpu", dtype=torch.long))
 
         return  motion_command | base_observations
 

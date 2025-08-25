@@ -88,5 +88,3 @@ class MotionBuffer(object):
         dof_vel = reindex_motion_dof(dof_vel, dof_indices_sim, dof_indices_motion, valid_dof_body_ids)
         return dof_pos, dof_vel
 
-
-    
