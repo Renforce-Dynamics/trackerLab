@@ -9,7 +9,6 @@ import torch
 import re
 from abc import ABC, abstractmethod
 
-from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 from sim2simlib.utils.utils import get_gravity_orientation
 from sim2simlib.model.config import Sim2Sim_Config, Actions
 
