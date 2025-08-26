@@ -16,7 +16,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 
         self.scene.robot = UNITREE_G1_29DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
-                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*", ".*head.*"
+                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*"
             ])
         self.adjust_external_events(["torso_link"])
         self.adjust_feet(".*ankle_roll.*")
@@ -46,3 +46,4 @@ class G1TrackingWalk_Play(G1TrackingWalk):
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+        self.scene.terrain.terrain_generator.curriculum = False

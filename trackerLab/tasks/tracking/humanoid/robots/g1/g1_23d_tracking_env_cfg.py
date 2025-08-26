@@ -26,7 +26,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 
         self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
-                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*", ".*head.*"
+                "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*"
             ])
         self.adjust_external_events(["torso_link"])
 
