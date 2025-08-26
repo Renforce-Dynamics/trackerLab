@@ -5,11 +5,11 @@ from isaaclab.actuators import IdealPDActuatorCfg, ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
 
-from trackerLab import TRACKERLAB_USD_DIR
+from trackerLab import TRACKERLAB_UNIFY_ASSETS_DIR
 
 PI_PLUS_21DOF_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/pi_plus_21dof/pi_plus_21dof.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/pi_plus/usd/pi_plus_21dof.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -42,7 +42,7 @@ PI_PLUS_21DOF_CFG = ArticulationCfg(
                               ],
             stiffness=80.0,
             damping=1.1,
-            effort_limit_sim=20,
+            effort_limit_sim=50,
         ),
         "arms": ImplicitActuatorCfg(
             joint_names_expr=[".*_shoulder_.*", 
@@ -52,7 +52,7 @@ PI_PLUS_21DOF_CFG = ArticulationCfg(
                               ],
             stiffness=30.0,
             damping=0.6,
-            effort_limit_sim=20,
+            effort_limit_sim=30,
         ),
     },
 )

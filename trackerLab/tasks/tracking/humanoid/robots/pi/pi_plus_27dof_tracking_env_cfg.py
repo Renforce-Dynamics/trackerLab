@@ -9,7 +9,7 @@ from .motion_align_cfg import PI_27D_MOTION_ALIGN_CFG
 class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
-        self.set_plane()
+        # self.set_plane()
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "pi_plus_27dof"
