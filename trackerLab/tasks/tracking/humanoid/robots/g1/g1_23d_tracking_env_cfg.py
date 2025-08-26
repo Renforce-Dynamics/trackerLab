@@ -8,7 +8,7 @@ from .motion_align_cfg import G1_23D_MOTION_ALIGN_CFG
 class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
     def __post_init__(self):
         self.set_no_scanner()
-        self.set_plane()
+        # self.set_plane()
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.set_motion_align_cfg(G1_23D_MOTION_ALIGN_CFG)
