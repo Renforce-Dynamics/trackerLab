@@ -47,3 +47,20 @@ class R2TrackingRun(R2TrackingEnvCfg):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
         
+
+@configclass
+class R2TrackingWalk_Play(R2TrackingWalk):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+        
+@configclass
+class R2TrackingRun_Play(R2TrackingRun):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
