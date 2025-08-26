@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 
 config = Sim2Sim_Config(

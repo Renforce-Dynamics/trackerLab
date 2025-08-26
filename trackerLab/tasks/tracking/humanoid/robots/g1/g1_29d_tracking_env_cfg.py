@@ -1,7 +1,6 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-from trackerLab.assets.humanoids.g1 import G1_29D_CFG
 from trackerLab.assets.unitree import UNITREE_G1_29DOF_CFG
 
 @configclass

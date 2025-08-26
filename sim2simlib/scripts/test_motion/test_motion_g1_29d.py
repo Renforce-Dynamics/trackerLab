@@ -1,9 +1,9 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
-from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
+from sim2simlib import LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_29d',
@@ -66,8 +66,8 @@ config = Sim2Sim_Config(
             ]
         ),
     action_cfg=Actions_Config(
-        action_clip=(-100.0, 100.0), # CHECK
-        scale=0.5 # CHECK
+        action_clip= (-3.14, 3.14), # CHECK
+        scale=1.0 # CHECK
     ),            
     motor_cfg=Motor_Config(
         motor_type=PID_Motor,

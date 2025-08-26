@@ -117,6 +117,8 @@ class CommandsCfg:
         debug_vis=True
     )
     root_ang_vel_command = cmd.RootAngVelCommandCfg()
+    
+    action_fluctuation_ratio = cmd.ActionFluctuationRatioCommandCfg()
 
 
 @configclass
