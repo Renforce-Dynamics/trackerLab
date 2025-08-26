@@ -28,17 +28,16 @@ class MotionManager(ManagerBase):
     def __init__(self, cfg, env, device):
         super().__init__(cfg, env)
         # Init basic params
-        self.speed_scale: float = getattr(self.cfg, "speed_scale", 1.0)
-        self.static_motion: bool = self.cfg.static_motion
-        self.motion_dt = env.step_dt * self.speed_scale
-        self.obs_from_buffer: bool = getattr(self.cfg, "obs_from_buffer", True)
-        self.loc_gen: bool = getattr(self.cfg, "loc_gen", True)
-        self.reset_to_pose = getattr(self.cfg, "reset_to_pose", False)
+        self.speed_scale:       float   = getattr(self.cfg, "speed_scale", 1.0)
+        self.static_motion:     bool    = self.cfg.static_motion
+        self.motion_dt:         float   = env.step_dt * self.speed_scale
+        self.loc_gen:           bool    = getattr(self.cfg, "loc_gen", True)
+        self.reset_to_pose:     bool    = getattr(self.cfg, "reset_to_pose", False)
         
         self.init_id_cast()
 
         self._motion_buffer = MotionBuffer(cfg.motion_buffer_cfg, env.num_envs, self.motion_dt, device, id_caster=self.id_caster)
-        self.motion_lib = self._motion_buffer._motion_lib
+        self.motion_lib     = self._motion_buffer._motion_lib
     
         
     def init_id_cast(self):
@@ -166,7 +165,7 @@ class MotionManager(ManagerBase):
         
         blend = blend.unsqueeze(-1)
         self.loc_root_rot = slerp(terms_0[1], terms_1[1], blend)
-        # blend = blend
+
         loc_dof_pos = slerp(terms_0[3], terms_1[3], blend)
         loc_dof_vel = slerp(terms_0[4], terms_1[4], blend)
         # loc_local_rot = slerp(terms_0[7], terms_1[7], blend)

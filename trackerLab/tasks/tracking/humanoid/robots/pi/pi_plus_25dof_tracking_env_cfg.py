@@ -24,6 +24,8 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.actions.joint_pos.scale = 0.25
 
         self.scene.robot = PI_PLUS_25DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot.spawn.articulation_props.enabled_self_collisions = True
+        
         self.adjust_contact([
             "base_link",
             ".*_hip_.*", ".*_calf_.*", 
@@ -32,9 +34,11 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
             ])
         self.adjust_external_events(["base_link"])
         
-        self.terminations.base_contact = None
-        
+
+        self.terminations.base_contact = None        
         self.observations.policy.set_history(5)
+        
+        self.rewards.set_no_deviation()
 
 
 @configclass

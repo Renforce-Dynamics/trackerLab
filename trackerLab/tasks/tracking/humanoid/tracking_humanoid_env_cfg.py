@@ -34,25 +34,28 @@ class HuamnoidRewardsCfg(RewardsCfg):
             )
         },
     )
-    # joint_deviation_waists = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-1,
-    #     params={
-    #         "asset_cfg": SceneEntityCfg(
-    #             "robot",
-    #             joint_names=[
-    #                 "waist.*",
-    #             ],
-    #         )
-    #     },
-    # )
-    pass
+    joint_deviation_waists = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                joint_names=[
+                    "waist.*",
+                ],
+            )
+        },
+    )
+    
+    def set_no_deviation(self):
+        self.joint_deviation_arms = None
+        self.joint_deviation_waists = None
 
 
 @configclass
 class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
-    rewards = HuamnoidRewardsCfg()
-    terminations = HumanoidTerminationCfg()
+    rewards: HuamnoidRewardsCfg = HuamnoidRewardsCfg()
+    terminations: HumanoidTerminationCfg = HumanoidTerminationCfg()
     
     def __post_init__(self):
         super().__post_init__()

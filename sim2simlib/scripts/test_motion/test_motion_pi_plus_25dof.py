@@ -1,17 +1,35 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.motion_manager import MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib import MUJOCO_ASSETS_DIR, LOGS_DIR
-from trackerLab import TRACKERLAB_ASSETS_DIR
+
+from sim2simlib.utils.config import load_from_py, load_from_yaml
+from trackerLab import TRACKERLAB_ASSETS_DIR, TRACKERLAB_TASKS_DIR
+
+ckpt_dir = ""
+
+env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
+    
+    motion_cfg=MotionManagerCfg(
+        motion_buffer_cfg = MotionBufferCfg(
+            motion = MotionBufferCfg.MotionCfg(
+                motion_name="amass/pi_plus_25dof/simple_walk.yaml",
+                regen_pkl=True,
+            )
+        ),
+        robot_type="pi_plus_25dof",
+        motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
+    ),
+    
     robot_name='pi_plus_25dof',
     simulation_dt=0.005,
     slowdown_factor=1.0,
     control_decimation=4,
-    policy_path="",
+    policy_path=f"{ckpt_dir}/exported/policy.pt",
     xml_path=f"{TRACKERLAB_ASSETS_DIR}/pi_plus_25dof/xml/pi_waist.xml",
     policy_joint_names=[
         "l_shoulder_pitch_joint",
@@ -78,13 +96,6 @@ config = Sim2Sim_Config(
     default_pos=np.array([0.0, 0.0, 0.6], dtype=np.float32),
     default_angles={
         },
-    
-    motion_cfg=MotionBufferCfg(
-        motion=MotionBufferCfg.MotionCfg(
-            motion_name="amass/pi_plus_25dof/simple_walk.yaml",
-            regen_pkl=True,
-        )
-    )
 )
 
 mujoco_model = Sim2Sim_Motion_Model(config)
