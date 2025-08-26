@@ -4,33 +4,32 @@ from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib import MUJOCO_ASSETS_DIR, LOGS_DIR
-from sim2simlib.utils.config import load_from_py
+from sim2simlib.utils.config import load_from_yaml
 from trackerLab import TRACKERLAB_ASSETS_DIR, TRACKERLAB_TASKS_DIR
 
-R2B_MOTION_ALIGN_CFG = load_from_py(
-    f"{TRACKERLAB_TASKS_DIR}/humanoid/robots/r2b/motion_align_cfg.py",
-    "R2B_MOTION_ALIGN_CFG"
-    )
+ckpt_dir = ""
+
+env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
     
     motion_cfg=MotionManagerCfg(
             motion_buffer_cfg = MotionBufferCfg(
                 motion = MotionBufferCfg.MotionCfg(
-                    motion_name="amass/pi_plus_25dof/simple_walk.yaml",
+                    motion_name="amass/r2b/simple_walk.yaml",
                     regen_pkl=True,
                 )
             ),
             robot_type="r2b",
-            motion_align_cfg=R2B_MOTION_ALIGN_CFG
+            motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
         ),
     
     robot_name='r2b',
     simulation_dt=0.005,
     slowdown_factor=1.0,
     control_decimation=4,
-    policy_path="",
-    xml_path=f"{TRACKERLAB_ASSETS_DIR}/pi_plus_25dof/xml/pi_waist.xml",
+    policy_path=f"{ckpt_dir}/exported/policy.pt",
+    xml_path=f"{TRACKERLAB_ASSETS_DIR}/r2_v3/r2.xml",
     policy_joint_names=[
         "left_hip_pitch_joint",
         "right_hip_pitch_joint",
@@ -62,8 +61,8 @@ config = Sim2Sim_Config(
                                  'joint_pos', 
                                  'joint_vel',
                                  'last_action'],
-        using_base_obs_history=True,
-        base_obs_his_length=5,
+        # using_base_obs_history=True,
+        # base_obs_his_length=5,
         scale={ 
                 'base_lin_vel': 1.0,
                 'base_ang_vel': 0.25, # CHECK
@@ -79,7 +78,7 @@ config = Sim2Sim_Config(
         ),
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0), # CHECK
-        scale=0.5 # CHECK
+        scale=0.25 # CHECK
     ),            
     motor_cfg=Motor_Config(
         motor_type=PID_Motor,

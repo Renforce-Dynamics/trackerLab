@@ -1,0 +1,18 @@
+{
+    "mod_seq": [
+        ["l_shoulder_pitch_link", 75.0, [1.0, 0.0, 0.0]],
+        ["r_shoulder_pitch_link", -75.0, [1.0, 0.0, 0.0]]
+    ],
+    "node_drop": [
+        "l_hip_roll_link",
+        "l_thigh_link",
+        "l_ankle_roll_link",
+        "r_hip_roll_link",
+        "r_thigh_link",
+        "r_ankle_roll_link",
+        "l_shoulder_roll_link",
+        "l_upper_arm_link",
+        "r_shoulder_roll_link",
+        "r_upper_arm_link"
+    ]
+}
