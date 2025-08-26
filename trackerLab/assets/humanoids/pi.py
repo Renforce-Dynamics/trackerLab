@@ -20,7 +20,7 @@ PI_PLUS_25DOF_CFG = ArticulationCfg(
         ),
         articulation_props=sim_utils.ArticulationRootPropertiesCfg(
             fix_root_link=False,
-            enabled_self_collisions=True, 
+            enabled_self_collisions=False, 
             solver_position_iteration_count=4, 
             solver_velocity_iteration_count=4
         ),

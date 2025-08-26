@@ -21,10 +21,9 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         self._init_motion_joint_maps()
      
     def _init_motion_manager(self):
-        self.motion_manager = Motion_Manager(
-                                motion_buffer_cfg=self._cfg.motion_cfg,
+        self.motion_manager = Motion_Manager.from_configclass(
+                                cfg=self._cfg.motion_cfg,
                                 lab_joint_names=self.policy_joint_names,
-                                robot_type=self._cfg.robot_name,
                                 dt=self._cfg.simulation_dt * self._cfg.control_decimation,
                                 device="cpu"
                             )
@@ -73,10 +72,6 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         base_observations = self.get_base_observations()
         motion_command = self.get_motion_command()
         
-        # dummy motion with zero
-        for key in motion_command.keys():
-            motion_command[key].fill(0)
-
         if torch.any(is_update):
             print("Motion updated.")
             self.motion_manager.set_finite_state_machine_motion_ids(

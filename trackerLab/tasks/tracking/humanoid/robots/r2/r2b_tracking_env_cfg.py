@@ -19,15 +19,11 @@ class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.adjust_external_events(["base_link"])
         
 
-
 @configclass
 class R2TrackingWalk(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_walk.yaml"
-        self.observations.policy.set_no_noise()
-        self.events.set_event_determine()
-        # self.commands.dofpos_command.verbose_detail = True
         
         
 @configclass
@@ -35,12 +31,4 @@ class R2TrackingRun(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
-        self.observations.policy.set_no_noise()
-        self.events.set_event_determine()
-        # self.commands.dofpos_command.verbose_detail = True
         
-        self.rewards.motion_base_lin_vel.weight = 0.5
-        self.rewards.motion_base_lin_vel_x.weight = 0.5
-        
-        self.rewards.reward_alive.weight = 5
-        # self.set_test_motion_mode()
