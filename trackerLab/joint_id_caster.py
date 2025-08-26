@@ -20,15 +20,25 @@ class JointIdCaster(object):
     def __init__(
             self, 
             device, lab_joint_names,
-            robot_type="H1"
+            robot_type="H1",
+            motion_align_cfg=None,
         ):
         self.lab_joint_names = lab_joint_names
         self.device = device
         self.robot_type = robot_type.lower()
         
-        self.align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
-        with open(self.align_cfg_path, 'r') as f:
-            config:dict = json.load(f)
+        if isinstance(motion_align_cfg, dict):
+            config = motion_align_cfg
+        elif isinstance(motion_align_cfg, str):
+            motion_align_cfg_path = motion_align_cfg
+            with open(motion_align_cfg_path, 'r') as f:
+                config:dict = json.load(f)
+        else:
+            print("[Warning] Using default motion align config which will be clean in future.")
+            motion_align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
+            with open(motion_align_cfg_path, 'r') as f:
+                config:dict = json.load(f)
+
         self.align_cfg = config
         
         self.init_gym_motion_offset()

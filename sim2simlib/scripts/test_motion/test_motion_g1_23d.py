@@ -1,16 +1,17 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_23d',
     simulation_dt=0.001,
     slowdown_factor=1.0,
     control_decimation=20,
-    policy_path=None,
-    xml_path="/home/ac/Desktop/2025/project_isaac/trackerLab_private/data/assets/g1_description/g1_23dof.xml",
+    policy_path="",
+    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_23dof.xml",
     policy_joint_names=[ 
         "left_hip_pitch_joint",
         "right_hip_pitch_joint",
@@ -51,6 +52,8 @@ config = Sim2Sim_Config(
                 'joint_vel': 0.05,
                 'last_action': 1.0
             },
+        # using_base_obs_history=True,
+        # base_obs_his_length=5,
         motion_observations_terms=[
             'loc_dof_pos',
             'loc_root_vel'
@@ -122,9 +125,8 @@ config = Sim2Sim_Config(
     },
     
     motion_cfg=MotionBufferCfg(
-        regen_pkl=False,
         motion=MotionBufferCfg.MotionCfg(
-            motion_type="yaml",
+            regen_pkl=True,
             motion_name="amass/g1_23d/simple_walk.yaml"
         )
     )

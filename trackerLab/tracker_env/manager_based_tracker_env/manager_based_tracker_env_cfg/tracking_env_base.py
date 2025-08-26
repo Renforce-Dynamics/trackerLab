@@ -60,7 +60,11 @@ class ManagerBasedTrackerEnvCfg(ManagerBasedRLEnvCfg):
             if self.scene.terrain.terrain_generator is not None:
                 self.scene.terrain.terrain_generator.curriculum = False
                 
-        self.observations.policy.set_history(0)
+        # self.observations.policy.set_history(0)
+
+
+    def adjust_feet(self, name:str):
+        self.rewards.adjust_feet(name)
 
     def adjust_scanner(self, name: str):
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/" + name

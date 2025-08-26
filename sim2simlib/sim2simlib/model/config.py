@@ -33,7 +33,8 @@ class Observations_Config:
     scale: dict[str, float]
     using_base_obs_history: bool = False
     base_obs_flatten: bool = True
-    """using base_obs_flatten=True, terms flatten as N*dim(prev->current); 
+    """
+    using base_obs_flatten=True, terms flatten as N*dim(prev->current); 
     else base_obs_flatten=False, terms stack shape as (N, dim)
     """
     base_obs_his_length: int = 1
@@ -90,5 +91,6 @@ class Sim2Sim_Config:
     cmd: list[float] = None
     """base sim2sim command for velocity task"""
     
+    motion_float_grav: bool = False
     motion_cfg: MotionManagerCfg = None
     """motion manager configuration"""

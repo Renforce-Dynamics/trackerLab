@@ -176,6 +176,7 @@ def main():
         path=export_model_dir,
         filename="policy.pt",
     )
+    print(f"[INFO] Joint orders: {env.unwrapped.scene['robot'].joint_names}")
 
     dt = env.unwrapped.step_dt
 

@@ -43,7 +43,8 @@ class MotionManager(ManagerBase):
         
     def init_id_cast(self):
         lab_joint_names = self._env.scene.articulations["robot"]._data.joint_names
-        self.id_caster = JointIdCaster(self.device, lab_joint_names, robot_type = self.cfg.robot_type)
+        motion_align_cfg =self.cfg.motion_align_cfg
+        self.id_caster = JointIdCaster(self.device, lab_joint_names, robot_type = self.cfg.robot_type, motion_align_cfg=motion_align_cfg)
         self.lab_joint_names = self.id_caster.lab_joint_names
         self.gym_joint_names = self.id_caster.gym_joint_names
         

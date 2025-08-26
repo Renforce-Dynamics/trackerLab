@@ -47,6 +47,7 @@ POSELIB_RETARGETED_DATA_DIR = config_dir(POSELIB_DATA_DIR, "retargeted")
 POSELIB_MOTION_CFG_DIR      = os.path.join(POSELIB_DATA_DIR, "configs")
 POSELIB_BUFFER_DIR          = os.path.join(POSELIB_DATA_DIR, "pkl_buffer")
 
+POSELIB_DOF_AXIS_DIR        = config_dir(POSELIB_DATA_DIR, "dof_axis")
 
 # Dirs that containing poselib configs, where the retarget is using poselib
 POSELIB_CFG_DIR = os.path.join(POSELIB_DATA_DIR, "poselib_cfg")

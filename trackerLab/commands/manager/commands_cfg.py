@@ -5,6 +5,7 @@ from isaaclab.managers import CommandTermCfg
 from isaaclab.markers import VisualizationMarkersCfg
 from isaaclab.markers.config import BLUE_ARROW_X_MARKER_CFG, FRAME_MARKER_CFG, GREEN_ARROW_X_MARKER_CFG
 from isaaclab.utils import configclass
+from isaaclab.envs.mdp.commands.null_command import NullCommand
 
 from .exbody_command import (
     DofposCommand,
@@ -12,6 +13,8 @@ from .exbody_command import (
     RootVelCommand,
     RootAngVelCommand
 )
+
+from .metrics_command import ActionFluctuationRatioCommand
 
 @configclass
 class DofposCommandCfg(CommandTermCfg):
@@ -42,3 +45,16 @@ class RootAngVelCommandCfg(CommandTermCfg):
     def __post_init__(self):
         self.resampling_time_range = None
         
+
+
+@configclass
+class ActionFluctuationRatioCommandCfg(CommandTermCfg):
+    """Configuration for the episode success tracking command generator."""
+    
+    class_type: type = ActionFluctuationRatioCommand
+    
+    using_term: bool = False
+    term_name: str = "joint_pos"
+    
+    def __post_init__(self):
+        self.resampling_time_range = None

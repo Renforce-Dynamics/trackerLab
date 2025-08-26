@@ -9,13 +9,24 @@
 
 A high-performance simulation library designed for transferring policies from IsaacLab to MuJoCo simulation environments. This codebase provides a unified interface for robot simulation, motor modeling, and motion tracking.
 
-## Features
+## Snapshots
 
-- **Policy Transfer**: Seamless transfer of trained policies from IsaacLab to MuJoCo
-- **Motor Models**: Realistic DC motor and PID motor models with velocity-dependent torque limits
-- **Motion Tracking**: Advanced motion manager for kinematic tracking and motion playback
-- **Observation History**: Support for temporal observation sequences with configurable history length
-- **Flexible Configuration**: Comprehensive configuration system for different robot platforms
+<!-- | Basic Velocity Task |
+|----------| -->
+
+| Go2 HandStand | G1 FlatVelocity |
+|----------|------------|
+| <video src="./docs/videos/Go2_HandStand.mp4" width="320" controls><a href="./docs/videos/Go2_HandStand.mp4">Video at here</a></video>  | <video src="./docs/videos/G1_29dof_Velocity.mp4" width="320" controls><a href="./docs/videos/G1_29dof_Velocity.mp4">Video at here</a></video> |
+
+
+## Features
+| Feature                | Description                                                                                   |
+|------------------------|-----------------------------------------------------------------------------------------------|
+| Policy Transfer        | Seamless transfer of trained policies from IsaacLab to MuJoCo                                 |
+| Motor Models           | Realistic DC motor and PID motor models with velocity-dependent torque limits                 |
+| Motion Tracking        | Advanced motion manager for kinematic tracking and motion playback                            |
+| Observation History    | Support for temporal observation sequences with configurable history length                   |
+| Flexible Configuration | Comprehensive configuration system for different robot platforms                              |
 
 ## Code Structure
 
@@ -25,15 +36,26 @@ sim2simlib/
 │   ├── sim2sim_base.py      # Base classes and core simulation logic
 │   ├── sim2sim_motion.py    # Motion tracking and kinematic playback
 │   ├── actuator_motor.py    # Motor models (PID, DC motor)
-│   └── config.py           # Configuration dataclasses
+│   └── config.py            # Configuration dataclasses
 ├── motion/
-│   └── sim2sim_manager.py  # Motion management system
+│   └── motion_manager.py  # Motion manager system
 ├── utils/
 │   └── utils.py           # Utility functions
 └── scripts/               # Example scripts and demos
 ```
 
 ## Core Design
+
+### Framework
+
+```mermaid
+flowchart TD
+    A[Mujoco Model] --> B[Observation Maps]
+    B --> C[Policy Runtime]
+    C --> D[Action]
+    D --> E[Actuator Maps]
+    E --> A
+```
 
 ### Base Architecture
 
@@ -63,43 +85,17 @@ base_observations = {
 # Concatenated: [t-n, t-(n-1), ..., t-1, t] or stacked: (history_length, obs_dim)
 ```
 
-**Key Features:**
-- **Scalable observations**: Add custom observation terms by implementing `_obs_{term_name}()` methods
-- **History support**: Configurable observation history with flattening options
-- **Flexible scaling**: Per-observation-term scaling factors
-
-### Motion Manager
+### Motion Observation Input
 
 Advanced motion tracking system for kinematic playback:
 
 - **Motion Data Loading**: Support for various motion formats from TrackerLab
-- **Joint Mapping**: Automatic mapping between motion data and robot joints
 - **Finite State Machine**: Motion state management and transitions
 - **Forward Kinematics**: Real-time motion visualization
 
-**Workflow:**
-```
-Motion Data -> Motion Manager -> Joint Mapping -> MuJoCo Simulation
-```
 
-**Motion-to-MuJoCo Joint Mapping:**
-```python
-motion_joint_names -> actuators_joint_names.index() -> motion_maps -> mujoco_qpos
-```
 
-### Action Apply Pipeline
-
-```
-Policy Output -> Clipping -> Scaling -> Joint Mapping -> Target Positions -> Motor Control -> Applied Torques
-```
-
-1. **Policy Inference**: Neural network policy generates actions
-2. **Action Processing**: Clipping and scaling based on configuration
-3. **Joint Mapping**: Reorder actions to match MuJoCo joint order
-4. **Motor Control**: PID/DC motor computes required torques
-5. **Application**: Torques applied to MuJoCo simulation
-
-#### Motor Models
+### Motor Models
 
 **PID Motor** - Simple PID controller with constant torque limits:
 ```
