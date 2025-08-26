@@ -55,3 +55,28 @@ class PiTrackingJump(PiTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_jump.yaml"
+        
+        
+@configclass
+class PiTrackingWalk_Play(PiTrackingWalk):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
+@configclass
+class PiTrackingRun_Play(PiTrackingRun):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+        
+@configclass
+class PiTrackingJump_Play(PiTrackingJump):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1

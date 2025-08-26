@@ -25,3 +25,11 @@ class H1TrackingWalk(H1TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/h1/simple_walk.yaml"
+        
+@configclass
+class H1TrackingWalk_Play(H1TrackingWalk):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
