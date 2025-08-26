@@ -74,7 +74,7 @@ def main():
     """Play with RSL-RL agent."""
     # parse configuration
     env_cfg = parse_env_cfg(
-        args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
+        args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric,
     )
     agent_cfg: RslRlOnPolicyRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
 
@@ -176,6 +176,7 @@ def main():
         path=export_model_dir,
         filename="policy.pt",
     )
+    
     print(f"[INFO] Joint orders: {env.unwrapped.scene['robot'].joint_names}")
 
     dt = env.unwrapped.step_dt

@@ -3,16 +3,16 @@ from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.motion_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
-from sim2simlib import LOGS_DIR
+from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 
 config = Sim2Sim_Config(
     robot_name='g1_29d',
     simulation_dt=0.001,
     slowdown_factor=1.0,
     control_decimation=20,
-    policy_path="",
-    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof_rev_1_0.xml",
-    policy_joint_names=[
+    policy_path=None, # CHECK your path
+    xml_path=MUJOCO_ASSETS["unitree_g1_29dof"],
+    policy_joint_names=[ 
         "left_hip_pitch_joint",
         "right_hip_pitch_joint",
         "waist_yaw_joint",
