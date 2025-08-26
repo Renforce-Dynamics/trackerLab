@@ -2,6 +2,7 @@ import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.unitree import UNITREE_G1_29DOF_CFG
+from .motion_align_cfg import G1_29D_MOTION_ALIGN_CFG
 
 @configclass
 class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -10,6 +11,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         # self.set_plane()
         # self.adjust_scanner("base_link")
         super().__post_init__()
+        self.motion.set_motion_align_cfg(G1_29D_MOTION_ALIGN_CFG)
         self.motion.robot_type = "g1_29d"
 
         self.scene.robot = UNITREE_G1_29DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")

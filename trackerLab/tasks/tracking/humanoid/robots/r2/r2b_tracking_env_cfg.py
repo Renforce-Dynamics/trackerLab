@@ -2,6 +2,7 @@ import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.r2 import R2_CFG
+from .motion_align_cfg import R2B_MOTION_ALIGN_CFG
 
 @configclass
 class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -11,6 +12,7 @@ class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "r2b"
+        self.motion.set_motion_align_cfg(R2B_MOTION_ALIGN_CFG)
 
         self.scene.robot = R2_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact(["base_link", ".*_hip_.*", ".*_knee_.*", "waist_.*", ".*_shoulder_.*", ".*_arm_.*"])

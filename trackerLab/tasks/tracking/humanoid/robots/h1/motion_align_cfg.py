@@ -1,0 +1,18 @@
+H1_MOTION_ALIGN_CFG = {
+    "gym_joint_names": [ 
+        "left_hip_yaw", "left_hip_roll", "left_hip_pitch", 
+        "left_knee", "left_ankle", 
+        "right_hip_yaw", "right_hip_roll", "right_hip_pitch", 
+        "right_knee", "right_ankle", 
+        "torso", 
+        "left_shoulder_pitch", "left_shoulder_roll", "left_shoulder_yaw", 
+        "left_elbow", 
+        "right_shoulder_pitch", "right_shoulder_roll", "right_shoulder_yaw", 
+        "right_elbow"
+    ],
+    "dof_body_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "dof_offsets": [0, 3, 4, 5, 8, 9, 10, 11, 14, 15, 16, 19, 20, 21],
+    "invalid_dof_id": [-1, -6],
+    "dof_indices_sim": [    0, 1, 2,    5, 6, 7,    11, 12, 13,     16, 17, 18],
+    "dof_indices_motion": [ 2, 0, 1,    7, 5, 6,    12, 11, 13,     17, 16, 18]
+}

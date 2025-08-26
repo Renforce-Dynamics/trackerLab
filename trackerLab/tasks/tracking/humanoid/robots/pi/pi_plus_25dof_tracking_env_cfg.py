@@ -2,6 +2,7 @@ import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.pi import PI_PLUS_25DOF_CFG
+from .motion_align_cfg import PI_25D_MOTION_ALIGN_CFG
 
 @configclass
 class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -11,6 +12,7 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "pi_plus_25dof"
+        self.motion.set_motion_align_cfg(PI_25D_MOTION_ALIGN_CFG)
         
         self.observations.policy.base_lin_vel.scale = 1.0
         self.observations.policy.base_ang_vel.scale = 0.25
@@ -52,5 +54,3 @@ class PiTrackingJump(PiTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_jump.yaml"
-        
-        self.rewards.reward_alive.weight = 5

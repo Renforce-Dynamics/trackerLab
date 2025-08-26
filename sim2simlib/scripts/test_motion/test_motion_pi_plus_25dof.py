@@ -1,9 +1,10 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.sim2sim_manager import MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionBufferCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
-from sim2simlib import SIM2SIMLIB_ASSETS_DIR, LOGS_DIR
+from sim2simlib import MUJOCO_ASSETS_DIR, LOGS_DIR
+from trackerLab import TRACKERLAB_ASSETS_DIR
 
 config = Sim2Sim_Config(
     robot_name='pi_plus_25dof',
@@ -11,7 +12,7 @@ config = Sim2Sim_Config(
     slowdown_factor=1.0,
     control_decimation=4,
     policy_path="",
-    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/pi_plus_25dof/xml/pi_waist.xml",
+    xml_path=f"{TRACKERLAB_ASSETS_DIR}/pi_plus_25dof/xml/pi_waist.xml",
     policy_joint_names=[
         "l_shoulder_pitch_joint",
         "r_shoulder_pitch_joint",
