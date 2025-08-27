@@ -38,7 +38,11 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.terminations.base_contact = None        
         self.observations.policy.set_history(5)
         
+        self.episode_length_s = 12
+        
         self.rewards.set_no_deviation()
+        
+        # self.set_test_motion_mode()
 
 
 @configclass

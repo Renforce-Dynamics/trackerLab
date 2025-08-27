@@ -206,6 +206,8 @@ class MotionLib():
         curr_dof_pos = _local_rotation_to_dof(self.id_caster, curr_motion.local_rotation, self._device)
         curr_motion.dof_poses = curr_dof_pos
         
+        self.id_caster.post_cast(curr_dof_pos)
+        
         # Two way of calc pos and vel
         curr_dof_vels = self._dof_pos_to_dof_vel(curr_dof_pos, curr_dt)
         # Calc dof vel with old api

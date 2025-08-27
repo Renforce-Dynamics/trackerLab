@@ -103,6 +103,13 @@ class JointIdCaster(object):
     
     # Utils
     
+    def post_cast(self, dof_pos: torch.Tensor):
+        reverse_dof_idx = self.align_cfg.get("reverse_dof", [])
+        if reverse_dof_idx:
+            dof_pos[:, reverse_dof_idx] = -dof_pos[:, reverse_dof_idx]
+        
+        return dof_pos
+    
     def fill_2lab(self, source:torch.Tensor, target: torch.Tensor):
         """
         Move subset of gym and feed into the lab tensor.
