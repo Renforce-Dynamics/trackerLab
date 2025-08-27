@@ -5,8 +5,8 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 @configclass
 class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 5000
-    save_interval = 100
+    max_iterations = 10000
+    save_interval = 500
     experiment_name = "tracker"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(

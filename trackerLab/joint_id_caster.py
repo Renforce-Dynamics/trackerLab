@@ -2,7 +2,6 @@ import os
 import json
 import torch
 from typing import Dict, List
-from poselib import POSELIB_MOTION_ALIGN_DIR
 from trackerLab import TRACKERLAB_LABJOINTS_DIR
 
 # ====================================================================================
@@ -34,6 +33,7 @@ class JointIdCaster(object):
             with open(motion_align_cfg_path, 'r') as f:
                 config:dict = json.load(f)
         else:
+            from poselib import POSELIB_MOTION_ALIGN_DIR
             print("[Warning] Using default motion align config which will be clean in future.")
             motion_align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
             with open(motion_align_cfg_path, 'r') as f:
