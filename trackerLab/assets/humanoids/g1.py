@@ -5,6 +5,8 @@ from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
 from trackerLab import TRACKERLAB_USD_DIR, TRACKERLAB_ASSETS_DIR
 
+print('[WARN] Please Not Use This Asset.')
+
 G1_29D_LOCO_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
         usd_path=f"{TRACKERLAB_USD_DIR}/g1_29d_loco/g1_29d_loco.usd",

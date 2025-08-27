@@ -231,11 +231,7 @@ class Sim2Sim_Base_Model(Sim2Sim):
                     raise ValueError(f"Observation term '{term}' not found in history.")
         else:
             # Return current observations without history
-            for term in self._cfg.observation_cfg.base_observations_terms:
-                if hasattr(self, f"_obs_{term}"):
-                    base_observations[term] = getattr(self, f"_obs_{term}")() * self._cfg.observation_cfg.scale[term]
-                else:
-                    raise ValueError(f"Observation term '{term}' not implemented.")
+            base_observations = self._get_current_base_observations()
         
         return base_observations
 

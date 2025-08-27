@@ -2,7 +2,7 @@ import gymnasium as gym
 
 gym.register(
     id="Unitree-Go2-Velocity",
-    entry_point="trackerLab.tracker_env:ManagerBasedRLEnv",
+    entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": f"{__name__}.velocity_env_cfg:RobotEnvCfg",
