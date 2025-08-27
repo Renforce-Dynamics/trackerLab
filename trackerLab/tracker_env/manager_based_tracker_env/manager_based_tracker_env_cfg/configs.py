@@ -31,6 +31,7 @@ from trackerLab.tasks.playground import ROUGH_TERRAINS_CFG, FLAT_TERRAINS_CFG
 import trackerLab.tracker_env.mdp.tracker.reward as tracker_reward
 import trackerLab.tracker_env.mdp.tracker.observation as tracker_obs
 import trackerLab.tracker_env.mdp.records as tracker_record
+import trackerLab.tracker_env.mdp.tracker.events as tracker_event
 
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 from trackerLab.managers.motion_manager import MotionManagerCfg
@@ -269,6 +270,8 @@ class RewardsCfg:
     dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
 
+    alive                   = RewTerm(func=mdp.is_alive, weight=1.0)
+
     # -- robot
     # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
     # base_height             = RewTerm(func=mdp.base_height_l2, weight=-10, params={"target_height": 0.78})
@@ -345,6 +348,10 @@ class EventCfg:
             "torque_range": (-0.0, 0.0),
         },
     )
+    
+    # reset_to_traj = EventTerm(
+    #     func=tracker_event.reset_to_traj
+    # )
 
     reset_base = EventTerm(
         func=mdp.reset_root_state_uniform,

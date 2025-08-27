@@ -32,7 +32,7 @@ class HuamnoidRewardsCfg(RewardsCfg):
                     ".*_elbow_joint",
                 ],
             )
-        },
+        }
     )
     joint_deviation_waists = RewTerm(
         func=mdp.joint_deviation_l1,
@@ -78,11 +78,11 @@ class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
                     "pitch": (-0.5, 0.5),
                     "yaw": (-0.5, 0.5),
                 },
-            },
+            }
         self.events.reset_robot_joints.params = {
                 "position_range": (1.0, 1.0),
                 "velocity_range": (-1.0, 1.0),
-            },
+            }
 
         # Push terms
         self.events.push_robot.params = {
