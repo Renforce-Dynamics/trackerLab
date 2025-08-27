@@ -56,7 +56,7 @@ class HuamnoidRewardsCfg(RewardsCfg):
         self.joint_deviation_waists = None
 
 @configclass
-class G1_23Dof_RewardsCfg:
+class HumanoidRewardsCfgV2:
     # task rewards
     motion_whb_dof_pos = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
                                  params={"std": math.sqrt(2)},
@@ -80,16 +80,23 @@ class G1_23Dof_RewardsCfg:
     alive               = RewTerm(func=mdp.is_alive,            weight=0.15)
 
     # contact rewards
-    undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-1.0,
-                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", 
-                                            body_names=[".*shoulder.*", 
-                                                        ".*elbow.*", 
-                                                        ".*wrist.*",
-                                                        "torso_link",
-                                                        "pelvis.*",
-                                                        ".*hip.*",
-                                                        ".*knee.*"]),
-                                          "threshold": 1.0})
+    undesired_contacts  = RewTerm(
+        func=mdp.undesired_contacts,  
+        weight=-1.0,
+        params={"sensor_cfg": 
+            SceneEntityCfg(
+                "contact_forces", 
+                body_names=[
+                    ".*shoulder.*", 
+                    ".*elbow.*", 
+                    ".*wrist.*",
+                    "torso_link",
+                    "pelvis.*",
+                    ".*hip.*",
+                    ".*knee.*"]
+                ),
+                "threshold": 1.0}
+        )
     
     # gravity rewards
     flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1.0)
@@ -119,13 +126,11 @@ class G1_23Dof_RewardsCfg:
 
 @configclass
 class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
-    rewards: G1_23Dof_RewardsCfg = G1_23Dof_RewardsCfg()
+    rewards: HumanoidRewardsCfgV2 = HumanoidRewardsCfgV2()
     terminations: HumanoidTerminationCfg = HumanoidTerminationCfg()
     
     def __post_init__(self):
         super().__post_init__()
-        # self.decimation = 20
-        # self.sim.dt = 0.001
         
     def align_friction(self):
         self.scene.terrain.physics_material.dynamic_friction = 0.45
