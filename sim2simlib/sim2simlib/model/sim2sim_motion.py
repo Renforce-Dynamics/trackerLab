@@ -14,11 +14,13 @@ from sim2simlib.motion.motion_manager import Motion_Manager
 class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
     
     motion_manager: Motion_Manager
+    motion_obs_history: dict[str, list[np.ndarray]] = {}
     
     def __init__(self, cfg: Sim2Sim_Config):
         super().__init__(cfg)
         self._init_motion_manager()
         self._init_motion_joint_maps()
+        self._init_motion_observation_history()
      
     def _init_motion_manager(self):
         self.motion_manager = Motion_Manager.from_configclass(
@@ -54,8 +56,19 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         
         self.motion_maps = [item + self.base_link_id + 7 for item in self.motion_maps]
         
-    
-    def get_motion_command(self) -> dict[str, np.ndarray]:
+    def _init_motion_observation_history(self):
+        """Initialize motion observation history buffers."""
+        if self._cfg.observation_cfg.using_motion_obs_history:
+            # Get initial motion observations to determine sizes
+            initial_obs = self._get_current_motion_observations()
+            
+            # Initialize history buffers for each motion observation term
+            for term, obs_value in initial_obs.items():
+                self.motion_obs_history[term] = [obs_value.copy() for _ in range(self._cfg.observation_cfg.motion_obs_his_length)]
+
+    def _get_current_motion_observations(self) -> dict[str, np.ndarray]:
+        """Get current motion observations without history processing."""
+        is_update = self.motion_manager.step()
         motion_observations = {}
         for term in self._cfg.observation_cfg.motion_observations_terms:
             if hasattr(self.motion_manager, f"{term}"):
@@ -65,18 +78,50 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                 motion_observations[term] = term_data.astype(np.float32)
             else:
                 raise ValueError(f"Motion observation term '{term}' not implemented.")
+        if torch.any(is_update):
+            self.motion_manager.set_finite_state_machine_motion_ids(
+                motion_ids=torch.tensor([0], device="cpu", dtype=torch.long))
+        return motion_observations
+    
+    def _update_motion_observation_history(self):
+        """Update motion observation history with current observations."""
+        if self._cfg.observation_cfg.using_motion_obs_history:
+            current_obs = self._get_current_motion_observations()
+            
+            for term, obs_value in current_obs.items():
+                # Shift history (remove oldest, add newest)
+                self.motion_obs_history[term] = self.motion_obs_history[term][1:] + [obs_value.copy()]
+        
+    
+    def get_motion_command(self) -> dict[str, np.ndarray]:
+        """Get motion observations with optional history."""
+        # Update history before getting observations
+        if self._cfg.observation_cfg.using_motion_obs_history:
+            self._update_motion_observation_history()
+            
+        motion_observations = {}
+        
+        if self._cfg.observation_cfg.using_motion_obs_history:
+            # Return historical observations
+            for term in self._cfg.observation_cfg.motion_observations_terms:
+                if term in self.motion_obs_history:
+                    if self._cfg.observation_cfg.motion_obs_flatten:
+                        # Flatten history: [t-2, t-1, t] -> concatenated array
+                        motion_observations[term] = np.concatenate(self.motion_obs_history[term], axis=-1)
+                    else:
+                        # Keep as separate timesteps: shape (history_length, obs_dim)
+                        motion_observations[term] = np.stack(self.motion_obs_history[term], axis=0)
+                else:
+                    raise ValueError(f"Motion observation term '{term}' not found in history.")
+        else:
+            # Return current observations without history
+            motion_observations = self._get_current_motion_observations()
+        
         return motion_observations
     
     def get_obs(self) -> dict[str, np.ndarray]:
-        is_update = self.motion_manager.step()
         base_observations = self.get_base_observations()
         motion_command = self.get_motion_command()
-        
-        if torch.any(is_update):
-            print("Motion updated.")
-            self.motion_manager.set_finite_state_machine_motion_ids(
-                motion_ids=torch.tensor([0], device="cpu", dtype=torch.long))
-
         return  motion_command | base_observations
 
     def motion_fk_view(self):
