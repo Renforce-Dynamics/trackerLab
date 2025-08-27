@@ -16,6 +16,16 @@ gym.register(
     },
 )
 
+# gym.register(
+#     id="G123DAMPTrackingWalk",
+#     entry_point="trackerLab.tracker_env:ManagerBasedAMPEnv",
+#     disable_env_checker=True,
+#     kwargs={
+#         "env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk",
+#         "rsl_rl_cfg_entry_point": f"{agent.__name__}.g1_23d_rsl_rl_cfg:G1AMPTrackingWalk",
+#     },
+# )
+
 gym.register(
     id="G129DLocoTrackingWalk",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
