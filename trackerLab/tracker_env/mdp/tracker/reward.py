@@ -2,12 +2,13 @@ import torch
 from isaaclab.assets import Articulation, RigidObject
 from isaaclab.managers import ManagerTermBase
 from isaaclab.managers import SceneEntityCfg
-from trackerLab.motion_buffer import MotionBuffer
-from trackerLab.utils.torch_utils import euler_from_quaternion
-
+from isaaclab.utils.math import quat_apply_inverse, yaw_quat
 from isaaclab.sensors import ContactSensor
 
 from typing import TYPE_CHECKING
+
+from trackerLab.motion_buffer import MotionBuffer
+from trackerLab.utils.torch_utils import euler_from_quaternion
 
 # from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnv
 
@@ -148,3 +149,76 @@ def punish_base_ang_vel(
     diff = asset.data.root_ang_vel_b[:, 2]
     reward = torch.exp(- diff ** 2)
     return reward
+
+
+def body_orientation_l2(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    asset: Articulation = env.scene[asset_cfg.name]
+    body_orientation = quat_apply_inverse(
+        asset.data.body_quat_w[:, asset_cfg.body_ids[0], :], asset.data.GRAVITY_VEC_W
+    )
+    return torch.sum(torch.square(body_orientation[:, :2]), dim=1)
+
+def body_force(
+    env, sensor_cfg: SceneEntityCfg, threshold: float = 500, max_reward: float = 400
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    reward = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2].norm(dim=-1)
+    reward[reward < threshold] = 0
+    reward[reward > threshold] -= threshold
+    reward = reward.clamp(min=0, max=max_reward)
+    return reward
+
+def feet_too_near(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), threshold: float = 0.2
+) -> torch.Tensor:
+    assert len(asset_cfg.body_ids) == 2
+    asset: Articulation = env.scene[asset_cfg.name]
+    feet_pos = asset.data.body_pos_w[:, asset_cfg.body_ids, :]
+    distance = torch.norm(feet_pos[:, 0] - feet_pos[:, 1], dim=-1)
+    return (threshold - distance).clamp(min=0)
+
+
+def feet_stumble(
+    env, sensor_cfg: SceneEntityCfg
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    return torch.any(
+        torch.norm(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :2], dim=2)
+        > 5 * torch.abs(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2]),
+        dim=1,
+    )
+
+def motion_ang_vel_z_world_exp(
+    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Reward tracking of angular velocity commands (yaw) in world frame using exponential kernel."""
+    asset = env.scene[asset_cfg.name]
+    ang_vel_error = torch.square(asset.data.root_ang_vel_b[:, 2] - env.motion_manager.loc_ang_vel[:, 2])
+    reward = torch.exp(-ang_vel_error / std**2)
+    reward *= torch.clamp(-env.scene["robot"].data.projected_gravity_b[:, 2], 0, 0.7) / 0.7
+    return reward
+
+def motion_lin_vel_xy_yaw_frame_exp(
+    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), vel_scale: float = 1.0
+) -> torch.Tensor:
+    """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
+    asset = env.scene[asset_cfg.name]
+    vel_yaw = quat_apply_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
+    lin_vel_error = torch.sum(
+        torch.square(env.motion_manager.loc_root_vel[:, :2] * vel_scale - vel_yaw[:, :2]), dim=1
+    )
+    return torch.exp(-lin_vel_error / std**2)
+
+def motion_whb_dof_pos_subset_exp(env, std: float) -> torch.Tensor:
+    """Reward tracking of whb dof position commands in the gravity aligned robot frame using exponential kernel."""
+    diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
+    diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
+    return torch.exp(-diff_angle / std**2)
+
+def motion_whb_dof_pos_subset_l2(env) -> torch.Tensor:
+    """Reward tracking of whb dof position commands in the gravity aligned robot frame using L2 loss."""
+    diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
+    diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
+    return torch.square(diff_angle)

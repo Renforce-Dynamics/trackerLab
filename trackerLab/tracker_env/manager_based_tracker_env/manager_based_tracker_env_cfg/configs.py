@@ -268,6 +268,8 @@ class RewardsCfg:
     action_rate             = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
     dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
+    
+    alive                   = RewTerm(func=mdp.is_alive, weight=0.15)
 
     # -- robot
     # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
