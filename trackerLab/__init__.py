@@ -21,6 +21,6 @@ TRACKERLAB_BUFFER_DIR           = config_dir(TRACKERLAB_DATA_DIR, "pkl_buffer")
 TRACKERLAB_LABJOINTS_DIR        = config_dir(TRACKERLAB_DATA_DIR, "lab_joints")
 
 TRACKERLAB_TASKS_DIR            = os.path.join(TRACKERLAB_REPO_DIR, "tasks", "tracking")
-# Register Gym environments.
-# from .tasks import *
+
+
 

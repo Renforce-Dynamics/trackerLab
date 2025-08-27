@@ -1,7 +1,7 @@
 import gymnasium as gym
 
 gym.register(
-    id="Unitree-H1-Velocity",
+    id="Pi-Plus-21dof-Velocity",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={

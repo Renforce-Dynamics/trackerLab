@@ -40,12 +40,10 @@ class ManagerBasedTrackerEnv(ManagerBasedRLEnv):
 
     def reset(self, seed = None, env_ids = None, options = None):
         super().reset(seed, env_ids, options)
-        # if seed is not None:
-        #     self.seed(seed)
         if getattr(self, "motion_manager", None) is not None:
             if env_ids is None:
                 env_ids = torch.arange(self.num_envs, dtype=torch.int64, device=self.device)
-            state:dict = self.motion_manager.reset(env_ids)
+            self.motion_manager.reset(env_ids)
             # if state:
             #     self.reset_to(state, env_ids, seed, is_relative=False)
         return self.obs_buf, self.extras

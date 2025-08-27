@@ -2,15 +2,19 @@ import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
-from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
+
+from sim2simlib.utils.config import load_from_py, load_from_yaml
+from sim2simlib import SIM2SIMLIB_ASSETS_DIR
+ckpt_dir = ""
+env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
-    robot_name='go2',
+    robot_name='Go2',
     simulation_dt=0.005,
     slowdown_factor=1.0,
     control_decimation=4,
-    xml_path=str(MUJOCO_ASSETS["unitree_go2"]),
-    policy_path=str(LOGS_DIR/"checkpoints/go2_vel/policy.pt"),
+    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/unitree_go2/mjcf/scene_go2.xml",
+    policy_path=f"{ckpt_dir}/exported/policy.pt",
     policy_joint_names=['FL_hip_joint', 'FR_hip_joint', 'RL_hip_joint', 'RR_hip_joint', 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint', 'FL_calf_joint', 'FR_calf_joint', 'RL_calf_joint', 'RR_calf_joint'],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_ang_vel', 
@@ -42,12 +46,12 @@ config = Sim2Sim_Config(
 
     default_pos=np.array([0.0, 0.0, 0.4], dtype=np.float32),
     default_angles={
-            ".*R_hip_joint": -0.1,
-            ".*L_hip_joint": 0.1,
-            "F[L,R]_thigh_joint": 0.8,
-            "R[L,R]_thigh_joint": 1.0,
-            ".*_calf_joint": -1.5,
-        },
+        ".*R_hip_joint": -0.1,
+        ".*L_hip_joint": 0.1,
+        "F[L,R]_thigh_joint": 0.8,
+        "R[L,R]_thigh_joint": 1.0,
+        ".*_calf_joint": -1.5,
+    },
 )
 
 mujoco_model = Sim2Sim_Base_Model(config)

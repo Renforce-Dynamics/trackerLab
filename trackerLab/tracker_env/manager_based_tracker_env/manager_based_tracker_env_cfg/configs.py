@@ -31,6 +31,7 @@ from trackerLab.tasks.playground import ROUGH_TERRAINS_CFG, FLAT_TERRAINS_CFG
 import trackerLab.tracker_env.mdp.tracker.reward as tracker_reward
 import trackerLab.tracker_env.mdp.tracker.observation as tracker_obs
 import trackerLab.tracker_env.mdp.records as tracker_record
+import trackerLab.tracker_env.mdp.tracker.events as tracker_event
 
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 from trackerLab.managers.motion_manager import MotionManagerCfg
@@ -230,10 +231,10 @@ class RewardsCfg:
     """Reward terms for the MDP."""
 
     # Task
-    # demo_height = RewTerm(
-    #     func=tracker_reward.reward_tracking_demo_height, 
-    #     weight=0.0
-    # )
+    demo_height = RewTerm(
+        func=tracker_reward.reward_tracking_demo_height, 
+        weight=0.0
+    )
     motion_exp_whb_dof_pos = RewTerm(
         func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
         weight = 5.0,
@@ -268,10 +269,8 @@ class RewardsCfg:
     action_rate             = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
     dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
+    alive                   = RewTerm(func=mdp.is_alive, weight=1.0)
 
-    # -- robot
-    # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    # base_height             = RewTerm(func=mdp.base_height_l2, weight=-10, params={"target_height": 0.78})
 
     # -- feet
     feet_slide = RewTerm(
@@ -282,20 +281,9 @@ class RewardsCfg:
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
         },
     )
-    # feet_clearance = RewTerm(
-    #     func=tracker_reward.foot_clearance_reward,
-    #     weight=1.0,
-    #     params={
-    #         "std": 0.05,
-    #         "tanh_mult": 2.0,
-    #         "target_height": 0.1,
-    #         "asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"),
-    #     },
-    # )
-    
+
     def adjust_feet(self, expr:list):
         self.feet_slide.params["asset_cfg"].body_names = expr
-        # self.feet_clearance.params["asset_cfg"].body_names = expr
 
 
 @configclass
@@ -345,6 +333,10 @@ class EventCfg:
             "torque_range": (-0.0, 0.0),
         },
     )
+    
+    # reset_to_traj = EventTerm(
+    #     func=tracker_event.reset_to_traj
+    # )
 
     reset_base = EventTerm(
         func=mdp.reset_root_state_uniform,

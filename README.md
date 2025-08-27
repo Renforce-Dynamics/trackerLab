@@ -46,6 +46,8 @@ Whether you're working with **SMPL/FBX motion data**, designing low-level **whol
 > 🎓 Want to understand TrackerLab quickly?
 > 👉 Check out our full [Tutorial (EN)](./docs/tutorial_en.md) or [教程 (中文版)](./docs/tutorial_cn.md)
 
+For assets and ckpts you could download from [Asset Repo](https://github.com/Beat-in-our-hearts/mujoco_sim2sim_assets), where we collect the assets and make sure them works on both simulations and real world.
+
 ### ✅ Prerequisites
 
 TrackerLab extends IsaacLab. Make sure IsaacLab and its dependencies are installed properly.
@@ -160,7 +162,7 @@ If you find TrackerLab helpful for your work or research, please consider citing
 
 You can join the Wechat group for detialed contact!
 
-![Wechat Group](https://youke1.picui.cn/s1/2025/08/20/68a568770e11f.jpg)
+<!-- ![Wechat Group](https://youke1.picui.cn/s1/2025/08/20/68a568770e11f.jpg) -->
 
 
 ## 📄 License
