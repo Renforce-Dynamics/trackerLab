@@ -5,14 +5,14 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 @configclass
 class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 5000
+    max_iterations = 3000
     save_interval = 100
     experiment_name = "tracker"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
-        actor_hidden_dims=[512, 256, 128],
-        critic_hidden_dims=[512, 256, 128],
+        actor_hidden_dims=[256, 128, 128],
+        critic_hidden_dims=[256, 128, 128],
         activation="elu",
     )
     algorithm = RslRlPpoAlgorithmCfg(
@@ -22,7 +22,7 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
         entropy_coef=0.01,
         num_learning_epochs=5,
         num_mini_batches=4,
-        learning_rate=1.0e-3,
+        learning_rate=1.0e-5,
         schedule="adaptive",
         gamma=0.99,
         lam=0.95,
@@ -31,26 +31,15 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
     )
 
 @configclass
-class PiTrackingWalk(PPORunnerCfg):
-    experiment_name = "pi_plus_27dof_tracking_walk"
-    
-@configclass
-class PiTrackingRun(PPORunnerCfg):
-    experiment_name = "pi_plus_27dof_tracking_run"
-    
-@configclass
-class PiTrackingJump(PPORunnerCfg):
-    experiment_name = "pi_plus_27dof_tracking_jump"
-
-@configclass
-class PiAMPTrackingWalk(PiTrackingWalk):
-    experiment_name = "pi_plus_27dof_tracking_amp_walk"
+class Pi27DAMPRun(PPORunnerCfg):
+    experiment_name = "pi_plus_27d_amp_run"
     discriminator = {
-        "hidden_dims": [1024, 512],
+        "hidden_dims": [512, 256],
         "reward_scale": 1.0,
-        "loss_type": "Wasserstein"
+        # Choose between BCEWithLogits or Wasserstein
+        "loss_type": "BCEWithLogits"
     }
-    
+    task_reward_weight = 0
+    style_reward_weight = 1
     def __post_init__(self):
         self.algorithm.class_name = "AMP_PPO"
-    
