@@ -2,7 +2,12 @@ import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.pi import PI_PLUS_25DOF_CFG
-from .motion_align_cfg import PI_25D_MOTION_ALIGN_CFG, PI_25D_MOTION_ALIGN_CFG_WAIST_YAW, PI_25D_MOTION_ALIGN_CFG_WAIST_YAW
+from .motion_align_cfg import (
+    PI_25D_MOTION_ALIGN_CFG, 
+    PI_25D_MOTION_ALIGN_CFG_WAIST_YAW, 
+    PI_25D_MOTION_ALIGN_CFG_WAIST_YAW,
+    PI_25D_MOTION_ALIGN_CFG_KEY
+)
 
 @configclass
 class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -12,7 +17,7 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
         # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.robot_type = "pi_plus_25dof"
-        self.motion.set_motion_align_cfg(PI_25D_MOTION_ALIGN_CFG_WAIST_YAW)
+        self.motion.set_motion_align_cfg(PI_25D_MOTION_ALIGN_CFG_KEY)
         
         self.scene.robot = PI_PLUS_25DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.scene.robot.spawn.articulation_props.enabled_self_collisions = True

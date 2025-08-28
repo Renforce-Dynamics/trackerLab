@@ -92,6 +92,7 @@ class HumanoidRewardsCfgV2:
 
     def set_feet(self, names):
         self.feet_slide.params["sensor_cfg"].body_names = names
+        self.feet_slide.params["asset_cfg"].body_names = names
         self.feet_force.params["sensor_cfg"].body_names = names
         self.feet_too_near.params["asset_cfg"].body_names = names
         self.feet_stumble.params["sensor_cfg"].body_names = names
