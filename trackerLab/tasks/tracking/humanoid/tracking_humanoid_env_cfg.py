@@ -20,43 +20,10 @@ from trackerLab.tasks.playground import COBBLESTONE_ROAD_CFG
 class HumanoidTerminationCfg(TerminationsCfg):
     base_height = DoneTerm(func=mdp.root_height_below_minimum, params={"minimum_height": 0.2})
     bad_orientation = DoneTerm(func=mdp.bad_orientation, params={"limit_angle": 0.8})
-    def __post_init__(self):
-        pass
+
 
 @configclass
-class HuamnoidRewardsCfg(RewardsCfg):
-    joint_deviation_arms = RewTerm(
-        func=mdp.joint_deviation_l1,
-        weight=-0.1,
-        params={
-            "asset_cfg": SceneEntityCfg(
-                "robot",
-                joint_names=[
-                    ".*_shoulder_.*_joint",
-                    ".*_elbow_joint",
-                ],
-            )
-        },
-    )
-    joint_deviation_waists = RewTerm(
-        func=mdp.joint_deviation_l1,
-        weight=-0.1,
-        params={
-            "asset_cfg": SceneEntityCfg(
-                "robot",
-                joint_names=[
-                    "waist.*",
-                ],
-            )
-        },
-    )
-    
-    def set_no_deviation(self):
-        self.joint_deviation_arms = None
-        self.joint_deviation_waists = None
-
-@configclass
-class G1_23Dof_RewardsCfg:
+class HumanoidRewardsCfgV2:
     # task rewards
     # motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
     #                               params={"std": math.sqrt(2)},
@@ -120,13 +87,46 @@ class G1_23Dof_RewardsCfg:
     legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
 
+    def set_feet(self, names):
+        self.feet_slide.params["sensor_cfg"].body_names = names
+        self.feet_slide.params["asset_cfg"].body_names = names
+        self.feet_force.params["sensor_cfg"].body_names = names
+        self.feet_too_near.params["asset_cfg"].body_names = names
+        self.feet_stumble.params["sensor_cfg"].body_names = names
 
 @configclass
 class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
-    rewards: G1_23Dof_RewardsCfg = G1_23Dof_RewardsCfg()
+    rewards: HumanoidRewardsCfgV2 = HumanoidRewardsCfgV2()
     terminations: HumanoidTerminationCfg = HumanoidTerminationCfg()
     
     def __post_init__(self):
         super().__post_init__()
-        # self.decimation = 20
-        # self.sim.dt = 0.001
+        
+    def align_friction(self):
+        self.scene.terrain.physics_material.dynamic_friction = 0.45
+        self.scene.terrain.physics_material.static_friction = 0.5
+        
+    def domain_randomization(self):
+        # Reset Terms
+        self.events.reset_base.params = {
+                "pose_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "yaw": (-3.14, 3.14)},
+                "velocity_range": {
+                    "x": (-1.0, 1.0),
+                    "y": (-1.0, 1.0),
+                    "z": (-1.0, 1.0),
+                    "roll": (-0.5, 0.5),
+                    "pitch": (-0.5, 0.5),
+                    "yaw": (-0.5, 0.5),
+                },
+            }
+        self.events.reset_robot_joints.params = {
+                "position_range": (1.0, 1.0),
+                "velocity_range": (-1.0, 1.0),
+            }
+
+        # Push terms
+        self.events.push_robot.params = {
+                "velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.8, 1.5)}
+            }
+        
+

@@ -93,8 +93,6 @@ class SkillManager(MotionManager):
         self.skill_buffer.reset(env_ids)
         self.loc_gen_state(env_ids)
         state = self.calc_current_pose(env_ids)
-        if not self.reset_to_pose:
-            state = None
         return state
 
     def compute(self):
