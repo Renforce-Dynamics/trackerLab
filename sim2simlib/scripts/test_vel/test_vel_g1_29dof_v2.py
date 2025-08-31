@@ -30,7 +30,7 @@ config = Sim2Sim_Config(
                 'last_action': 1.0
             },
         ),
-    cmd=[0,0,0],
+    cmd=[1,0,0],
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0),
         scale=0.25
