@@ -19,6 +19,8 @@ from trackerLab.tasks.locomotion import mdp
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
 from .motion_align_cfg import G1_23D_MOTION_ALIGN_CFG
+from trackerLab import TRACKERLAB_RECORDINGS_DIR
+
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
     size=(8.0, 8.0),
@@ -201,4 +203,5 @@ class G1TrackingWalk_Play(G1TrackingWalk):
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+        self.set_record(dir=TRACKERLAB_RECORDINGS_DIR)
         

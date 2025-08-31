@@ -7,7 +7,7 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk",
         "play_env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk_Play",
-        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:G123DWalkPPOCfg",
+        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.tracking.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
     },
 )
 
@@ -18,6 +18,6 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.g1_29d_tracking_env_cfg:G1TrackingWalk",
         "play_env_cfg_entry_point": f"{__name__}.g1_29d_tracking_env_cfg:G1TrackingWalk_Play",
-        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:G129DWalkPPOCfg",
+        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.tracking.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
     },
 )

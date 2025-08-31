@@ -2,6 +2,7 @@
 Python module serving as a project/extension template.
 """
 import os
+from etils import epath
 
 def config_dir(*args):
     dir = os.path.join(*args)
@@ -22,5 +23,7 @@ TRACKERLAB_LABJOINTS_DIR        = config_dir(TRACKERLAB_DATA_DIR, "lab_joints")
 
 TRACKERLAB_TASKS_DIR            = os.path.join(TRACKERLAB_REPO_DIR, "tasks", "tracking")
 
+TRACKERLAB_RECORDINGS_DIR      = config_dir(TRACKERLAB_DATA_DIR, "recordings")
 
+TRACKERLAB_UNIFY_ASSETS_DIR = epath.Path(__file__).resolve().parent.parent / "data" / "unify_assets"
 
