@@ -73,7 +73,7 @@ if __name__ == "__main__":
                         help='List of AMASS subfolders to scan under data root')
     parser.add_argument('--robot', type=str, default="h1",
                         help='robot type for retargeting')
-    parser.add_argument('--max_frames', type=int, default=10000,
+    parser.add_argument('--max_frames', type=int, default=1e6,
                         help='Max number of frames per sequence')
     parser.add_argument('--workers', type=int, default=None,
                         help='Number of parallel workers (default=CPU count)')
@@ -84,8 +84,5 @@ if __name__ == "__main__":
     REPORT_FILE = RESULTS_DIR / "report.txt"
 
     folders = args.folders
-    # folders = [
-    #     f"CMU/{tar}" for tar in ["127", "02", "01", "75", "55", "35"]
-    # ]
 
     process_all(folders, robot, max_frames=args.max_frames, num_workers=args.workers)

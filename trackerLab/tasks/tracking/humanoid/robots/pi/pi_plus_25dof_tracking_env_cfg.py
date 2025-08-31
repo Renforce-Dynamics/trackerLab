@@ -6,7 +6,8 @@ from .motion_align_cfg import (
     PI_25D_MOTION_ALIGN_CFG, 
     PI_25D_MOTION_ALIGN_CFG_WAIST_YAW, 
     PI_25D_MOTION_ALIGN_CFG_WAIST_YAW,
-    PI_25D_MOTION_ALIGN_CFG_KEY
+    PI_25D_MOTION_ALIGN_CFG_KEY,
+    PI_25D_MOTION_ALIGN_CFG_REPLAY
 )
 
 @configclass
@@ -58,7 +59,9 @@ class PiTrackingWalk(PiTrackingEnvCfg):
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_walk.yaml"
         
         
-        self.rewards.feet_slide.weight = -2.0
+        self.rewards.feet_slide.weight = -1.0
+        self.rewards.feet_too_near.weight = -0.05
+        self.rewards.feet_stumble.weight = -0.01
         self.rewards.motion_whb_dof_pos.weight = 3.0
         self.rewards.motion_base_ang_vel.weight = 0.5
         self.rewards.motion_base_lin_vel.weight = 3.0
@@ -71,10 +74,19 @@ class PiTrackingRun(PiTrackingEnvCfg):
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_run.yaml"
         
         self.rewards.feet_slide.weight = -1.0
-        self.rewards.motion_whb_dof_pos.weight = 2.0
-        self.rewards.motion_base_ang_vel.weight = 0.0
-        self.rewards.motion_base_lin_vel.weight = 2.0
+        self.rewards.motion_whb_dof_pos.weight = 3.0
+        self.rewards.motion_base_ang_vel.weight = 0.5
+        self.rewards.motion_base_lin_vel.weight = 3.0
         self.rewards.alive.weight = 3.0
+        
+@configclass
+class PiTrackingRun_Replay(PiTrackingRun):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_run_replay.yaml"
+        self.motion.set_motion_align_cfg(PI_25D_MOTION_ALIGN_CFG_REPLAY)
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+        self.motion.motion_buffer_cfg.motion_type = "replay"
         
         
 @configclass

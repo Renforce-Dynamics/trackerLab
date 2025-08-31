@@ -129,14 +129,13 @@ class MotionCfg(MotionManagerCfg):
             motion_name = None,
             regen_pkl=True
         ),
-        
+        motion_lib_type="MotionLib",
+        motion_type="poselib"
     )
     static_motion: bool = False
-    # obs_from_buffer: bool = False
     loc_gen: bool = True
     speed_scale: float = 1.0
     robot_type: str = None
-    reset_to_pose: bool = False
 
 @configclass
 class RecordsCfg(RecorderManagerBaseCfg):
@@ -179,15 +178,16 @@ class ObservationsCfg:
 
 
         # observation terms (order preserved)
-        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
-        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2))
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1), clip=(-100, 100))
+        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2), clip=(-100, 100))
         projected_gravity = ObsTerm(
             func=mdp.projected_gravity,
             noise=Unoise(n_min=-0.05, n_max=0.05),
+            clip=(-100, 100)
         )
-        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
-        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5))
-        actions = ObsTerm(func=mdp.last_action)
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01), clip=(-100, 100))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5), clip=(-100, 100))
+        actions = ObsTerm(func=mdp.last_action, clip=(-100, 100))
 
         # Recommend for No height scan
         height_scan = ObsTerm(

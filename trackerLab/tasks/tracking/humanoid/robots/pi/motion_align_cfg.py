@@ -99,10 +99,10 @@ PI_25D_MOTION_ALIGN_CFG_KEY = {
         "waist_skip","waist_skip", "waist_joint_skip",
         "l_hip_roll_joint", "l_hip_pitch_joint", "l_thigh_joint",
         "l_calf_joint",
-        "l_ankle_roll_joint_skip", "l_ankle_pitch_joint_skip",
+        "l_ankle_roll_joint", "l_ankle_pitch_joint",
         "r_hip_roll_joint", "r_hip_pitch_joint", "r_thigh_joint",
         "r_calf_joint",
-        "r_ankle_roll_joint_skip", "r_ankle_pitch_joint_skip",
+        "r_ankle_roll_joint", "r_ankle_pitch_joint",
     ],
     "dof_body_ids": [1, 2, 3, 4,  5,  6,  7,  8,  9,  10,  11],
     "dof_offsets": [0, 3, 6, 9, 12, 15, 18, 19, 21, 24,  26,   27],
@@ -110,4 +110,35 @@ PI_25D_MOTION_ALIGN_CFG_KEY = {
     "dof_indices_sim": [0],
     "dof_indices_motion": [0],
     "reverse_dof": [11]
+}
+
+PI_25D_MOTION_ALIGN_CFG_REPLAY = {
+    "gym_joint_names": [
+        "l_shoulder_pitch_joint",
+        "r_shoulder_pitch_joint",
+        "waist_joint",
+        "l_shoulder_roll_joint",
+        "r_shoulder_roll_joint",
+        "l_hip_pitch_joint",
+        "r_hip_pitch_joint",
+        "l_upper_arm_joint",
+        "r_upper_arm_joint",
+        "l_hip_roll_joint",
+        "r_hip_roll_joint",
+        "l_elbow_joint",
+        "r_elbow_joint",
+        "l_thigh_joint",
+        "r_thigh_joint",
+        "l_calf_joint",
+        "r_calf_joint",
+        "l_ankle_pitch_joint",
+        "r_ankle_pitch_joint",
+        "l_ankle_roll_joint",
+        "r_ankle_roll_joint"
+    ],
+    "dof_body_ids": [],
+    "dof_offsets": [21],
+    "invalid_dof_id": [],
+    "dof_indices_sim": [0],
+    "dof_indices_motion": [0],
 }
