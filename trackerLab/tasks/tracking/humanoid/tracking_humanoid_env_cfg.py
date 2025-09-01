@@ -69,13 +69,15 @@ class HumanoidRewardsCfgV2:
     feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-1.50,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
-    feet_force          = RewTerm(func=mdp.body_force,          weight=-3e-3,
+    feet_force          = RewTerm(func=mdp.body_force,          weight=-1e-2,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "threshold": 500, "max_reward": 400})
     feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
                                           "threshold": 0.2})
     feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
+    feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-2.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
     
     # joint deviation rewards
@@ -88,16 +90,15 @@ class HumanoidRewardsCfgV2:
 
     # specific task rewards
     # walk
-    feet_air_time       = RewTerm(func=mdp.feet_air_time,       weight=0.0,
-                                  params={"command_name": "base_velocity",
-                                          "mode_time": 0.3,
-                                          "velocity_threshold": 0.5,
-                                          "command_threshold": 0.1,
-                                          "asset_cfg": SceneEntityCfg("robot"),
-                                          "sensor_cfg": SceneEntityCfg("contact_forces", body_names="")})
+    # feet_air_time       = RewTerm(func=mdp.feet_air_time,       weight=0.0,
+    #                               params={"command_name": "base_velocity",
+    #                                       "mode_time": 0.3,
+    #                                       "velocity_threshold": 0.5,
+    #                                       "command_threshold": 0.1,
+    #                                       "asset_cfg": SceneEntityCfg("robot"),
+    #                                       "sensor_cfg": SceneEntityCfg("contact_forces", body_names="")})
     
-    feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=0.0,
-                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
+    
 
     def set_feet(self, names):
         self.feet_slide.params["sensor_cfg"].body_names = names

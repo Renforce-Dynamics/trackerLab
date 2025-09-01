@@ -186,7 +186,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.episode_length_s = 20.0
         self.motion.speed_scale = 1.0
         self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
-        # self.motion.static_motion=True
+        self.scene.contact_forces.debug_vis = True
         self.disable_zero_weight_rewards()
         
 

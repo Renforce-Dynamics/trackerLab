@@ -2,10 +2,10 @@ G1_23D_MOTION_ALIGN_CFG = {
     "gym_joint_names": [
         "left_hip_roll_joint", "left_hip_pitch_joint", "left_hip_yaw_joint", 
         "left_knee_joint", 
-        "left_ankle_roll_joint",  "left_ankle_pitch_joint", 
+        "left_ankle_roll_joint:skip",  "left_ankle_pitch_joint:skip", 
         "right_hip_roll_joint", "right_hip_pitch_joint", "right_hip_yaw_joint", 
         "right_knee_joint", 
-        "right_ankle_roll_joint", "right_ankle_pitch_joint", 
+        "right_ankle_roll_joint:skip", "right_ankle_pitch_joint:skip", 
         "waist_yaw_joint",
         "left_shoulder_roll_joint", "left_shoulder_pitch_joint", "left_shoulder_yaw_joint", 
         "left_elbow_joint", 
