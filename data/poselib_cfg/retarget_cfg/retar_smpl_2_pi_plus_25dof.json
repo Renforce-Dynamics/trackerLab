@@ -1,7 +1,6 @@
 {
     "joint_mapping": {
         "Pelvis": "base_link",
-        "Head": "head_pitch_link",
         "L_Hip": "l_hip_pitch_link",
         "L_Knee": "l_calf_link",
         "L_Ankle": "l_ankle_pitch_link",
@@ -11,15 +10,11 @@
         "Spine3": "waist_link",
         "L_Shoulder": "l_shoulder_pitch_link",
         "L_Elbow": "l_elbow_link",
-        "L_Wrist": "l_wrist_link",
-        "L_Hand": "l_claw_link",
         "R_Shoulder": "r_shoulder_pitch_link",
-        "R_Elbow": "r_elbow_link",
-        "R_Wrist": "r_wrist_link",
-        "R_Hand": "r_claw_link"
+        "R_Elbow": "r_elbow_link"
     },
     "rotation": [0.5, 0.5, 0.5, 0.5],
-    "scale": 0.5,
+    "scale": 0.3,
 	"root_height_offset": 0.0,
 	"trim_frame_beg": -1,
 	"trim_frame_end": -1

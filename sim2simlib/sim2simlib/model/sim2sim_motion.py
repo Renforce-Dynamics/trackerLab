@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model, Sim2Sim_Config
 from sim2simlib.motion.motion_manager import Motion_Manager
+from rich import print
 
     
 class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
@@ -26,10 +27,11 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         self.motion_manager = Motion_Manager.from_configclass(
                                 cfg=self._cfg.motion_cfg,
                                 lab_joint_names=self.policy_joint_names,
-                                dt=self._cfg.simulation_dt * self._cfg.control_decimation,
+                                dt=self._cfg.simulation_dt * self._cfg.control_decimation * self._cfg.motion_cfg.speed_scale,
                                 device="cpu"
                             )
         num_motions = self.motion_manager.motion_lib.num_motions()
+        self.num_motions = num_motions
         self.motion_id = self._cfg.motion_id % num_motions
         
         self.motion_manager.init_finite_state_machine()
@@ -162,7 +164,10 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                     
                     # Optional: Print motion update info
                     if torch.any(is_update):
-                        print(f"[INFO] Motion updated at step {counter}")
+                        print(f"[INFO] Motion {self.motion_id} updated at step {counter}")
+                        self.motion_id = (self.motion_id + 1) % self.num_motions
+                        self.motion_manager.set_finite_state_machine_motion_ids(
+                            motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
                 
                 # Forward kinematics computation (no dynamics)
                 mujoco.mj_forward(self.mj_model, self.mj_data)

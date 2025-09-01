@@ -9,6 +9,7 @@ LOGS_DIR = SIM2SIMLIB_REPO_DIR.parent.parent / "logs"
 
 MUJOCO_ASSETS = {
     "unitree_go2": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_go2/mjcf/scene_go2.xml",
-    "unitree_g1_29dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_29dof.xml",
-    "unitree_g1_23dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_23dof.xml"
+    "unitree_g1_29dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_29dof_rev_1_0.xml",
+    "unitree_g1_23dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_23dof_rev_1_0.xml"
 }
+

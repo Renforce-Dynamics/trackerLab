@@ -4,9 +4,9 @@ from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
 from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
-from sim2simlib import LOGS_DIR
+from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 
-ckpt_dir = "/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/tracking_unitree_g1_29d_walk/2025-08-26_11-48-11"
+ckpt_dir = ""
 
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
@@ -25,10 +25,40 @@ config = Sim2Sim_Config(
     robot_name='g1_29d_loco',
     simulation_dt=0.005,
     slowdown_factor=1.0,
-    control_decimation=4,
-    policy_path=f"{ckpt_dir}/exported/policy.pt",
-    xml_path="/home/ac/Desktop/2025/project_3/mujoco_sim2sim_assets/unitree_g1/mjcf/scene_29dof.xml",
-    policy_joint_names= ['left_hip_pitch_joint', 'right_hip_pitch_joint', 'waist_yaw_joint', 'left_hip_roll_joint', 'right_hip_roll_joint', 'waist_roll_joint', 'left_hip_yaw_joint', 'right_hip_yaw_joint', 'waist_pitch_joint', 'left_knee_joint', 'right_knee_joint', 'left_shoulder_pitch_joint', 'right_shoulder_pitch_joint', 'left_ankle_pitch_joint', 'right_ankle_pitch_joint', 'left_shoulder_roll_joint', 'right_shoulder_roll_joint', 'left_ankle_roll_joint', 'right_ankle_roll_joint', 'left_shoulder_yaw_joint', 'right_shoulder_yaw_joint', 'left_elbow_joint', 'right_elbow_joint', 'left_wrist_roll_joint', 'right_wrist_roll_joint', 'left_wrist_pitch_joint', 'right_wrist_pitch_joint', 'left_wrist_yaw_joint', 'right_wrist_yaw_joint'],
+    control_decimation=20,
+    policy_path="",
+    xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/g1_description/g1_29dof_rev_1_0.xml",
+    policy_joint_names=[
+        "left_hip_pitch_joint",
+        "right_hip_pitch_joint",
+        "waist_yaw_joint",
+        "left_hip_roll_joint",
+        "right_hip_roll_joint",
+        "waist_roll_joint",
+        "left_hip_yaw_joint",
+        "right_hip_yaw_joint",
+        "waist_pitch_joint",
+        "left_knee_joint",
+        "right_knee_joint",
+        "left_shoulder_pitch_joint",
+        "right_shoulder_pitch_joint",
+        "left_ankle_pitch_joint",
+        "right_ankle_pitch_joint",
+        "left_shoulder_roll_joint",
+        "right_shoulder_roll_joint",
+        "left_ankle_roll_joint",
+        "right_ankle_roll_joint",
+        "left_shoulder_yaw_joint",
+        "right_shoulder_yaw_joint",
+        "left_elbow_joint",
+        "right_elbow_joint",
+        "left_wrist_roll_joint",
+        "right_wrist_roll_joint",
+        "left_wrist_pitch_joint",
+        "right_wrist_pitch_joint",
+        "left_wrist_yaw_joint",
+        "right_wrist_yaw_joint"
+    ],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_lin_vel', 
                                  'base_ang_vel', 

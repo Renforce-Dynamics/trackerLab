@@ -1,7 +1,7 @@
 import gymnasium as gym
 
 gym.register(
-    id="Tracking-R2-Walk",
+    id="TrackerLab-Tracking-R2-Walk",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -12,7 +12,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-R2-Run",
+    id="TrackerLab-Tracking-R2-Run",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={

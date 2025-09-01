@@ -18,7 +18,9 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 from trackerLab.tasks.locomotion import mdp
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
-from .motion_align_cfg import G1_23D_MOTION_ALIGN_CFG
+from .motion_align_cfg import G1_23D_MOTION_ALIGN_CFG, G1_23D_MOTION_ALIGN_CFG_REPLAY
+from trackerLab import TRACKERLAB_RECORDINGS_DIR
+
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
     size=(8.0, 8.0),
@@ -182,8 +184,10 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
-        self.motion.speed_scale *= 0.5
-
+        self.motion.speed_scale = 1.0
+        self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
+        # self.motion.static_motion=True
+        self.disable_zero_weight_rewards()
         
 
 
@@ -191,7 +195,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 class G1TrackingWalk(G1TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/cmu_walk_full.yaml"
 
 
 @configclass
@@ -201,4 +205,14 @@ class G1TrackingWalk_Play(G1TrackingWalk):
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+        self.set_record(dir=TRACKERLAB_RECORDINGS_DIR)
         
+
+@configclass
+class G1TrackingWalk_Replay(G1TrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/simple_walk_replay.yaml"
+        self.motion.set_motion_align_cfg(G1_23D_MOTION_ALIGN_CFG_REPLAY)
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+        self.motion.motion_buffer_cfg.motion_type = "replay"

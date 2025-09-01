@@ -26,8 +26,6 @@ class UnitreeArticulationCfg(ArticulationCfg):
 
     soft_joint_pos_limit_factor = 0.9
 
-import os
-from trackerLab import TRACKERLAB_USD_DIR
 
 UNITREE_GO2_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(

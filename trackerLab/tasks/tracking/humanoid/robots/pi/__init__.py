@@ -1,7 +1,7 @@
 import gymnasium as gym
 
 gym.register(
-    id="Tracking-Pi-Plus-25D-Walk",
+    id="TrackerLab-Tracking-Pi-Plus-25D-Walk",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -12,7 +12,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-Pi-Plus-25D-Run",
+    id="TrackerLab-Tracking-Pi-Plus-25D-Run",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -23,7 +23,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-Pi-Plus-25D-Jump",
+    id="TrackerLab-Tracking-Pi-Plus-25D-Jump",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -34,7 +34,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-Pi-Plus-27D-Walk",
+    id="TrackerLab-Tracking-Pi-Plus-27D-Walk",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -45,7 +45,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-Pi-Plus-27D-Run",
+    id="TrackerLab-Tracking-Pi-Plus-27D-Run",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={
@@ -56,7 +56,7 @@ gym.register(
 )
 
 gym.register(
-    id="Tracking-Pi-Plus-27D-Jump",
+    id="TrackerLab-Tracking-Pi-Plus-27D-Jump",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={

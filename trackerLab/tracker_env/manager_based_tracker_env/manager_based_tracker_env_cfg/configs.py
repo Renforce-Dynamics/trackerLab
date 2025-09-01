@@ -31,6 +31,7 @@ from trackerLab.tasks.playground import ROUGH_TERRAINS_CFG, FLAT_TERRAINS_CFG
 import trackerLab.tracker_env.mdp.tracker.reward as tracker_reward
 import trackerLab.tracker_env.mdp.tracker.observation as tracker_obs
 import trackerLab.tracker_env.mdp.records as tracker_record
+import trackerLab.tracker_env.mdp.tracker.events as tracker_event
 
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 from trackerLab.managers.motion_manager import MotionManagerCfg
@@ -51,8 +52,8 @@ class MySceneCfg(InteractiveSceneCfg):
         physics_material=sim_utils.RigidBodyMaterialCfg(
             friction_combine_mode="multiply",
             restitution_combine_mode="multiply",
-            static_friction=1.0,
-            dynamic_friction=1.0,
+            static_friction=0.5,
+            dynamic_friction=0.4,
         ),
         visual_material=sim_utils.MdlFileCfg(
             mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
@@ -128,14 +129,13 @@ class MotionCfg(MotionManagerCfg):
             motion_name = None,
             regen_pkl=True
         ),
-        
+        motion_lib_type="MotionLib",
+        motion_type="poselib"
     )
     static_motion: bool = False
-    # obs_from_buffer: bool = False
     loc_gen: bool = True
     speed_scale: float = 1.0
     robot_type: str = None
-    reset_to_pose: bool = False
 
 @configclass
 class RecordsCfg(RecorderManagerBaseCfg):
@@ -178,15 +178,16 @@ class ObservationsCfg:
 
 
         # observation terms (order preserved)
-        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
-        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2))
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1), clip=(-100, 100))
+        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2), clip=(-100, 100))
         projected_gravity = ObsTerm(
             func=mdp.projected_gravity,
             noise=Unoise(n_min=-0.05, n_max=0.05),
+            clip=(-100, 100)
         )
-        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
-        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5))
-        actions = ObsTerm(func=mdp.last_action)
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01), clip=(-100, 100))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5), clip=(-100, 100))
+        actions = ObsTerm(func=mdp.last_action, clip=(-100, 100))
 
         # Recommend for No height scan
         height_scan = ObsTerm(
@@ -230,10 +231,10 @@ class RewardsCfg:
     """Reward terms for the MDP."""
 
     # Task
-    # demo_height = RewTerm(
-    #     func=tracker_reward.reward_tracking_demo_height, 
-    #     weight=0.0
-    # )
+    demo_height = RewTerm(
+        func=tracker_reward.reward_tracking_demo_height, 
+        weight=0.0
+    )
     motion_exp_whb_dof_pos = RewTerm(
         func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
         weight = 5.0,
@@ -268,12 +269,8 @@ class RewardsCfg:
     action_rate             = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
     dof_pos_limits          = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy                  = RewTerm(func=tracker_reward.energy, weight=-2e-5)
-    
-    alive                   = RewTerm(func=mdp.is_alive, weight=0.15)
+    alive                   = RewTerm(func=mdp.is_alive, weight=1.0)
 
-    # -- robot
-    # flat_orientation_l2     = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    # base_height             = RewTerm(func=mdp.base_height_l2, weight=-10, params={"target_height": 0.78})
 
     # -- feet
     feet_slide = RewTerm(
@@ -284,20 +281,9 @@ class RewardsCfg:
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
         },
     )
-    # feet_clearance = RewTerm(
-    #     func=tracker_reward.foot_clearance_reward,
-    #     weight=1.0,
-    #     params={
-    #         "std": 0.05,
-    #         "tanh_mult": 2.0,
-    #         "target_height": 0.1,
-    #         "asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"),
-    #     },
-    # )
-    
+
     def adjust_feet(self, expr:list):
         self.feet_slide.params["asset_cfg"].body_names = expr
-        # self.feet_clearance.params["asset_cfg"].body_names = expr
 
 
 @configclass
@@ -347,6 +333,10 @@ class EventCfg:
             "torque_range": (-0.0, 0.0),
         },
     )
+    
+    # reset_to_traj = EventTerm(
+    #     func=tracker_event.reset_to_traj
+    # )
 
     reset_base = EventTerm(
         func=mdp.reset_root_state_uniform,

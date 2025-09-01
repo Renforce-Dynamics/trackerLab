@@ -1,7 +1,7 @@
 import gymnasium as gym
 
 gym.register(
-    id="Tracking-Unitree-H1-Walk",
+    id="TrackerLab-Tracking-Unitree-H1-Walk",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,
     kwargs={

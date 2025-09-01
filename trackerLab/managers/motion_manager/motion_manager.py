@@ -104,9 +104,9 @@ class MotionManager(ManagerBase):
         self._motion_buffer.update_motion_ids(env_ids)
         self.loc_gen_state(env_ids)
         state = self.calc_current_pose(env_ids)
-        if not self.reset_to_pose:
-            state = None
-        return state
+        # if not self.reset_to_pose:
+        #     state = None
+        return
 
     def get_current_time(self, env_ids):
         motion_ids   = self._motion_buffer._motion_ids[env_ids].reshape(-1)
