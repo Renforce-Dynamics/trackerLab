@@ -38,7 +38,8 @@ class MotionBuffer(object):
             motion_file=self.cfg.motion.motion_name,
             id_caster=self.id_caster,
             device=self.device, 
-            regen_pkl=self.cfg.motion.regen_pkl)
+            regen_pkl=self.cfg.motion.regen_pkl,
+            motion_type=self.cfg.motion_type)
 
     def init_motion_buffers(self):
         """
@@ -74,7 +75,8 @@ class MotionBuffer(object):
         """
         This only used in reset.
         """
-        self._motion_times[env_ids] = self.resample_motion_times(env_ids)
+        # self._motion_times[env_ids] = self.resample_motion_times(env_ids)
+        self._motion_times[env_ids] = 0.
         self._motion_lengths[env_ids] = self._motion_lib.get_motion_length(self._motion_ids[env_ids])
         self._motion_difficulty[env_ids] = self._motion_lib.get_motion_difficulty(self._motion_ids[env_ids])
 

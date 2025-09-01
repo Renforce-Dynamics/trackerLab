@@ -25,13 +25,13 @@ class HumanoidTerminationCfg(TerminationsCfg):
 @configclass
 class HumanoidRewardsCfgV2:
     # task rewards
-    # motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
-    #                               params={"std": math.sqrt(2)},
-    #                               weight=1.5)
+    motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
+                                  params={"std": math.sqrt(2)},
+                                  weight=5.0)
     
     motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
-                                  params={"std": 0.5},
-                                  weight=1.5)
+                                  params={"std": 0.5, "vel_scale": 0.5},
+                                  weight=1.0)
     
     motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
                                   params={"std": 0.5},
@@ -42,7 +42,7 @@ class HumanoidRewardsCfgV2:
     dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
     dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
     energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
-    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.05)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.1)
     dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
     alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
 
@@ -67,7 +67,7 @@ class HumanoidRewardsCfgV2:
     termination_penalty = RewTerm(func=mdp.is_terminated,       weight=-200.0)
 
     # humanoid specific rewards
-    feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-0.50,
+    feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-1.50,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
     feet_force          = RewTerm(func=mdp.body_force,          weight=-3e-3,

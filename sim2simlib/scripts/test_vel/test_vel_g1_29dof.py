@@ -7,7 +7,7 @@ from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 
 ckpt_dir = ""
 
-env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
+# env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof',

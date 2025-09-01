@@ -5,7 +5,7 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 ckpt_dir = ""
-env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
+# env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
     robot_name='g1_29dof_his',
@@ -13,7 +13,7 @@ config = Sim2Sim_Config(
     slowdown_factor=1.0,
     control_decimation=4,
     xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_29dof.xml",
-    policy_path=f"{ckpt_dir}/exported/policy.pt",
+    policy_path=f"./logs/checkpoints/g1_29dof_vel_his/policy.pt",
     policy_joint_names=['left_hip_pitch_joint', 
                         'right_hip_pitch_joint', 
                         'waist_yaw_joint', 
