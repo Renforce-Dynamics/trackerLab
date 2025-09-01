@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 
 from sim2simlib.utils.utils import get_gravity_orientation
 from sim2simlib.model.config import Sim2Sim_Config, Actions
-
+import rich
 
 class Sim2Sim(ABC):
     qpos_maps: list[int] = []
@@ -44,8 +44,8 @@ class Sim2Sim(ABC):
         self.qvel_strat_ids = [self.mj_model.jnt_dofadr[i] for i in range(self.mj_model.njnt)]
 
         self.actuators_joint_names = self.mujoco_joint_names[1:]
-        print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
-        print('[INFO] Policy joint names:', self.policy_joint_names)
+        rich.print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
+        rich.print('[INFO] Policy joint names:', self.policy_joint_names)
         
         # mujoco order -> policy order
         for joint_name in self.policy_joint_names:
@@ -57,9 +57,9 @@ class Sim2Sim(ABC):
             else:
                 raise ValueError(f"Joint name {joint_name} not found in MuJoCo model.")
 
-        print("[INFO] qpos maps:", self.qpos_maps)
-        print("[INFO] qvel maps:", self.qvel_maps)
-        print("[INFO] Action maps:", self.act_maps) 
+        rich.print("[INFO] qpos maps:", self.qpos_maps)
+        rich.print("[INFO] qvel maps:", self.qvel_maps)
+        rich.print("[INFO] Action maps:", self.act_maps) 
         
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
@@ -176,10 +176,10 @@ class Sim2Sim_Base_Model(Sim2Sim):
                         self.mj_data.qpos[i + 7] = angle
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
-        print(f"[INFO] Initial qpos: [{', '.join([f'{x:.2f}' for x in self.init_qpos])}]")
-        print(f"[INFO] Initial angles: [{', '.join([f'{x:.2f}' for x in self.init_angles])}]")
-        print(f"[INFO] Initial angles mapped: [{', '.join([f'{x:.2f}' for x in self.maped_qpos])}]")
-    
+        rich.print("[INFO] Initial qpos: ", self.init_qpos)
+        rich.print("[INFO] Initial angles: ", self.init_angles)
+        rich.print("[INFO] Initial angles mapped: ", self.maped_qpos)
+
     def _init_observation_history(self):
         """Initialize observation history buffers."""
         if self._cfg.observation_cfg.using_base_obs_history:
@@ -245,7 +245,7 @@ class Sim2Sim_Base_Model(Sim2Sim):
         # self.debug("[DEBUG] Observation:", obs_np)
         obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
         action = self.policy(obs_tensor).detach().numpy().squeeze()
-        self.debug("[DEBUG] action:", action)
+        # self.debug("[DEBUG] action:", action)
         self.last_action[:] = action
         return action
     
