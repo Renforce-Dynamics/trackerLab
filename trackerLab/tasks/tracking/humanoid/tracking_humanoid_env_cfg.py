@@ -13,7 +13,6 @@ from isaaclab.managers import SceneEntityCfg
 
 import trackerLab.tracker_env.mdp as mdp
 
-import trackerLab.tracker_env.mdp.tracker.reward as treward
 from trackerLab.tasks.playground import COBBLESTONE_ROAD_CFG
 
 @configclass
@@ -30,7 +29,7 @@ class HumanoidRewardsCfgV2:
                                   weight=5.0)
     
     motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
-                                  params={"std": 0.5, "vel_scale": 0.5},
+                                  params={"std": 0.5, "vel_scale": 1.0},
                                   weight=1.0)
     
     motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
@@ -87,6 +86,19 @@ class HumanoidRewardsCfgV2:
     legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
 
+    # specific task rewards
+    # walk
+    feet_air_time       = RewTerm(func=mdp.feet_air_time,       weight=0.0,
+                                  params={"command_name": "base_velocity",
+                                          "mode_time": 0.3,
+                                          "velocity_threshold": 0.5,
+                                          "command_threshold": 0.1,
+                                          "asset_cfg": SceneEntityCfg("robot"),
+                                          "sensor_cfg": SceneEntityCfg("contact_forces", body_names="")})
+    
+    feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=0.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
+
     def set_feet(self, names):
         self.feet_slide.params["sensor_cfg"].body_names = names
         self.feet_slide.params["asset_cfg"].body_names = names
@@ -130,3 +142,10 @@ class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
             }
         
 
+    def disable_zero_weight_rewards(self):
+        """If the weight of rewards is 0, set rewards to None"""
+        for attr in dir(self.rewards):
+            if not attr.startswith("__"):
+                reward_attr = getattr(self.rewards, attr)
+                if not callable(reward_attr) and reward_attr.weight == 0:
+                    setattr(self.rewards, attr, None)

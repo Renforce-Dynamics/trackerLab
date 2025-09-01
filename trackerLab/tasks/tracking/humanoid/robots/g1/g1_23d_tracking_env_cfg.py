@@ -184,9 +184,10 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
         
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
-        self.motion.speed_scale = 0.25
+        self.motion.speed_scale = 1.0
         self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
         # self.motion.static_motion=True
+        self.disable_zero_weight_rewards()
         
 
 
@@ -194,7 +195,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 class G1TrackingWalk(G1TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/cmu_walk.yaml"
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/cmu_walk_full.yaml"
 
 
 @configclass
