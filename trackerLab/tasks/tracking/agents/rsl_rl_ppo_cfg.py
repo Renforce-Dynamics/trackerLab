@@ -3,11 +3,11 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 
 
 @configclass
-class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+class BasePPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 3000
-    save_interval = 100
-    experiment_name = "tracker"
+    max_iterations = 15000
+    save_interval = 500
+    experiment_name = ""  # same as task name
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
@@ -29,7 +29,3 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
-    
-@configclass
-class G1TrackingWalk(PPORunnerCfg):
-    experiment_name = "g1_29d_loco_tracking_walk"

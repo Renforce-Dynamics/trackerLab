@@ -20,7 +20,7 @@ PI_PLUS_25DOF_CFG = ArticulationCfg(
         ),
         articulation_props=sim_utils.ArticulationRootPropertiesCfg(
             fix_root_link=False,
-            enabled_self_collisions=True, 
+            enabled_self_collisions=False, 
             solver_position_iteration_count=4, 
             solver_velocity_iteration_count=4
         ),
@@ -76,6 +76,58 @@ PI_PLUS_27DOF_CFG = ArticulationCfg(
         ),
     },
 )
+
+
+PI_PLUS_21DOF_CFG = ArticulationCfg(
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TRACKERLAB_USD_DIR}/pi_plus_21dof/pi_plus_21dof.usd",
+        activate_contact_sensors=True,
+        rigid_props=sim_utils.RigidBodyPropertiesCfg(
+            disable_gravity=False,
+            retain_accelerations=False,
+            linear_damping=0.0,
+            angular_damping=0.0,
+            max_linear_velocity=1000.0,
+            max_angular_velocity=1000.0,
+            max_depenetration_velocity=1.0,
+        ),
+        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+            fix_root_link=False,
+            enabled_self_collisions=False, 
+            solver_position_iteration_count=4, 
+            solver_velocity_iteration_count=4
+        ),
+    ),
+    init_state=ArticulationCfg.InitialStateCfg(
+        pos=(0.0, 0.0, 0.4),
+        joint_pos={".*": 0.0},
+        joint_vel={".*": 0.0},
+    ),
+    soft_joint_pos_limit_factor=1.0,
+    actuators={
+        "legs": ImplicitActuatorCfg(
+            joint_names_expr=[".*_hip_.*", 
+                              ".*_thigh_.*",
+                              ".*_calf_.*",
+                              ".*_ankle_.*"
+                              ],
+            stiffness=80.0,
+            damping=1.1,
+            effort_limit_sim=100,
+        ),
+        "arms": ImplicitActuatorCfg(
+            joint_names_expr=[".*_shoulder_.*", 
+                              ".*_upper_arm_.*",
+                              ".*_elbow_.*",
+                              ".*_wrist_.*"
+                              ],
+            stiffness=30.0,
+            damping=0.6,
+            effort_limit_sim=100,
+        ),
+    },
+)
+
 
 """Configuration for the R2 Humanoid Robot."""
 

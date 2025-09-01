@@ -2,7 +2,6 @@ import os
 import json
 import torch
 from typing import Dict, List
-from poselib import POSELIB_MOTION_ALIGN_DIR
 from trackerLab import TRACKERLAB_LABJOINTS_DIR
 
 # ====================================================================================
@@ -34,6 +33,7 @@ class JointIdCaster(object):
             with open(motion_align_cfg_path, 'r') as f:
                 config:dict = json.load(f)
         else:
+            from poselib import POSELIB_MOTION_ALIGN_DIR
             print("[Warning] Using default motion align config which will be clean in future.")
             motion_align_cfg_path = os.path.join(POSELIB_MOTION_ALIGN_DIR, f"{self.robot_type}.json")
             with open(motion_align_cfg_path, 'r') as f:
@@ -102,6 +102,13 @@ class JointIdCaster(object):
         self.valid_dof_body_ids = valid_dof_body_ids
     
     # Utils
+    
+    def post_cast(self, dof_pos: torch.Tensor):
+        reverse_dof_idx = self.align_cfg.get("reverse_dof", [])
+        if reverse_dof_idx:
+            dof_pos[:, reverse_dof_idx] = -dof_pos[:, reverse_dof_idx]
+        
+        return dof_pos
     
     def fill_2lab(self, source:torch.Tensor, target: torch.Tensor):
         """

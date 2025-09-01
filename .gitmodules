@@ -1,3 +1,3 @@
-[submodule "sim2simlib/mujoco_assets"]
-	path = sim2simlib/mujoco_assets
+[submodule "data/unify_assets"]
+	path = data/unify_assets
 	url = https://github.com/Beat-in-our-hearts/mujoco_sim2sim_assets

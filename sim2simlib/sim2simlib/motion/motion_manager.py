@@ -6,6 +6,7 @@ from trackerLab.joint_id_caster import JointIdCaster
 from trackerLab.motion_buffer.motion_buffer import MotionBuffer
 from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
+from trackerLab.managers.motion_manager import MotionManagerCfg
 
 from sim2simlib.utils.utils import slerp
 
@@ -17,6 +18,7 @@ class Motion_Manager(object):
     
     def __init__(
             self, motion_buffer_cfg: MotionBufferCfg, 
+            motion_align_cfg: dict,
             lab_joint_names, robot_type, dt, device
         ):
         self.motion_buffer_cfg = motion_buffer_cfg
@@ -25,13 +27,17 @@ class Motion_Manager(object):
         self.dt = dt
         self.device = device
         
-        self.id_caster = JointIdCaster(device, lab_joint_names, robot_type=robot_type)
+        self.id_caster = JointIdCaster(device, lab_joint_names, robot_type=robot_type, motion_align_cfg=motion_align_cfg)
         self.motion_buffer = MotionBuffer(motion_buffer_cfg, num_envs=1, dt=dt, device=device, id_caster=self.id_caster)
         self.motion_lib = self.motion_buffer._motion_lib
         
         self.gym2lab_dof_ids = self.id_caster.gym2lab_dof_ids
         self.lab2gym_dof_ids = self.id_caster.lab2gym_dof_ids
         pass
+
+    @classmethod
+    def from_configclass(cls, cfg: MotionManagerCfg, lab_joint_names, dt, device):
+        return cls(cfg.motion_buffer_cfg, cfg.motion_align_cfg, lab_joint_names, cfg.robot_type, dt, device)
 
     def init_finite_state_machine(self):
         self.motion_buffer._motion_ids = torch.zeros_like(self.motion_buffer._motion_ids, dtype=torch.long, device=self.device)

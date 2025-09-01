@@ -11,7 +11,6 @@ class MotionManagerCfg:
     loc_gen:            bool                = True
     speed_scale:        float               = 1.0
     robot_type:         str                 = MISSING
-    reset_to_pose:      bool                = False
     motion_align_cfg:   Union[dict, str]    = None
     
     def set_motion_align_cfg(self, cfg):

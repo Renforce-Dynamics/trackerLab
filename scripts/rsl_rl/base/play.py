@@ -74,12 +74,13 @@ def main():
     """Play with RSL-RL agent."""
     # parse configuration
     env_cfg = parse_env_cfg(
-        args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric
+        args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs, use_fabric=not args_cli.disable_fabric,
+        entry_point_key="play_env_cfg_entry_point"
     )
     agent_cfg: RslRlOnPolicyRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
 
     # make a smaller scene for play
-    env_cfg.scene.num_envs = 50
+    # env_cfg.scene.num_envs = 50
     # spawn the robot randomly in the grid (instead of their terrain levels)
     env_cfg.scene.terrain.max_init_terrain_level = None
     # reduce the number of terrains to save memory
@@ -182,6 +183,7 @@ def main():
         path=export_model_dir,
         filename="policy.pt",
     )
+    
     print(f"[INFO] Joint orders: {env.unwrapped.scene['robot'].joint_names}")
 
     dt = env.unwrapped.step_dt
