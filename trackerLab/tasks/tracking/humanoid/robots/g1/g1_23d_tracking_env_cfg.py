@@ -198,6 +198,7 @@ class G1TrackingWalk(G1TrackingEnvCfg):
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/cmu_walk_full.yaml"
         self.rewards.flat_orientation_l2.weight = -5.0
         self.rewards.body_orientation_l2.weight = -5.0
+        self.rewards.action_rate_l2.weight = -0.5
 
 
 @configclass
