@@ -7,11 +7,10 @@ from glob import glob
 import numpy as np
 import rich
 import torch
-from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model, Sim2Sim_Config
+from sim2simlib.model.sim2sim_base import Sim2SimBaseModel, Sim2Sim_Config
 from sim2simlib.motion.motion_manager import MotionManagerSim2sim
-
     
-class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
+class Sim2SimMotionModel(Sim2SimBaseModel):
     
     motion_manager: MotionManagerSim2sim
     motion_obs_history: dict[str, list[np.ndarray]] = {}

@@ -157,7 +157,7 @@ class Sim2Sim(ABC):
         if self._cfg.debug:
             print(*args)
 
-class Sim2Sim_Base_Model(Sim2Sim):
+class Sim2SimBaseModel(Sim2Sim):
     
     def __init__(self, cfg: Sim2Sim_Config):
         super().__init__(cfg)  # Call parent constructor

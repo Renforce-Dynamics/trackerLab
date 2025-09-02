@@ -62,8 +62,8 @@ flowchart TD
 The library follows a hierarchical design pattern:
 
 - **`Sim2Sim` (Abstract Base Class)**: Defines the core interface with abstract methods for `act()`, `process_action()`, and `apply_action()`
-- **`Sim2Sim_Base_Model`**: Implements basic policy-driven simulation with PID/DC motor control
-- **`Sim2Sim_Motion_Model`**: Extends base model with motion tracking capabilities
+- **`Sim2SimBaseModel`**: Implements basic policy-driven simulation with PID/DC motor control
+- **`Sim2SimMotionModel`**: Extends base model with motion tracking capabilities
 
 ### Base Observation Input
 
@@ -119,11 +119,11 @@ v_ratio = q̇ / q̇_max
 
 ```python
 from sim2simlib.model.config import *
-from sim2simlib.model.actuator_motor import PID_Motor, DC_Motor
+from sim2simlib.model.actuator_motor import PIDMotor, DCMotor
 
 # Motor configuration with regex patterns
 motor_cfg = Motor_Config(
-    motor_type=DC_Motor,
+    motor_type=DCMotor,
     effort_limit={".*_hip_.*": 200.0, ".*_knee": 150.0, ".*": 100.0},
     stiffness={".*_hip_.*": 400.0, ".*": 200.0},
     damping={".*": 20.0},
@@ -169,10 +169,10 @@ cfg = Sim2Sim_Config(
 2. **Run Basic Policy Simulation**:
 
 ```python
-from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
+from sim2simlib.model.sim2sim_base import Sim2SimBaseModel
 
 # Create model
-model = Sim2Sim_Base_Model(cfg)
+model = Sim2SimBaseModel(cfg)
 
 # Run with visualization
 model.view_run()
@@ -184,13 +184,13 @@ model.headless_run()
 3. **Run Motion Tracking**:
 
 ```python
-from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
+from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
 
 # Add motion configuration to your config
 cfg.motion_cfg = MotionManagerCfg(...)
 
 # Create motion model
-motion_model = Sim2Sim_Motion_Model(cfg)
+motion_model = Sim2SimMotionModel(cfg)
 
 # Run motion forward kinematics visualization
 motion_model.motion_fk_view()
@@ -225,7 +225,7 @@ motion_model.view_run()
 Add custom observation terms by implementing methods in your model:
 
 ```python
-class MyCustomModel(Sim2Sim_Base_Model):
+class MyCustomModel(Sim2SimBaseModel):
     def _obs_custom_sensor(self) -> np.ndarray:
         # Your custom observation logic
         return sensor_data
@@ -238,7 +238,7 @@ Use regex patterns for joint-specific motor parameters:
 
 ```python
 motor_cfg = Motor_Config(
-    motor_type=DC_Motor,
+    motor_type=DCMotor,
     stiffness={
         ".*_hip_yaw": 300.0,      # Hip yaw joints
         ".*_hip_.*": 400.0,       # Other hip joints  

@@ -14,7 +14,7 @@ import rich
 from sim2simlib.model.config import Actions, Motor_Config
 import rich
 
-class PID_Motor:
+class PIDMotor:
     """
     Simple PID motor model with constant torque limits.
     
@@ -173,7 +173,7 @@ class PID_Motor:
         return np.clip(effort, a_min=-effort_limit, a_max=effort_limit)
 
 
-class DC_Motor(PID_Motor):
+class DCMotor(PIDMotor):
     """
     DC motor model with velocity-dependent torque limits.
     
@@ -209,7 +209,7 @@ class DC_Motor(PID_Motor):
         _velocity_limit (np.ndarray): Maximum velocities [rad/s]
         _friction (np.ndarray): Friction coefficients [N⋅m⋅s/rad]
         
-    Inherits from PID_Motor:
+    Inherits from PIDMotor:
         _effort_limit (np.ndarray): Absolute maximum torque limits [N⋅m]
         _stiffness (np.ndarray): Position gains [N⋅m/rad] 
         _damping (np.ndarray): Velocity gains [N⋅m⋅s/rad]
@@ -222,7 +222,7 @@ class DC_Motor(PID_Motor):
         """
         Initialize the DC motor with configuration parameters.
         
-        Calls the parent PID_Motor constructor to initialize basic parameters,
+        Calls the parent PIDMotor constructor to initialize basic parameters,
         then parses DC motor specific parameters.
         
         Args:
