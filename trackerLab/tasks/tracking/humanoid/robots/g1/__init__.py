@@ -21,3 +21,15 @@ gym.register(
         "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:G129DWalkPPOCfg",
     },
 )
+
+
+gym.register(
+    id="TrackerLab-Tracking-Unitree-G1-23D-Walk-Replay",
+    entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk_Replay",
+        "play_env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk_Replay",
+        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.tracking.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
+    },
+)

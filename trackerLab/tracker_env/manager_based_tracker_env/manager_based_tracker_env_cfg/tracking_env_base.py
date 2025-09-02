@@ -97,3 +97,4 @@ class ManagerBasedTrackerEnvCfg(ManagerBasedRLEnvCfg):
     def set_record(self, dir):
         self.recorders = TrajMotionRecordCfg() # RecordsCfg()
         self.recorders.dataset_export_dir_path = dir
+        print(f"[INFO] Recording dataset to: {dir}")

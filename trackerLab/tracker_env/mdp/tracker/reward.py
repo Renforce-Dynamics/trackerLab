@@ -160,13 +160,17 @@ def motion_lin_vel_xy_yaw_frame_exp(
     )
     return torch.exp(-lin_vel_error / std**2)
 
-def motion_whb_dof_pos_subset_exp(env, std: float) -> torch.Tensor:
+def motion_whb_dof_pos_subset_exp(
+    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
     """Reward tracking of whb dof position commands in the gravity aligned robot frame using exponential kernel."""
     diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
-    return torch.exp(-diff_angle / std**2)
+    reward = torch.exp(-diff_angle / std**2)
+    reward *= torch.clamp(-env.scene["robot"].data.projected_gravity_b[:, 2], 0, 0.7) / 0.7
+    return reward
 
-def motion_whb_dof_pos_subset_l2(env) -> torch.Tensor:
+def motion_whb_dof_pos_subset_l2(env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
     """Reward tracking of whb dof position commands in the gravity aligned robot frame using L2 loss."""
     diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)

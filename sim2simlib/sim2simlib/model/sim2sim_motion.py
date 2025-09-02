@@ -26,7 +26,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         self.motion_manager = MotionManagerSim2sim.from_configclass(
                                 cfg=self._cfg.motion_cfg,
                                 lab_joint_names=self.policy_joint_names,
-                                dt=self._cfg.simulation_dt * self._cfg.control_decimation,
+                                dt=self._cfg.simulation_dt * self._cfg.control_decimation * self._cfg.motion_cfg.speed_scale,
                                 device="cpu"
                             )
         self.num_motions = self.motion_manager.motion_lib.num_motions()
@@ -73,6 +73,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
     def _get_current_motion_observations(self) -> dict[str, np.ndarray]:
         """Get current motion observations without history processing."""
         is_update = self.motion_manager.step()
+        # print(f"[INFO] Motion Root_Vel: {self.motion_manager.loc_root_vel}")
         motion_observations = {}
         for term in self._cfg.observation_cfg.motion_observations_terms:
             if hasattr(self.motion_manager, f"{term}"):
@@ -83,12 +84,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
             else:
                 raise ValueError(f"Motion observation term '{term}' not implemented.")
         if torch.any(is_update):
-            if self._cfg.motion_update_rise:
-                old_motion_id = self.motion_id
-                self.motion_id = (self.motion_id + 1) % self.num_motions
-                rich.print(f"[INFO] Motion {old_motion_id} updated to new phase {self.motion_id} at step.")
-            else:
-                rich.print(f"[INFO] Motion {self.motion_id} updated at step.")
+            print(f"[INFO] Motion updated at step")
             self.motion_manager.set_finite_state_machine_motion_ids(
                 motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
         return motion_observations
@@ -132,6 +128,11 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
     def get_obs(self) -> dict[str, np.ndarray]:
         base_observations = self.get_base_observations()
         motion_command = self.get_motion_command()
+        
+        # # dummy motion 
+        # for key in motion_command:
+        #     motion_command[key] = np.zeros_like(motion_command[key])
+        
         return  motion_command | base_observations
 
     def motion_fk_view(self):
@@ -162,7 +163,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                     
                     # Optional: Print motion update info
                     if torch.any(is_update):
-                        rich.print(f"[INFO] Motion {self.motion_id} updated at step {counter}.")
+                        rich.print(f"[INFO] Motion {self.motion_id} updated at step {counter}")
                         self.motion_id = (self.motion_id + 1) % self.num_motions
                         self.motion_manager.set_finite_state_machine_motion_ids(
                             motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))

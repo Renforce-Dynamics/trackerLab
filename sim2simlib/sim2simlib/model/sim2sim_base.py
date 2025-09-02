@@ -12,7 +12,7 @@ import rich
 
 from sim2simlib.utils.utils import get_gravity_orientation
 from sim2simlib.model.config import Sim2Sim_Config, Actions
-
+import rich
 
 class Sim2Sim(ABC):
     qpos_maps: list[int] = []
@@ -39,6 +39,7 @@ class Sim2Sim(ABC):
         self.policy_joint_names = self._cfg.policy_joint_names
         self.last_action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
         self.cmd = cfg.cmd if cfg.cmd is not None else [0, 0, 0]
+        
 
         
     def _init_joint_names(self):
@@ -179,10 +180,10 @@ class Sim2Sim_Base_Model(Sim2Sim):
                         self.mj_data.qpos[i + 7] = angle
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
-        rich.print(f"[INFO] Initial qpos: {self.init_qpos}")
-        rich.print(f"[INFO] Initial angles: {self.init_angles}")
-        rich.print(f"[INFO] Initial angles mapped: {self.maped_qpos}")
-    
+        rich.print("[INFO] Initial qpos: ", self.init_qpos)
+        rich.print("[INFO] Initial angles: ", self.init_angles)
+        rich.print("[INFO] Initial angles mapped: ", self.maped_qpos)
+
     def _init_observation_history(self):
         """Initialize observation history buffers."""
         if self._cfg.observation_cfg.using_base_obs_history:
@@ -248,7 +249,7 @@ class Sim2Sim_Base_Model(Sim2Sim):
         # self.debug("[DEBUG] Observation:", obs_np)
         obs_tensor = torch.from_numpy(obs_np).unsqueeze(0)
         action = self.policy(obs_tensor).detach().numpy().squeeze()
-        self.debug("[DEBUG] action:", action)
+        # self.debug("[DEBUG] action:", action)
         self.last_action[:] = action
         return action
     

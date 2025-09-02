@@ -12,6 +12,7 @@ import numpy as np
 import re
 import rich
 from sim2simlib.model.config import Actions, Motor_Config
+import rich
 
 class PID_Motor:
     """
@@ -246,11 +247,11 @@ class DC_Motor(PID_Motor):
         self._saturation_effort = self._parse_parameter(self.cfg.saturation_effort)
         self._velocity_limit = self._parse_parameter(self.cfg.velocity_limit)
         self._friction = self._parse_parameter(self.cfg.friction)
-        
-        rich.print(f"[INFO] DC Motor additional parameters:")
-        rich.print(f"[INFO] Saturation effort: {self._saturation_effort}")
-        rich.print(f"[INFO] Velocity limit: {self._velocity_limit}")
-        rich.print(f"[INFO] Friction: {self._friction}")
+
+        rich.print("[INFO] DC Motor additional parameters:")
+        rich.print("[INFO] Saturation effort: ", self._saturation_effort)
+        rich.print("[INFO] Velocity limit: ", self._velocity_limit)
+        rich.print("[INFO] Friction: ", self._friction)
 
     def compute(self, joint_pos: np.ndarray, joint_vel: np.ndarray, action: Actions) -> np.ndarray:
         """

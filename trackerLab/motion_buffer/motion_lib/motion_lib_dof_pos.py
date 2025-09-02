@@ -21,8 +21,9 @@ from poselib.motion_data.dof_pos_motion import DofposMotion
 
 class MotionLibDofPos(MotionLib):
     def __init__(self, motion_file, id_caster, device, regen_pkl=False, **kwargs):
-        super().__init__(motion_file, id_caster, device, regen_pkl, **kwargs)
         self.motion_type = kwargs.get("motion_type")
+        print("MotionLibDofPos initialized with motion type:", self.motion_type)
+        super().__init__(motion_file, id_caster, device, regen_pkl, **kwargs)
 
     def _load_motions(self, motion_file):
         self._motions = []
