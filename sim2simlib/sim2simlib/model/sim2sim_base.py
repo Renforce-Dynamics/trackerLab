@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import re
 from abc import ABC, abstractmethod
+import rich
 
 from sim2simlib.utils.utils import get_gravity_orientation
 from sim2simlib.model.config import Sim2Sim_Config, Actions
@@ -32,6 +33,8 @@ class Sim2Sim(ABC):
         self.mj_model = mujoco.MjModel.from_xml_path(self.xml_path)
         self.mj_data = mujoco.MjData(self.mj_model)
         self.mj_model.opt.timestep = cfg.simulation_dt
+        self.mj_model.opt.integrator = mujoco.mjtIntegrator.mjINT_RK4
+        self.mj_model.opt.noslip_iterations = 100
         self.slowdown_factor = self._cfg.slowdown_factor
         self.policy_joint_names = self._cfg.policy_joint_names
         self.last_action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
@@ -44,8 +47,8 @@ class Sim2Sim(ABC):
         self.qvel_strat_ids = [self.mj_model.jnt_dofadr[i] for i in range(self.mj_model.njnt)]
 
         self.actuators_joint_names = self.mujoco_joint_names[1:]
-        print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
-        print('[INFO] Policy joint names:', self.policy_joint_names)
+        rich.print('[INFO] MuJoCo joint names:', self.mujoco_joint_names)
+        rich.print('[INFO] Policy joint names:', self.policy_joint_names)
         
         # mujoco order -> policy order
         for joint_name in self.policy_joint_names:
@@ -57,9 +60,9 @@ class Sim2Sim(ABC):
             else:
                 raise ValueError(f"Joint name {joint_name} not found in MuJoCo model.")
 
-        print("[INFO] qpos maps:", self.qpos_maps)
-        print("[INFO] qvel maps:", self.qvel_maps)
-        print("[INFO] Action maps:", self.act_maps) 
+        rich.print("[INFO] qpos maps:", self.qpos_maps)
+        rich.print("[INFO] qvel maps:", self.qvel_maps)
+        rich.print("[INFO] Action maps:", self.act_maps) 
         
     def _init_load_policy(self):
         self.policy = torch.jit.load(self._cfg.policy_path)
@@ -176,9 +179,9 @@ class Sim2Sim_Base_Model(Sim2Sim):
                         self.mj_data.qpos[i + 7] = angle
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
-        print(f"[INFO] Initial qpos: [{', '.join([f'{x:.2f}' for x in self.init_qpos])}]")
-        print(f"[INFO] Initial angles: [{', '.join([f'{x:.2f}' for x in self.init_angles])}]")
-        print(f"[INFO] Initial angles mapped: [{', '.join([f'{x:.2f}' for x in self.maped_qpos])}]")
+        rich.print(f"[INFO] Initial qpos: {self.init_qpos}")
+        rich.print(f"[INFO] Initial angles: {self.init_angles}")
+        rich.print(f"[INFO] Initial angles mapped: {self.maped_qpos}")
     
     def _init_observation_history(self):
         """Initialize observation history buffers."""

@@ -16,5 +16,5 @@ def load_from_py(file_path: str, var_name: str) -> Any:
 def load_from_yaml(file_path:str) -> dict:
     
     with open(file_path, "r", encoding="utf-8") as f:
-            data = yaml.load(f, Loader=yaml.UnsafeLoader)
+        data = yaml.load(f, Loader=yaml.UnsafeLoader)
     return data

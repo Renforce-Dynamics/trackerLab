@@ -93,4 +93,6 @@ class Sim2Sim_Config:
     
     motion_float_grav: bool = False
     motion_cfg: MotionManagerCfg = None
+    motion_id: int = 0
+    motion_update_rise: bool = False
     """motion manager configuration"""
