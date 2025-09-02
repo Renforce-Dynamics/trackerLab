@@ -5,7 +5,7 @@ import mujoco.viewer
 from dataclasses import dataclass
 from glob import glob
 import numpy as np
-
+import rich
 import torch
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model, Sim2Sim_Config
 from sim2simlib.motion.motion_manager import Motion_Manager
@@ -29,9 +29,13 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                                 dt=self._cfg.simulation_dt * self._cfg.control_decimation,
                                 device="cpu"
                             )
+        self.num_motions = self.motion_manager.motion_lib.num_motions()
+        self.motion_id = self._cfg.motion_id % self.num_motions
+        rich.print(f"[INFO] Loaded {self.num_motions} motions. Using motion ID: {self.motion_id}")
+        
         self.motion_manager.init_finite_state_machine()
         self.motion_manager.set_finite_state_machine_motion_ids(
-            motion_ids=torch.tensor([0], device="cpu", dtype=torch.long))
+            motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
    
     def _init_motion_joint_maps(self):
         """Initialize mapping from motion joint order to mujoco actuator joint order."""
@@ -40,8 +44,8 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         self.motion_joint_names = self.motion_manager.id_caster.shared_subset_lab_names
         self.motion_maps = []
         
-        print('[INFO] Motion joint names:', self.motion_joint_names)
-        print('[INFO] Actuator joint names:', self.actuators_joint_names)
+        rich.print('[INFO] Motion joint names:', self.motion_joint_names)
+        rich.print('[INFO] Actuator joint names:', self.actuators_joint_names)
         
         # Create mapping from motion joint names to mujoco actuator joint indices
         for motion_joint_name in self.motion_joint_names:
@@ -52,7 +56,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
             else:
                 raise ValueError(f"Motion joint name {motion_joint_name} not found in MuJoCo actuator joints.")
         
-        print(f"[INFO] Motion maps (motion order -> mujoco actuator order): {self.motion_maps}")
+        rich.print(f"[INFO] Motion maps (motion order -> mujoco actuator order): {self.motion_maps}")
         
         self.motion_maps = [item + self.base_link_id + 7 for item in self.motion_maps]
         
@@ -79,8 +83,14 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
             else:
                 raise ValueError(f"Motion observation term '{term}' not implemented.")
         if torch.any(is_update):
+            if self._cfg.motion_update_rise:
+                old_motion_id = self.motion_id
+                self.motion_id = (self.motion_id + 1) % self.num_motions
+                rich.print(f"[INFO] Motion {old_motion_id} updated to new phase {self.motion_id} at step.")
+            else:
+                rich.print(f"[INFO] Motion {self.motion_id} updated at step.")
             self.motion_manager.set_finite_state_machine_motion_ids(
-                motion_ids=torch.tensor([0], device="cpu", dtype=torch.long))
+                motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
         return motion_observations
     
     def _update_motion_observation_history(self):
@@ -132,8 +142,8 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         joint positions from the motion manager to the MuJoCo simulation.
         """
         counter = 0
-        print(f"[INFO] Starting motion forward kinematics visualization...")
-        print(f"[INFO] Motion joints: {len(self.motion_joint_names)}, Actuator joints: {len(self.actuators_joint_names)}")
+        rich.print(f"[INFO] Starting motion forward kinematics visualization...")
+        rich.print(f"[INFO] Motion joints: {len(self.motion_joint_names)}, Actuator joints: {len(self.actuators_joint_names)}")
         
         with mujoco.viewer.launch_passive(self.mj_model, self.mj_data) as viewer:
             while viewer.is_running():
@@ -152,7 +162,10 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
                     
                     # Optional: Print motion update info
                     if torch.any(is_update):
-                        print(f"[INFO] Motion updated at step {counter}")
+                        rich.print(f"[INFO] Motion {self.motion_id} updated at step {counter}.")
+                        self.motion_id = (self.motion_id + 1) % self.num_motions
+                        self.motion_manager.set_finite_state_machine_motion_ids(
+                            motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
                 
                 # Forward kinematics computation (no dynamics)
                 mujoco.mj_forward(self.mj_model, self.mj_data)
