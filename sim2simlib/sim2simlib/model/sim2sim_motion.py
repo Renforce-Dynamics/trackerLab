@@ -8,12 +8,12 @@ import numpy as np
 
 import torch
 from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model, Sim2Sim_Config
-from sim2simlib.motion.motion_manager import Motion_Manager
+from sim2simlib.motion.motion_manager import MotionManagerSim2sim
 
     
 class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
     
-    motion_manager: Motion_Manager
+    motion_manager: MotionManagerSim2sim
     motion_obs_history: dict[str, list[np.ndarray]] = {}
     
     def __init__(self, cfg: Sim2Sim_Config):
@@ -23,7 +23,7 @@ class Sim2Sim_Motion_Model(Sim2Sim_Base_Model):
         self._init_motion_observation_history()
      
     def _init_motion_manager(self):
-        self.motion_manager = Motion_Manager.from_configclass(
+        self.motion_manager = MotionManagerSim2sim.from_configclass(
                                 cfg=self._cfg.motion_cfg,
                                 lab_joint_names=self.policy_joint_names,
                                 dt=self._cfg.simulation_dt * self._cfg.control_decimation,

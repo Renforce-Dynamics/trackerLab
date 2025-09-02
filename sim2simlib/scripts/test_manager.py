@@ -1,7 +1,7 @@
 import json
 import torch
 
-from sim2simlib.motion.motion_manager import Motion_Manager, MotionBufferCfg
+from sim2simlib.motion.motion_manager import MotionManagerSim2sim, MotionBufferCfg
 from sim2simlib.utils.utils import get_mujoco_joint_names
 
 robot_type="pi_plus_27dof"
@@ -41,7 +41,7 @@ def test():
 
 if __name__ == "__main__":
 
-    manager = Motion_Manager(
+    manager = MotionManagerSim2sim(
         motion_buffer_cfg=cfg,
         lab_joint_names=mujoco_joint_names,
         robot_type=robot_type,

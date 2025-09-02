@@ -29,6 +29,14 @@ class HumanoidRewardsCfgV2:
                                  params={"std": math.sqrt(2)},
                                  weight = 1.0)
     
+    motion_whb_dof_pos_punish = RewTerm(
+        func=mdp.punish_motion_l1_whb_dof_pos_subset, 
+        weight = -1.0
+    )
+    
+    motion_base_lin_vel_punish = RewTerm(func=mdp.punish_motion_l1_lin_vel, weight=-0.6)
+    motion_base_ang_vel_punish = RewTerm(func=mdp.punish_motion_l1_ang_vel, weight=-0.6)
+    
     motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
                                   params={"std": 0.5},
                                   weight=2.0)
@@ -49,7 +57,7 @@ class HumanoidRewardsCfgV2:
     # contact rewards
     undesired_contacts  = RewTerm(
         func=mdp.undesired_contacts,  
-        weight=-1.0,
+        weight=-1e-2,
         params={"sensor_cfg": 
             SceneEntityCfg(
                 "contact_forces", 
@@ -66,8 +74,8 @@ class HumanoidRewardsCfgV2:
         )
     
     # gravity rewards
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1.0)
-    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-2.0,
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1e-3)
+    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-1e-3,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names="torso_link")})
 
     # termination rewards
@@ -80,10 +88,10 @@ class HumanoidRewardsCfgV2:
     feet_force          = RewTerm(func=mdp.body_force,          weight=-3e-3,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "threshold": 500, "max_reward": 400})
-    feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
+    feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-0.5,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
                                           "threshold": 0.2})
-    feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
+    feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-0.5,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
     
     # joint deviation rewards
@@ -123,8 +131,8 @@ class TrackingHumanoidEnvCfg(ManagerBasedTrackerEnvCfg):
                 },
             }
         self.events.reset_robot_joints.params = {
-                "position_range": (1.0, 1.0),
-                "velocity_range": (-1.0, 1.0),
+                "position_range": (0.5, 0.5),
+                "velocity_range": (-0.5, 0.5),
             }
 
         # Push terms

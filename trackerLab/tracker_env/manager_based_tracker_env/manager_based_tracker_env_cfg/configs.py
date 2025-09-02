@@ -235,20 +235,20 @@ class RewardsCfg:
         func=tracker_reward.reward_tracking_demo_height, 
         weight=0.0
     )
-    motion_exp_whb_dof_pos = RewTerm(
-        func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
-        weight = 5.0,
-        params={
-            "factor": 0.3
-        }
-    )
-    motion_base_lin_vel = RewTerm(
-        func=tracker_reward.reward_motion_base_lin_vel, 
-        params = {
-            "vel_scale": 1.0
-        },
-        weight=5.0
-    )
+    # motion_exp_whb_dof_pos = RewTerm(
+    #     func=tracker_reward.reward_motion_exp_whb_dof_pos_subset, 
+    #     weight = 5.0,
+    #     params={
+    #         "factor": 0.3
+    #     }
+    # )
+    # motion_base_lin_vel = RewTerm(
+    #     func=tracker_reward.reward_motion_base_lin_vel, 
+    #     params = {
+    #         "vel_scale": 1.0
+    #     },
+    #     weight=5.0
+    # )
     motion_base_ang_vel = RewTerm(
         func=tracker_reward.reward_motion_base_ang_vel, 
         weight=0.5

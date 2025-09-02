@@ -33,6 +33,8 @@ class MotionBuffer(object):
         motion_lib_type = getattr(self.cfg, "motion_lib_type")
         if isinstance(motion_lib_type, str):
             motion_lib_type = eval(motion_lib_type)
+        else:
+            motion_lib_type = MotionLib
 
         self._motion_lib = motion_lib_type(
             motion_file=self.cfg.motion.motion_name,

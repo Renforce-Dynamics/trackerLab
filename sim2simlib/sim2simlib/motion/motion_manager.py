@@ -10,7 +10,7 @@ from trackerLab.managers.motion_manager import MotionManagerCfg
 
 from sim2simlib.utils.utils import slerp
 
-class Motion_Manager(object):
+class MotionManagerSim2sim(object):
     
     motion_buffer: MotionBuffer
     id_caster: JointIdCaster

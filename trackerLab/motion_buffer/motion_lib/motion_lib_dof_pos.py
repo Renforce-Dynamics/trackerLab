@@ -16,24 +16,7 @@ from .transforms.hdf5_loader import load_trajectories_from_hdf5
 
 from dataclasses import dataclass
 
-@dataclass
-class DofposMotion:
-    global_translation: torch.Tensor
-    global_rotation: torch.Tensor
-    local_rotation: torch.Tensor
-    global_root_velocity: torch.Tensor
-    global_root_angular_velocity: torch.Tensor
-    dof_vels: torch.Tensor
-    dof_poses: torch.Tensor
-    
-    def tensorlize(self, device):
-        self.global_translation             = torch.tensor(self.global_translation, device=device)
-        self.global_rotation                = torch.tensor(self.global_rotation, device=device)
-        self.local_rotation                 = torch.tensor(self.local_rotation, device=device)
-        self.global_root_velocity           = torch.tensor(self.global_root_velocity, device=device)
-        self.global_root_angular_velocity   = torch.tensor(self.global_root_angular_velocity, device=device)
-        self.dof_vels                       = torch.tensor(self.dof_vels, device=device)
-        self.dof_poses                      = torch.tensor(self.dof_poses, device=device)
+from poselib.motion_data.dof_pos_motion import DofposMotion
 
 
 class MotionLibDofPos(MotionLib):
@@ -100,23 +83,8 @@ class MotionLibDofPos(MotionLib):
         trajs: List[Dict[str, torch.Tensor]] = load_trajectories_from_hdf5(curr_file)
 
         for traj in trajs:
-            body_link_pose_w = traj["body_link_pose_w"]
-            joint_pos = traj["joint_pos"]
-            joint_vel = traj["joint_vel"]
-            root_lin_vel_b = traj["root_lin_vel_b"]
-            root_ang_vel_b = traj["root_ang_vel_b"]
-            body_com_quat_b = traj["body_com_quat_b"]
-
-            frames = joint_pos.shape[0]
-            motion = DofposMotion(
-                global_translation=body_link_pose_w[..., :3],
-                global_rotation=body_link_pose_w[..., 3:7],
-                local_rotation=body_com_quat_b,
-                global_root_velocity=root_lin_vel_b,
-                global_root_angular_velocity=root_ang_vel_b,
-                dof_vels=joint_vel,
-                dof_poses=joint_pos
-            )
+            motion = DofposMotion.from_replay(traj)
+            frames = motion.frames
             motion.tensorlize(self._device)
             self._motions.append(motion)
             self._motion_fps.append(fps)
@@ -131,6 +99,18 @@ class MotionLibDofPos(MotionLib):
     def load_from_GMR_pkl(self, curr_file: str, locs):
         fps = locs["motion_fps"]
         dt = locs["curr_dt"]
+        motion = DofposMotion.from_GMR(curr_file)
+        frames = motion.frames
+        motion.tensorlize(self._device)
+        self._motions.append(motion)
+        self._motion_fps.append(fps)
+        self._motion_num_frames.append(frames)
+        self._motion_lengths.append(dt * frames)
+        
+        self._motion_dt.append(dt)
+        self._motion_weights.append(locs["curr_weight"])
+        self._motion_files.append(curr_file)
+        self._motion_difficulty.append(locs["curr_difficulty"])
         raise NotImplementedError("This method is undone")
             
     def _fetch_motion_files(self, motion_file):

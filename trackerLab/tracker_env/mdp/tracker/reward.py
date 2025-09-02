@@ -57,48 +57,49 @@ def reward_alive(env):
 reward motion terms will using the motion manager self cached data which is better for .
 """
 
+# Motion terms v1
+
 """
 Penalize joint positions that deviate from the default one when no command.
 l1 for all joint pos and mul with the z component of the projected gravity
 """
-def reward_motion_l1_whb_dof_pos_subset(
+def punish_motion_l1_whb_dof_pos_subset(
     env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ):
     # asset: Articulation = env.scene[asset_cfg.name]
     # diff_angle = asset.data.joint_pos - env.motion_manager.loc_dof_pos
-    diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
-    reward = torch.sum(torch.abs(diff_angle), dim=1)
+    diff = env.joint_subset - env.motion_manager.loc_dof_pos
+    reward = torch.sum(torch.abs(diff), dim=1)
     return reward
 
-def reward_motion_exp_whb_dof_pos_subset(
-    env, factor = 0.5, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-):
-    diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
-    diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
-    return torch.exp(-diff_angle * factor)
-
-# def reward_motion_l1_whb_dof_pos(
-#     env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-# ):
-#     # asset: Articulation = env.scene[asset_cfg.name]
-#     diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
-#     reward = torch.sum(torch.abs(diff_angle), dim=1)
-#     return reward
-
-# def reward_motion_exp_whb_dof_pos(
-#     env, factor = 0.5, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-# ):
-#     asset: Articulation = env.scene[asset_cfg.name]
-#     diff_angle = asset.data.joint_pos - env.motion_manager.loc_dof_pos
-#     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
-#     return torch.exp(-diff_angle * factor)
-
-def reward_motion_base_lin_vel(
-    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), vel_scale = 1.0
+def punish_motion_l1_lin_vel(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ):
     asset: Articulation = env.scene[asset_cfg.name]
-    diff = asset.data.root_lin_vel_b - env.motion_manager.loc_root_vel * vel_scale
-    reward = torch.exp(- torch.norm(diff, dim=1))
+    diff = asset.data.root_lin_vel_b - env.motion_manager.loc_root_vel
+    reward = torch.sum(torch.abs(diff), dim=1)
+    return reward
+
+def punish_motion_l1_ang_vel(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+):
+    asset: Articulation = env.scene[asset_cfg.name]
+    diff = asset.data.root_ang_vel_b - env.motion_manager.loc_ang_vel
+    reward = torch.sum(torch.abs(diff), dim=1)
+    return reward
+
+def punish_base_ang_vel(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+):
+    """
+    Penalize joint positions that deviate from the default one when no command.
+    l1 for all joint pos and mul with the z component of the projected gravity
+    """
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    # compute out of limits constraints
+    diff = asset.data.root_ang_vel_b[:, 2]
+    reward = torch.abs(diff)
     return reward
 
 def reward_motion_base_lin_vel_x(
@@ -136,59 +137,7 @@ def reward_tracking_demo_height(
     rew = torch.exp(- torch.abs(cur_height - demo_height))
     return rew
 
-def punish_base_ang_vel(
-    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-):
-    """
-    Penalize joint positions that deviate from the default one when no command.
-    l1 for all joint pos and mul with the z component of the projected gravity
-    """
-    # extract the used quantities (to enable type-hinting)
-    asset: Articulation = env.scene[asset_cfg.name]
-    # compute out of limits constraints
-    diff = asset.data.root_ang_vel_b[:, 2]
-    reward = torch.exp(- diff ** 2)
-    return reward
-
-
-def body_orientation_l2(
-    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
-) -> torch.Tensor:
-    asset: Articulation = env.scene[asset_cfg.name]
-    body_orientation = quat_apply_inverse(
-        asset.data.body_quat_w[:, asset_cfg.body_ids[0], :], asset.data.GRAVITY_VEC_W
-    )
-    return torch.sum(torch.square(body_orientation[:, :2]), dim=1)
-
-def body_force(
-    env, sensor_cfg: SceneEntityCfg, threshold: float = 500, max_reward: float = 400
-) -> torch.Tensor:
-    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
-    reward = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2].norm(dim=-1)
-    reward[reward < threshold] = 0
-    reward[reward > threshold] -= threshold
-    reward = reward.clamp(min=0, max=max_reward)
-    return reward
-
-def feet_too_near(
-    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), threshold: float = 0.2
-) -> torch.Tensor:
-    assert len(asset_cfg.body_ids) == 2
-    asset: Articulation = env.scene[asset_cfg.name]
-    feet_pos = asset.data.body_pos_w[:, asset_cfg.body_ids, :]
-    distance = torch.norm(feet_pos[:, 0] - feet_pos[:, 1], dim=-1)
-    return (threshold - distance).clamp(min=0)
-
-
-def feet_stumble(
-    env, sensor_cfg: SceneEntityCfg
-) -> torch.Tensor:
-    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
-    return torch.any(
-        torch.norm(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :2], dim=2)
-        > 5 * torch.abs(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2]),
-        dim=1,
-    )
+# Motion Terms V2
 
 def motion_ang_vel_z_world_exp(
     env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
@@ -222,3 +171,48 @@ def motion_whb_dof_pos_subset_l2(env) -> torch.Tensor:
     diff_angle = env.joint_subset - env.motion_manager.loc_dof_pos
     diff_angle = torch.sum(torch.abs(diff_angle), dim=1)
     return torch.square(diff_angle)
+
+
+# 
+
+def body_orientation_l2(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    asset: Articulation = env.scene[asset_cfg.name]
+    body_orientation = quat_apply_inverse(
+        asset.data.body_quat_w[:, asset_cfg.body_ids[0], :], asset.data.GRAVITY_VEC_W
+    )
+    return torch.sum(torch.square(body_orientation[:, :2]), dim=1)
+
+def body_force(
+    env, sensor_cfg: SceneEntityCfg, threshold: float = 500, max_reward: float = 400
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    reward = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2].norm(dim=-1)
+    reward[reward < threshold] = 0
+    reward[reward > threshold] -= threshold
+    reward = reward.clamp(min=0, max=max_reward)
+    return reward
+
+# 
+
+def feet_too_near(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), threshold: float = 0.2
+) -> torch.Tensor:
+    assert len(asset_cfg.body_ids) == 2
+    asset: Articulation = env.scene[asset_cfg.name]
+    feet_pos = asset.data.body_pos_w[:, asset_cfg.body_ids, :]
+    distance = torch.norm(feet_pos[:, 0] - feet_pos[:, 1], dim=-1)
+    return (threshold - distance).clamp(min=0)
+
+
+def feet_stumble(
+    env, sensor_cfg: SceneEntityCfg
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    return torch.any(
+        torch.norm(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :2], dim=2)
+        > 5 * torch.abs(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2]),
+        dim=1,
+    )
+
