@@ -1,0 +1,140 @@
+motions:
+  '35/35_01_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_02_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_03_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_04_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_05_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_06_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_07_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_08_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_09_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_10_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_11_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_12_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_13_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_14_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_15_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_16_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_28_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_29_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_30_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_31_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_32_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_33_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_34_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  root: "GMR/booster_k1/CMU"
