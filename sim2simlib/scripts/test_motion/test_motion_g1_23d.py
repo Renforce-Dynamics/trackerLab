@@ -6,7 +6,7 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from sim2simlib import LOGS_DIR, MUJOCO_ASSETS
 
-ckpt_dir = f"{LOGS_DIR}/rsl_rl/trackerlab_tracking_unitree_g1_23d_walk/2025-09-01_11-05-47"
+ckpt_dir = f"{LOGS_DIR}/rsl_rl/trackerlab_tracking_unitree_g1_23d_walk/2025-09-02_11-50-12"
 
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
@@ -27,9 +27,9 @@ config = Sim2Sim_Config(
     ),
     motion_id=16,
     robot_name='g1_23d',
-    simulation_dt=0.001,
+    simulation_dt=0.002,
     slowdown_factor=1.0,
-    control_decimation=20,
+    control_decimation=10,
     policy_path=f"{ckpt_dir}/exported/policy.pt",
     xml_path=MUJOCO_ASSETS["unitree_g1_23dof"],
     policy_joint_names=['left_hip_pitch_joint', 'right_hip_pitch_joint', 'waist_yaw_joint', 'left_hip_roll_joint', 'right_hip_roll_joint', 'left_shoulder_pitch_joint', 'right_shoulder_pitch_joint', 'left_hip_yaw_joint', 'right_hip_yaw_joint', 'left_shoulder_roll_joint', 'right_shoulder_roll_joint', 'left_knee_joint', 'right_knee_joint', 'left_shoulder_yaw_joint', 'right_shoulder_yaw_joint', 'left_ankle_pitch_joint', 'right_ankle_pitch_joint', 'left_elbow_joint', 'right_elbow_joint', 'left_ankle_roll_joint', 'right_ankle_roll_joint', 'left_wrist_roll_joint', 'right_wrist_roll_joint'],
