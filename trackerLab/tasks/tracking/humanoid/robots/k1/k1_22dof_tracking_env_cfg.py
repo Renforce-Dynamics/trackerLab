@@ -1,3 +1,4 @@
+import math
 import isaaclab.sim as sim_utils
 import isaaclab.terrains as terrain_gen
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
@@ -15,7 +16,7 @@ from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 
-from trackerLab.tasks.locomotion import mdp
+import trackerLab.tracker_env.mdp as mdp
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
 from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG
 from .motion_align_cfg import K1_MOTION_ALIGN_CFG
@@ -154,12 +155,87 @@ class EventCfg:
         params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
     )
     
+@configclass
+class K1_HumanoidRewardsCfg:
+    # task rewards
+    motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
+                                  params={"std": math.sqrt(2)},
+                                  weight=5.0)
+    
+    motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
+                                  params={"std": 0.5, "vel_scale": 1.0},
+                                  weight=1.0)
+    
+    motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
+                                  params={"std": 0.5},
+                                  weight=0.5)
+    # base rewards
+    lin_vel_z_l2        = RewTerm(func=mdp.lin_vel_z_l2,        weight=-1.0)
+    ang_vel_xy_l2       = RewTerm(func=mdp.ang_vel_xy_l2,       weight=-0.05)
+    dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
+    dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
+    energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.15)
+    dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
+    alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
+
+    # contact rewards
+    undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-2.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", 
+                                            body_names=[".*shoulder.*", 
+                                                        ".*elbow.*", 
+                                                        ".*wrist.*",
+                                                        "torso_link",
+                                                        "pelvis.*",
+                                                        ".*hip.*",
+                                                        ".*knee.*"]),
+                                          "threshold": 1.0})
+    
+    # gravity rewards
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1.0)
+    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-2.0,
+                                  params={"asset_cfg": SceneEntityCfg("robot", body_names="torso_link")})
+
+    # termination rewards
+    termination_penalty = RewTerm(func=mdp.is_terminated,       weight=-200.0)
+
+    # humanoid specific rewards
+    feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-1.50,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
+    feet_force          = RewTerm(func=mdp.body_force,          weight=-1e-2,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "threshold": 400, "max_reward": 500})
+    feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
+                                  params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
+                                          "threshold": 0.2})
+    feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
+    # feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-2.0,
+    #                               params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+    #                                       "n_dt": 2.0})
+    
+    # joint deviation rewards
+    waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.1,
+                                  params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*waist.*"])})
+    arms_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
+                                  params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*shoulder.*", ".*elbow.*", ".*wrist.*"])})
+    legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
+                                  params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
+
+    def set_feet(self, names):
+        self.feet_slide.params["sensor_cfg"].body_names = names
+        self.feet_slide.params["asset_cfg"].body_names = names
+        self.feet_force.params["sensor_cfg"].body_names = names
+        self.feet_too_near.params["asset_cfg"].body_names = names
+        self.feet_stumble.params["sensor_cfg"].body_names = names
 
 @configclass
 class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
     
     scene: RobotSceneCfg = RobotSceneCfg(num_envs=4096, env_spacing=2.5)
     events: EventCfg = EventCfg()
+    rewards: K1_HumanoidRewardsCfg = K1_HumanoidRewardsCfg()
     
     def __post_init__(self):
         self.set_no_scanner()
@@ -184,6 +260,8 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = "Trunk"
         self.rewards.set_feet(".*Ankle_Roll")
         self.rewards.waists_deviation.weight = 0
+        self.rewards.arms_deviation.weight = 0
+        self.rewards.legs_deviation.weight = 0
         self.disable_zero_weight_rewards()
         
     def disable_zero_weight_rewards(self):
