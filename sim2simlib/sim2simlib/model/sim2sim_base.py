@@ -32,10 +32,13 @@ class Sim2Sim(ABC):
         self.mj_model = mujoco.MjModel.from_xml_path(self.xml_path)
         self.mj_data = mujoco.MjData(self.mj_model)
         self.mj_model.opt.timestep = cfg.simulation_dt
+        self.mj_model.opt.integrator = mujoco.mjtIntegrator.mjINT_RK4
+        self.mj_model.opt.noslip_iterations = 100
         self.slowdown_factor = self._cfg.slowdown_factor
         self.policy_joint_names = self._cfg.policy_joint_names
         self.last_action = np.zeros(len(cfg.policy_joint_names), dtype=np.float32)
         self.cmd = cfg.cmd if cfg.cmd is not None else [0, 0, 0]
+        
 
         
     def _init_joint_names(self):

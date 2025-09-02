@@ -15,17 +15,17 @@ config = Sim2Sim_Config(
     motion_cfg=MotionManagerCfg(
         motion_buffer_cfg = MotionBufferCfg(
             motion = MotionBufferCfg.MotionCfg(
-                motion_name="amass/g1_23d/cmu_walk.yaml",
+                motion_name="amass/g1_23d/cmu_walk_full.yaml",
                 regen_pkl=True,
             ),
             motion_lib_type="MotionLib",
             motion_type="poselib"
         ),
-        speed_scale=0.5,
+        speed_scale=1.0,
         robot_type="g1_23d",
         motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
     ),
-    motion_id=0,
+    motion_id=16,
     robot_name='g1_23d',
     simulation_dt=0.001,
     slowdown_factor=1.0,
