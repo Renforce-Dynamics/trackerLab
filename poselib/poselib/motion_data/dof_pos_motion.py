@@ -2,7 +2,7 @@ import torch
 from dataclasses import dataclass
 import pickle
 from poselib.retarget import AMASSLoader
-
+from trackerLab.utils.torch_utils import quat_to_angle_axis
 
 @dataclass
 class DofposMotion:
@@ -59,20 +59,20 @@ class DofposMotion:
             data = pickle.load(f)
             
         fps = data["fps"]
-        root_pos = data["root_pos"]
-        root_rot = data["root_rot"]
-        dof_pos = data["dof_pos"]
-        local_body_pos = data["local_body_pos"]
+        root_pos = torch.tensor(data["root_pos"])
+        root_rot = torch.tensor(data["root_rot"])
+        dof_pos = torch.tensor(data["dof_pos"])
+        local_body_pos = torch.tensor(data["local_body_pos"])
         
         F, J = dof_pos.shape[:2]
         
         root_lin_vel = cls.calc_root_vel(root_pos, fps)
-        root_ang_vel = cls.calc_root_vel(root_rot, fps)
+        root_ang_vel = cls.calc_root_vel(quat_to_angle_axis(root_rot)[1], fps)
         dof_vels = cls.calc_root_vel(dof_pos, fps)
         
         motion = cls(
             global_translation=local_body_pos,
-            global_rotation=root_rot,
+            global_rotation=root_rot.unsqueeze(1),
             local_rotation=torch.zeros(F, J, 4),
             global_root_velocity=root_lin_vel,
             global_root_angular_velocity=root_ang_vel,
