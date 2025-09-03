@@ -19,7 +19,7 @@ config = Sim2Sim_Config(
                 regen_pkl=True,
             )
         ),
-        robot_type="g1_29d_loco",
+        robot_type="g1_23d_loco",
         motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
     ),
     robot_name='g1_23d',

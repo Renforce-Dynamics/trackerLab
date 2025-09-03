@@ -4,7 +4,7 @@ from typing import Optional
 
 from trackerLab.managers.motion_manager import MotionManager
 from .utils import _interpolate, _slerp
-from trackerLab.tracker_env.mdp.amp import compute_obs
+from .utils.amp_mdp import compute_obs
 
 class AMPManager(MotionManager):
     def __init__(self, cfg, env, device):

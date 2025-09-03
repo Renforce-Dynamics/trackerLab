@@ -70,6 +70,8 @@ config = Sim2Sim_Config(
                 'joint_vel': 0.05, # CHECK
                 'last_action': 1.0
             },
+        # using_motion_obs_history=True,
+        # motion_obs_his_length=5,
         motion_observations_terms=[
             'loc_dof_pos',
             'loc_root_vel'

@@ -11,7 +11,7 @@ Author: Lu Zuxing
 Data: 2025/8/22
 """
 
-from trackerLab.managers.motion_manager import MotionManagerCfg
+from trackerLab.managers.motion_manager.motion_manager_cfg import MotionManagerCfg
 from dataclasses import dataclass
 import numpy as np
 
