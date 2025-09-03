@@ -61,7 +61,7 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
         )
 
         return amp_observation.reshape(self.num_amp_observations, -1)
-        # cusrl中需要view到 (1, 2*self.amp_obs_feat)
+        # cusrl needsn view to (1, 2*self.amp_obs_feat)
         # return amp_observation.view(num_samples, -1)
     
     def collect_local_amp_obs(self):

@@ -8,8 +8,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
-# from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg
-from ...velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg
+from trackerLab.tasks.amp_velocity.amp_velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg
 ##
 # Pre-defined configs
 ##
@@ -75,29 +74,6 @@ class G1Rewards(RewardsCfg):
             )
         },
     )
-    # joint_deviation_fingers = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-0.05,
-    #     params={
-    #         "asset_cfg": SceneEntityCfg(
-    #             "robot",
-    #             joint_names=[
-    #                 ".*_five_joint",
-    #                 ".*_three_joint",
-    #                 ".*_six_joint",
-    #                 ".*_four_joint",
-    #                 ".*_zero_joint",
-    #                 ".*_one_joint",
-    #                 ".*_two_joint",
-    #             ],
-    #         )
-    #     },
-    # )
-    # joint_deviation_torso = RewTerm(
-    #     func=mdp.joint_deviation_l1,
-    #     weight=-0.1,
-    #     params={"asset_cfg": SceneEntityCfg("robot", joint_names="torso_joint")},
-    # )
     undesired_contacts = RewTerm(
         func=mdp.undesired_contacts,
         weight=-1.0,

@@ -1,7 +1,7 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
-from trackerLab.assets.humanoids.g1 import G1_23D_CFG
+from trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
 
 from .g1_env_cfg import G1FlatEnvCfg
 
@@ -14,7 +14,7 @@ class G1AMPEnvCfg(G1FlatEnvCfg):
         super().__post_init__()
         self.motion.robot_type = "g1_23d"
 
-        self.scene.robot = G1_23D_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = UNITREE_G1_23DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         self.adjust_contact([
                 "pelvis.*", ".*shoulder.*", "torso_link", ".*elbow.*", ".*wrist.*", ".*head.*"
             ])

@@ -22,7 +22,6 @@ class PiAMPEnvCfg(PiFlatEnvCfg):
             "waist_.*", ".*_shoulder_.*", ".*_claw_.*",
             ".*_elbow_.*", ".*_wrist_.*"
             ])
-        # self.adjust_external_events(["torso_link"])
         
 
 
