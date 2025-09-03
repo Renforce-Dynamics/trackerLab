@@ -167,15 +167,15 @@ class K1_HumanoidRewardsCfg:
                                   weight=1.0)
     
     motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
-                                  params={"std": 0.5},
-                                  weight=0.5)
+                                  params={"std": 1.0},
+                                  weight=2.0)
     # base rewards
     lin_vel_z_l2        = RewTerm(func=mdp.lin_vel_z_l2,        weight=-1.0)
     ang_vel_xy_l2       = RewTerm(func=mdp.ang_vel_xy_l2,       weight=-0.05)
     dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
     dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
     energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
-    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.20)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.10)
     dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
     alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
 
@@ -214,7 +214,10 @@ class K1_HumanoidRewardsCfg:
     feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "n_dt": 3.0})
-    
+    feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
+
     # joint deviation rewards
     waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*waist.*"])})
@@ -230,6 +233,8 @@ class K1_HumanoidRewardsCfg:
         self.feet_too_near.params["asset_cfg"].body_names = names
         self.feet_stumble.params["sensor_cfg"].body_names = names
         self.feet_async_stable.params["sensor_cfg"].body_names = names
+        self.feet_flat_ankle.params["sensor_cfg"].body_names = names
+        self.feet_flat_ankle.params["asset_cfg"].body_names = names
 
 @configclass
 class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):

@@ -6,7 +6,7 @@ from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from sim2simlib import MUJOCO_ASSETS
 
-ckpt_dir = ""
+ckpt_dir = "/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/tracking_booster_k1_walk/2025-09-03_19-09-50"
 
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 

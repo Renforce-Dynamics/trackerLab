@@ -229,3 +229,14 @@ def feet_async_stable(env, sensor_cfg: SceneEntityCfg, n_dt: float = 1.25
     # if both feet are unstable, then the reward is 1
     reward = torch.all(is_unstable_mode, dim=-1).float()  # (N,)
     return reward
+
+def feet_flat_ankle(env,  asset_cfg: SceneEntityCfg, sensor_cfg: SceneEntityCfg) -> torch.Tensor:
+    """Reward for keeping feet flat on the ground when in contact."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    asset: Articulation = env.scene[asset_cfg.name]
+    contact = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+    foot_orientation = quat_apply_inverse(
+        asset.data.body_quat_w[:, asset_cfg.body_ids, :], asset.data.GRAVITY_VEC_W.unsqueeze(1).expand(-1, len(asset_cfg.body_ids), -1)
+    )
+    reward = torch.sum(torch.square(foot_orientation[:, :, :2]), dim=(1, 2)) * contact.float()
+    return reward
