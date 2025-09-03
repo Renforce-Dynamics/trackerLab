@@ -56,7 +56,7 @@ class MotionLibDofPos(MotionLib):
                     is_load = True
             elif self.motion_type == "GMR":
                 if curr_file.endswith(".pkl"):
-                    print("Loading with hdf5 file.")
+                    print("Loading with pkl file.")
                     self.load_from_GMR_pkl(curr_file, locals())
                     is_load = True
             if not is_load:
@@ -112,7 +112,6 @@ class MotionLibDofPos(MotionLib):
         self._motion_weights.append(locs["curr_weight"])
         self._motion_files.append(curr_file)
         self._motion_difficulty.append(locs["curr_difficulty"])
-        raise NotImplementedError("This method is undone")
             
     def _fetch_motion_files(self, motion_file):
         motion_files = []
@@ -136,7 +135,7 @@ class MotionLibDofPos(MotionLib):
             curr_weight = motion_config["motions"][motion_entry]['weight']
             curr_difficulty = motion_config["motions"][motion_entry]['difficulty']
             curr_description = motion_config["motions"][motion_entry]['description']
-            fps = motion_config["motions"][motion_entry].get("fps")
+            fps = motion_config["motions"][motion_entry].get("fps", 30.0)
             assert(curr_weight >= 0)
 
             curr_file = os.path.join(dir_name, curr_file)
