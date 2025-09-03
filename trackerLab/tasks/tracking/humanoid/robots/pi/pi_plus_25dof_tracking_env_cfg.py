@@ -75,7 +75,9 @@ class PiTrackingRun(PiTrackingEnvCfg):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_run.yaml"
         
-        self.rewards.feet_slide.weight = -1.0
+        self.rewards.feet_slide.weight = -0.5
+        self.rewards.feet_too_near.weight = -0.05
+        self.rewards.feet_stumble.weight = -0.01
         self.rewards.motion_whb_dof_pos.weight = 3.0
         self.rewards.motion_base_ang_vel.weight = 0.5
         self.rewards.motion_base_lin_vel.weight = 3.0
