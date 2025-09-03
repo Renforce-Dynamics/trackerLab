@@ -220,3 +220,12 @@ def feet_stumble(
         dim=1,
     )
 
+def feet_async_stable(env, sensor_cfg: SceneEntityCfg, n_dt: float = 1.25
+) -> torch.Tensor:
+    """Reward for stable foot placement during asynchronous control."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids] # (N, 2)
+    is_unstable_mode = contact_time < n_dt * env.step_dt
+    # if both feet are unstable, then the reward is 1
+    reward = torch.all(is_unstable_mode, dim=-1).float()  # (N,)
+    return reward

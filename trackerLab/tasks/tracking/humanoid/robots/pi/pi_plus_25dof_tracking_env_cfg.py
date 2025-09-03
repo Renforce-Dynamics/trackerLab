@@ -38,9 +38,10 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
             "base_link",
             ".*_hip_.*", ".*_calf_.*", 
             ".*_shoulder_.*",
-            ".*_elbow_.*", ".*_wrist_.*"
+            ".*_elbow_.*"
             ])
-        self.terminations.base_contact = None        
+        self.terminations.base_contact = None
+        self.rewards.arms_deviation.params["asset_cfg"].joint_names = [".*_elbow_.*"]    
 
         self.adjust_external_events(["base_link"])
         
@@ -50,6 +51,7 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
         
         self.rewards.set_feet([".*_ankle_roll.*"])
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = ["base_link"]
+        self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*_hip_.*", ".*_calf_.*", ]
 
 
 @configclass

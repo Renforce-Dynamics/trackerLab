@@ -17,4 +17,76 @@ motions:
     trim_beg: -1
     trim_end: -1
     weight: 1.0
+  '07/07_01_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_02_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_03_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_04_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_05_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_06_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_07_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_08_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_09_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_10_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_11_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '07/07_12_poses':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
   root: "amass_results/pi_plus_25dof/CMU"
