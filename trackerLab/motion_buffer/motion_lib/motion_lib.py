@@ -140,13 +140,27 @@ class MotionLib():
 
     # These values could be calced from the original data
     def load_normed_terms(self):
+        # self.gts.shape = [length, 14, 3]
+        # GMR: self.gts.shape = [length, 38, 3]
         root_pos = self.gts[:, 0:1, :]
+        # self.grs.shape = [length, 14, 4]
+        # GMR: self.grs.shape = [length, 4]
+        # self.grs 现在是 [length, 4], 变成 [length, 1, 4]
+        # self.grs = self.grs.unsqueeze(1)
         root_rot = self.grs[:, 0:1, :]
         num_joints = self.gts.shape[1]
         rel_pos = self.gts - root_pos
+        # rel_pos.shape = [length, 14, 3]
+        # self.grvs.shape = [length, 3]
+        # GMR: self.grvs.shape = [length, 3]
+        # root_rot.shape = [length, 1, 4]
         self.vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.grvs.view(-1, 3)).view(self.grvs.shape)
         self.trans_base = quat_rotate_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
-        self.ang_vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
+        # self.grvs.shape = [length, 3]
+        # selg.gravs.shape = [length, 3]
+        # GMR: self.gravs.shape = [length, 4]
+        self.ang_vels_base = self.gravs
+        # quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
         # self.dof_pos = self._local_rotation_to_dof(self.lrs)
 
@@ -257,6 +271,7 @@ class MotionLib():
                 curr_motion._skeleton_tree._parent_indices = curr_motion._skeleton_tree._parent_indices.to(self._device)
                 curr_motion._skeleton_tree._local_translation = curr_motion._skeleton_tree._local_translation.to(self._device)
                 curr_motion._rotation = curr_motion._rotation.to(self._device)
+                curr_motion._comp_local_rotation = curr_motion._comp_local_rotation.to(self._device)
 
             self._motions.append(curr_motion)
             self._motion_lengths.append(curr_len)
