@@ -8,3 +8,4 @@ class R2bWalkPPOCfg(BasePPORunnerCfg):
 @configclass
 class R2bRunPPOCfg(BasePPORunnerCfg):
     experiment_name = "r2b_run"
+    

@@ -1,7 +1,7 @@
 import os
 import torch
 from .utils.jit_func import reindex_motion_dof
-from .motion_lib import MotionLib
+from .motion_lib import MotionLib, MotionLibDofPos
 from .motion_buffer_cfg import MotionBufferCfg
 
 from trackerLab.joint_id_caster import JointIdCaster
@@ -30,10 +30,18 @@ class MotionBuffer(object):
     reindex_motion_dof = reindex_motion_dof
         
     def init_motions(self):
-        self._motion_lib = MotionLib(motion_file=self.cfg.motion.motion_name,
-                                     id_caster=self.id_caster,
-                                     device=self.device, 
-                                     regen_pkl=self.cfg.motion.regen_pkl)
+        motion_lib_type = getattr(self.cfg, "motion_lib_type")
+        if isinstance(motion_lib_type, str):
+            motion_lib_type = eval(motion_lib_type)
+        else:
+            motion_lib_type = MotionLib
+
+        self._motion_lib = motion_lib_type(
+            motion_file=self.cfg.motion.motion_name,
+            id_caster=self.id_caster,
+            device=self.device, 
+            regen_pkl=self.cfg.motion.regen_pkl,
+            motion_type=self.cfg.motion_type)
 
     def init_motion_buffers(self):
         """
@@ -69,7 +77,8 @@ class MotionBuffer(object):
         """
         This only used in reset.
         """
-        self._motion_times[env_ids] = self.resample_motion_times(env_ids)
+        # self._motion_times[env_ids] = self.resample_motion_times(env_ids)
+        self._motion_times[env_ids] = 0.
         self._motion_lengths[env_ids] = self._motion_lib.get_motion_length(self._motion_ids[env_ids])
         self._motion_difficulty[env_ids] = self._motion_lib.get_motion_difficulty(self._motion_ids[env_ids])
 

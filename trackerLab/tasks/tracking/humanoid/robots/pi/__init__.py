@@ -23,6 +23,17 @@ gym.register(
 )
 
 gym.register(
+    id="TrackerLab-Tracking-Pi-Plus-25D-Run-Replay",
+    entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pi_plus_25dof_tracking_env_cfg:PiTrackingRun",
+        "play_env_cfg_entry_point": f"{__name__}.pi_plus_25dof_tracking_env_cfg:PiTrackingRun_Play",
+        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:PiPlus25DRunPPOCfg",
+    },
+)
+
+gym.register(
     id="TrackerLab-Tracking-Pi-Plus-25D-Jump",
     entry_point="trackerLab.tracker_env:ManagerBasedTrackerEnv",
     disable_env_checker=True,

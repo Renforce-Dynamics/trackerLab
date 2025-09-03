@@ -20,6 +20,8 @@ from .configs import (
     RecordsCfg
 )
 
+from trackerLab.tracker_env.mdp.records import TrajMotionRecordCfg
+
 @configclass
 class ManagerBasedTrackerEnvCfg(ManagerBasedRLEnvCfg):
     scene:          MySceneCfg = MySceneCfg(num_envs=4096, env_spacing=2.5)
@@ -93,5 +95,6 @@ class ManagerBasedTrackerEnvCfg(ManagerBasedRLEnvCfg):
         self.scene.terrain.terrain_generator = None
         
     def set_record(self, dir):
-        self.recorders = RecordsCfg()
+        self.recorders = TrajMotionRecordCfg() # RecordsCfg()
         self.recorders.dataset_export_dir_path = dir
+        print(f"[INFO] Recording dataset to: {dir}")

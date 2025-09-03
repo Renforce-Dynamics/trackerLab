@@ -16,7 +16,7 @@ from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
 
 from . import unitree_actuators
-from trackerLab import TRACKERLAB_USD_DIR
+from trackerLab import TRACKERLAB_UNIFY_ASSETS_DIR
 
 @configclass
 class UnitreeArticulationCfg(ArticulationCfg):
@@ -26,12 +26,10 @@ class UnitreeArticulationCfg(ArticulationCfg):
 
     soft_joint_pos_limit_factor = 0.9
 
-import os
-from trackerLab import TRACKERLAB_USD_DIR
 
 UNITREE_GO2_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_go2/usd/go2.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_go2/usd/go2.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -77,7 +75,7 @@ UNITREE_GO2_CFG = UnitreeArticulationCfg(
 
 UNITREE_GO2W_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_go2/usd/go2w.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_go2/usd/go2w.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -130,7 +128,7 @@ UNITREE_GO2W_CFG = UnitreeArticulationCfg(
 
 UNITREE_B2_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_b2/usd/b2.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_b2/usd/b2.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -179,7 +177,7 @@ UNITREE_B2_CFG = UnitreeArticulationCfg(
 
 UNITREE_H1_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_h1/usd/h1.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_h1/usd/h1.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -274,7 +272,7 @@ UNITREE_H1_CFG = UnitreeArticulationCfg(
 
 UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_g1/usd/g1_23dof_rev_1_0.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_g1/usd/g1_23dof_rev_1_0.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -385,7 +383,7 @@ UNITREE_G1_23DOF_CFG = UnitreeArticulationCfg(
 
 UNITREE_G1_29DOF_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{TRACKERLAB_USD_DIR}/unitree_g1/usd/g1_29dof_rev_1_0.usd",
+        usd_path=f"{TRACKERLAB_UNIFY_ASSETS_DIR}/unitree_g1/usd/g1_29dof_rev_1_0.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

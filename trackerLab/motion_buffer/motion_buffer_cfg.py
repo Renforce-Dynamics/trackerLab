@@ -1,5 +1,6 @@
 from trackerLab.utils import configclass
 from dataclasses import MISSING
+from typing import Literal
 
 
 @configclass
@@ -13,3 +14,6 @@ class MotionBufferCfg:
     # interval_demo_steps: int = 2
     
     motion: MotionCfg = MotionCfg()
+    
+    motion_lib_type: str = MISSING
+    motion_type: Literal["poselib", "replay", "GMR"] = MISSING

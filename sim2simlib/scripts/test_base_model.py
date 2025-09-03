@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
-from sim2simlib.model.sim2sim_base import Sim2Sim_Base_Model
-from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib.model.sim2sim_base import Sim2SimBaseModel
+from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
 
 config = Sim2Sim_Config(
@@ -38,7 +38,7 @@ config = Sim2Sim_Config(
         scale=0.25
     ),
     motor_cfg=Motor_Config(
-        motor_type=DC_Motor,
+        motor_type=DCMotor,
         effort_limit=23.5,
         saturation_effort=23.5,
         velocity_limit=30.0,
@@ -50,6 +50,6 @@ config = Sim2Sim_Config(
     default_angles=np.array([ 0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8, 0.0, 0.9, -1.8 ], dtype=np.float32),
 )
 
-mujoco_model = Sim2Sim_Base_Model(config)
+mujoco_model = Sim2SimBaseModel(config)
 
 mujoco_model.view_run()

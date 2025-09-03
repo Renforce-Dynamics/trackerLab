@@ -1,92 +1,140 @@
 motions:
-  '55/55_04_poses':
+  '35/35_01_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '02/02_02_poses':
+  '35/35_02_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '35/35_22_poses':
-    description: "run"
-    difficulty: 4
-    trim_beg: -1
-    trim_end: -1
-    weight: 1.0
-  '07/07_01_poses':
+  '35/35_03_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_02_poses':
+  '35/35_04_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_03_poses':
+  '35/35_05_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_04_poses':
+  '35/35_06_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_05_poses':
+  '35/35_07_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_06_poses':
+  '35/35_08_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_07_poses':
+  '35/35_09_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_08_poses':
+  '35/35_10_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_09_poses':
+  '35/35_11_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_10_poses':
+  '35/35_12_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_11_poses':
+  '35/35_13_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  '07/07_12_poses':
+  '35/35_14_stageii.pkl':
     description: "walk episode"
     difficulty: 4
     trim_beg: -1
     trim_end: -1
     weight: 1.0
-  root: "amass_results/pi_plus_25dof/CMU"
+  '35/35_15_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_16_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_28_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_29_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_30_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_31_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_32_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_33_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '35/35_34_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  root: "GMR/booster_k1/CMU"

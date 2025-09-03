@@ -188,3 +188,6 @@ results
 
 MUJOCO_LOG.TXT
 MJDATA.TXT
+
+recordings/
+temp/

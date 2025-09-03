@@ -10,9 +10,11 @@ Data: 2025/8/22
 
 import numpy as np
 import re
+import rich
 from sim2simlib.model.config import Actions, Motor_Config
+import rich
 
-class PID_Motor:
+class PIDMotor:
     """
     Simple PID motor model with constant torque limits.
     
@@ -69,10 +71,10 @@ class PID_Motor:
         self._stiffness = self._parse_parameter(self.cfg.stiffness)
         self._damping = self._parse_parameter(self.cfg.damping)
 
-        print(f"[INFO] Motor parameters for {self.cfg.joint_names}:")
-        print(f"[INFO] Effort limit: {np.array2string(self._effort_limit, separator=', ', max_line_width=np.inf)}")
-        print(f"[INFO] Stiffness: {np.array2string(self._stiffness, separator=', ', max_line_width=np.inf)}")
-        print(f"[INFO] Damping: {np.array2string(self._damping, separator=', ', max_line_width=np.inf)}")
+        rich.print(f"[INFO] Motor parameters for {self.cfg.joint_names}:")
+        rich.print(f"[INFO] Effort limit: {self._effort_limit}")
+        rich.print(f"[INFO] Stiffness: {self._stiffness}")
+        rich.print(f"[INFO] Damping: {self._damping}")
 
     def _parse_parameter(self, param: float | dict[str, float]) -> np.ndarray:
         """
@@ -171,7 +173,7 @@ class PID_Motor:
         return np.clip(effort, a_min=-effort_limit, a_max=effort_limit)
 
 
-class DC_Motor(PID_Motor):
+class DCMotor(PIDMotor):
     """
     DC motor model with velocity-dependent torque limits.
     
@@ -207,7 +209,7 @@ class DC_Motor(PID_Motor):
         _velocity_limit (np.ndarray): Maximum velocities [rad/s]
         _friction (np.ndarray): Friction coefficients [N⋅m⋅s/rad]
         
-    Inherits from PID_Motor:
+    Inherits from PIDMotor:
         _effort_limit (np.ndarray): Absolute maximum torque limits [N⋅m]
         _stiffness (np.ndarray): Position gains [N⋅m/rad] 
         _damping (np.ndarray): Velocity gains [N⋅m⋅s/rad]
@@ -220,7 +222,7 @@ class DC_Motor(PID_Motor):
         """
         Initialize the DC motor with configuration parameters.
         
-        Calls the parent PID_Motor constructor to initialize basic parameters,
+        Calls the parent PIDMotor constructor to initialize basic parameters,
         then parses DC motor specific parameters.
         
         Args:
@@ -245,11 +247,11 @@ class DC_Motor(PID_Motor):
         self._saturation_effort = self._parse_parameter(self.cfg.saturation_effort)
         self._velocity_limit = self._parse_parameter(self.cfg.velocity_limit)
         self._friction = self._parse_parameter(self.cfg.friction)
-        
-        print(f"[INFO] DC Motor additional parameters:")
-        print(f"[INFO] Saturation effort: {np.array2string(self._saturation_effort, separator=', ', max_line_width=np.inf)}")
-        print(f"[INFO] Velocity limit: {np.array2string(self._velocity_limit, separator=', ', max_line_width=np.inf)}")
-        print(f"[INFO] Friction: {np.array2string(self._friction, separator=', ', max_line_width=np.inf)}")
+
+        rich.print("[INFO] DC Motor additional parameters:")
+        rich.print("[INFO] Saturation effort: ", self._saturation_effort)
+        rich.print("[INFO] Velocity limit: ", self._velocity_limit)
+        rich.print("[INFO] Friction: ", self._friction)
 
     def compute(self, joint_pos: np.ndarray, joint_vel: np.ndarray, action: Actions) -> np.ndarray:
         """

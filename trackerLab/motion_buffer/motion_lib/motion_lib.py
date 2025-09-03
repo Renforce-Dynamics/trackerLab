@@ -82,7 +82,8 @@ class MotionLib():
             motion_file, 
             id_caster: JointIdCaster,
             device, 
-            regen_pkl=False    
+            regen_pkl=False,
+            **kwargs
         ):
         self.id_caster:JointIdCaster = id_caster
         self.dof_body_ids = id_caster.dof_body_ids
@@ -137,6 +138,7 @@ class MotionLib():
         self.dvs = torch.cat([m.dof_vels for m in motions], dim=0).float().to(self._device)
         self.dps = torch.cat([m.dof_poses for m in motions], dim=0).float().to(self._device)
 
+    # These values could be calced from the original data
     def load_normed_terms(self):
         root_pos = self.gts[:, 0:1, :]
         root_rot = self.grs[:, 0:1, :]
@@ -147,6 +149,20 @@ class MotionLib():
         self.ang_vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
         # self.dof_pos = self._local_rotation_to_dof(self.lrs)
+
+    # Utility functions
+    def _fill_motions(self, curr_motion, curr_dt):
+        # Exbody mode for calc dof pos
+        curr_dof_pos = _local_rotation_to_dof(self.id_caster, curr_motion.local_rotation, self._device)
+        curr_motion.dof_poses = curr_dof_pos
+        
+        self.id_caster.post_cast(curr_dof_pos)
+        
+        # Two way of calc pos and vel
+        curr_dof_vels = self._dof_pos_to_dof_vel(curr_dof_pos, curr_dt)
+        # Calc dof vel with old api
+        # curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
+        curr_motion.dof_vels = curr_dof_vels
 
     def num_motions(self):
         return len(self._motions)
@@ -200,20 +216,6 @@ class MotionLib():
         f1l = frame_idx1 + self.length_starts[motion_ids]
         return f0l, f1l, blend
     
-    # Utility functions
-    def _fill_motions(self, curr_motion, curr_dt):
-        # Exbody mode for calc dof pos
-        curr_dof_pos = _local_rotation_to_dof(self.id_caster, curr_motion.local_rotation, self._device)
-        curr_motion.dof_poses = curr_dof_pos
-        
-        self.id_caster.post_cast(curr_dof_pos)
-        
-        # Two way of calc pos and vel
-        curr_dof_vels = self._dof_pos_to_dof_vel(curr_dof_pos, curr_dt)
-        # Calc dof vel with old api
-        # curr_dof_vels = self._compute_motion_dof_vels(curr_motion)
-        curr_motion.dof_vels = curr_dof_vels
-    
     def _load_motions(self, motion_file):
         self._motions = []
         self._motion_lengths = []
@@ -258,7 +260,6 @@ class MotionLib():
 
             self._motions.append(curr_motion)
             self._motion_lengths.append(curr_len)
-            # self._motions_local_key_body_pos.append(curr_key_body_pos)
 
             curr_weight = motion_weights[f]
             self._motion_weights.append(curr_weight)
@@ -293,7 +294,6 @@ class MotionLib():
                    self._motion_dt, 
                    self._motion_num_frames, 
                    self._motion_files, 
-                   self._motions_local_key_body_pos, 
                    self._motion_difficulty, 
                    self.motion_description]
         with open(pkl_file, 'wb') as outp:
@@ -316,9 +316,8 @@ class MotionLib():
         self._motion_dt = objects[4].to(self._device)
         self._motion_num_frames = objects[5].to(self._device)
         self._motion_files = objects[6]
-        self._motions_local_key_body_pos = objects[7]
-        self._motion_difficulty = objects[8].to(self._device)
-        self.motion_description = objects[9]
+        self._motion_difficulty = objects[7].to(self._device)
+        self.motion_description = objects[8]
 
         num_motions = self.num_motions()
         total_len = self.get_total_length()

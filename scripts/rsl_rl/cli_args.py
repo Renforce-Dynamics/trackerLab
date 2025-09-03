@@ -95,8 +95,4 @@ def update_rsl_rl_cfg(agent_cfg: RslRlOnPolicyRunnerCfg, args_cli: argparse.Name
         task_name = args_cli.task
         agent_cfg.experiment_name = task_name.lower().replace("-", "_").removesuffix("_play")
 
-    if agent_cfg.experiment_name == "":
-        task_name = args_cli.task
-        agent_cfg.experiment_name = task_name.lower().replace("-", "_").removesuffix("_play")
-
     return agent_cfg

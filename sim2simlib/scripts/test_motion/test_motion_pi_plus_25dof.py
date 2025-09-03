@@ -1,8 +1,8 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
-from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
+from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
 from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
-from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
+from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from trackerLab import TRACKERLAB_ASSETS_DIR
@@ -80,7 +80,7 @@ config = Sim2Sim_Config(
         scale=0.25 # CHECK
     ),            
     motor_cfg=Motor_Config(
-        motor_type=PID_Motor,
+        motor_type=PIDMotor,
             effort_limit={
             ".*": 100,
         },
@@ -97,7 +97,7 @@ config = Sim2Sim_Config(
         },
 )
 
-mujoco_model = Sim2Sim_Motion_Model(config)
+mujoco_model = Sim2SimMotionModel(config)
 
 # mujoco_model.motion_fk_view()
 mujoco_model.view_run()
