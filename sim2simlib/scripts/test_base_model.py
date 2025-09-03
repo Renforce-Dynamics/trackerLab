@@ -1,16 +1,17 @@
+import os
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_base import Sim2SimBaseModel
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
-from sim2simlib import MUJOCO_ASSETS, LOGS_DIR
+from sim2simlib import SIM2SIMLIB_ASSETS_DIR
 
 config = Sim2Sim_Config(
     robot_name='Go2',
     simulation_dt=0.005,
     slowdown_factor=5.0,
     control_decimation=4,
-    xml_path=MUJOCO_ASSETS["unitree_go2"],
-    policy_path=f"{LOGS_DIR}/checkpoints/go2_handstand/policy.pt",
+    xml_path=os.path.join(SIM2SIMLIB_ASSETS_DIR, "unitree_go2", "mjcf", "scene_go2.xml"),
+    policy_path=f"",
     policy_joint_names=[ 
             "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
             "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",

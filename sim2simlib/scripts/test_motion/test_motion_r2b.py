@@ -3,7 +3,6 @@ from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions
 from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
 from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
-# from sim2simlib import MUJOCO_ASSETS_DIR, LOGS_DIR
 from sim2simlib.utils.config import load_from_yaml
 from trackerLab import TRACKERLAB_ASSETS_DIR, TRACKERLAB_TASKS_DIR
 

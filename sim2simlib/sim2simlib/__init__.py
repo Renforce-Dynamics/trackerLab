@@ -1,15 +1,5 @@
 import os
-from etils import epath
 
-SIM2SIMLIB_REPO_DIR = epath.Path(__file__).resolve().parent
-
-SIM2SIMLIB_ASSETS_DIR = SIM2SIMLIB_REPO_DIR.parent.parent / "data" / "unify_assets"
-
-LOGS_DIR = SIM2SIMLIB_REPO_DIR.parent.parent / "logs"
-
-MUJOCO_ASSETS = {
-    "unitree_go2": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_go2/mjcf/scene_go2.xml",
-    "unitree_g1_29dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_29dof_rev_1_0.xml",
-    "unitree_g1_23dof": f"{SIM2SIMLIB_ASSETS_DIR}/unitree_g1/mjcf/scene_23dof_rev_1_0.xml"
-}
-
+SIM2SIMLIB_REPO_DIR     = os.path.dirname(os.path.abspath(__file__))
+SIM2SIMLIB_REPO_DIR     = os.path.dirname(os.path.dirname(SIM2SIMLIB_REPO_DIR))
+SIM2SIMLIB_ASSETS_DIR   = os.path.join(SIM2SIMLIB_REPO_DIR, "data", "unify_assets")
