@@ -145,10 +145,16 @@ def main():
 
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
+    agent_cfg.device = args_cli.device 
 
     print(f"[INFO]: Loading model checkpoint from: {resume_path}")
     # load previously trained model
-    ppo_runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device)
+    if args_cli.amp:
+        from amp_rsl_rl.runners import AMPOnPolicyRunner
+        ppo_runner: OnPolicyRunner = AMPOnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device)
+    else:
+        from rsl_rl.runners import OnPolicyRunner
+        ppo_runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device)
     ppo_runner.load(resume_path)
 
     # obtain the trained policy for inference

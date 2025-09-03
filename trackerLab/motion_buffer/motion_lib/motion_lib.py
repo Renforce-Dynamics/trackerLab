@@ -257,6 +257,7 @@ class MotionLib():
                 curr_motion._skeleton_tree._parent_indices = curr_motion._skeleton_tree._parent_indices.to(self._device)
                 curr_motion._skeleton_tree._local_translation = curr_motion._skeleton_tree._local_translation.to(self._device)
                 curr_motion._rotation = curr_motion._rotation.to(self._device)
+                curr_motion._comp_local_rotation = curr_motion._comp_local_rotation.to(self._device)
 
             self._motions.append(curr_motion)
             self._motion_lengths.append(curr_len)

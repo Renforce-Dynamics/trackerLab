@@ -3,7 +3,8 @@ import numpy as np
 import gymnasium as gym
 from trackerLab.managers import AMPManager
 from ..manager_based_tracker_env import ManagerBasedTrackerEnv
-from isaaclab.utils.math import quat_apply as quat_rotate
+
+import trackerLab.tracker_env.mdp.amp as amp_mdp
 
 class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
     def __init__(self, cfg, render_mode=None, **kwargs):
@@ -11,7 +12,8 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
 
         self.num_amp_observations = getattr(self.cfg, "num_amp_observations", 2)
         
-        
+        # DEBUG for cusrl
+        # self.amp_obs_feat = 59
         amp_obs = self.collect_reference_motions(1)
         self.amp_obs_feat = amp_obs.shape[-1]
         self.amp_observation_size = self.num_amp_observations * self.amp_obs_feat
@@ -48,7 +50,7 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
             root_ang_vel,
         ) = self.motion_manager.sample(num_samples=num_samples, times=times)
 
-        amp_observation = compute_obs(
+        amp_observation = amp_mdp.compute_obs(
             dof_pos,
             dof_vel,
             root_trans,
@@ -59,17 +61,19 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
         )
 
         return amp_observation.reshape(self.num_amp_observations, -1)
+        # cusrl中需要view到 (1, 2*self.amp_obs_feat)
+        # return amp_observation.view(num_samples, -1)
     
     def collect_local_amp_obs(self):
         
-        dof_pos = self.motion_manager.get_subset_real(self.robot.data.joint_pos)
-        dof_vel = self.motion_manager.get_subset_real(self.robot.data.joint_vel)
-        root_trans = self.robot.data.root_pos_w
-        root_rot = self.robot.data.root_link_quat_w
-        root_lin_vel = self.robot.data.root_lin_vel_b
-        root_ang_vel = self.robot.data.root_ang_vel_b
+        dof_pos = amp_mdp.amp_dof_pos(self)
+        dof_vel = amp_mdp.amp_dof_vel(self)
+        root_trans = amp_mdp.amp_root_trans(self)
+        root_rot = amp_mdp.amp_root_rot(self)
+        root_lin_vel = amp_mdp.amp_root_lin_vel(self)
+        root_ang_vel = amp_mdp.amp_root_ang_vel(self)
         
-        amp_observation = compute_obs(
+        amp_observation = amp_mdp.compute_obs(
             dof_pos,
             dof_vel,
             root_trans,
@@ -87,7 +91,9 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
             self.amp_observation_buffer[:, i + 1] = self.amp_observation_buffer[:, i]
         local_amp_obs = self.collect_local_amp_obs()
         self.amp_observation_buffer[:, 0] = local_amp_obs
-        self.extras = {"amp_obs": self.amp_observation_buffer.view(-1, self.amp_observation_size)}
+        # To avoid removing other extras
+        self.extras["amp_obs"] = self.amp_observation_buffer.view(-1, self.amp_observation_size)
+        self.obs_buf["amp"] = self.amp_observation_buffer.view(-1, self.amp_observation_size)
 
     
     def step(self, action: torch.Tensor):
@@ -95,35 +101,3 @@ class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
         self.update_local_amp_buffer()
         return self.obs_buf, self.reward_buf, self.reset_terminated, self.reset_time_outs, self.extras
     
-@torch.jit.script
-def quaternion_to_tangent_and_normal(q: torch.Tensor) -> torch.Tensor:
-    ref_tangent = torch.zeros_like(q[..., :3])
-    ref_normal = torch.zeros_like(q[..., :3])
-    ref_tangent[..., 0] = 1
-    ref_normal[..., -1] = 1
-    tangent = quat_rotate(q, ref_tangent)
-    normal = quat_rotate(q, ref_normal)
-    return torch.cat([tangent, normal], dim=len(tangent.shape) - 1)
-    
-def compute_obs(
-    dof_positions: torch.Tensor,
-    dof_velocities: torch.Tensor,
-    root_positions: torch.Tensor,
-    root_rotations: torch.Tensor,
-    root_linear_velocities: torch.Tensor,
-    root_angular_velocities: torch.Tensor,
-    # key_body_positions: torch.Tensor,
-) -> torch.Tensor:
-    obs = torch.cat(
-        (
-            dof_positions,
-            dof_velocities,
-            root_positions[:, 2:3],  # root body height
-            quaternion_to_tangent_and_normal(root_rotations),
-            root_linear_velocities,
-            root_angular_velocities,
-            # (key_body_positions - root_positions.unsqueeze(-2)).view(key_body_positions.shape[0], -1),
-        ),
-        dim=-1,
-    )
-    return obs

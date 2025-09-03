@@ -4,6 +4,7 @@ from typing import Optional
 
 from trackerLab.managers.motion_manager import MotionManager
 from .utils import _interpolate, _slerp
+from trackerLab.tracker_env.mdp.amp import compute_obs
 
 class AMPManager(MotionManager):
     def __init__(self, cfg, env, device):
@@ -11,6 +12,17 @@ class AMPManager(MotionManager):
 
         self.duration = sum(self.motion_lib._motion_lengths).item()
         self.num_frames = sum(self.motion_lib._motion_num_frames).item()
+        
+        # Build per-frame sampling weights: weight_i / length_i
+        # lengths = [len(d) for d in self.motion_lib._motion_num_frames]
+        self.lengths = self.motion_lib._motion_num_frames
+        per_frame = torch.cat(
+            [
+                torch.full((L,), w / L, device=self.device)
+                for w, L in zip(self.motion_lib._motion_weights, self.lengths)
+            ]
+        )
+        self.per_frame_weights = per_frame / per_frame.sum()
 
     def sample_times(self, num_samples: int, duration: float | None = None) -> torch.Tensor:
         duration = self.duration if duration is None else duration
@@ -52,3 +64,47 @@ class AMPManager(MotionManager):
             body_ang_vel
         )
     
+    def feed_forward_generator(self, num_mini_batch: int, mini_batch_size: int
+    ):
+        for _ in range(num_mini_batch):
+            idx = torch.multinomial(
+                self.per_frame_weights, mini_batch_size, replacement=True
+            )
+            next_idx = torch.clamp(idx + 1, max=self.num_frames - 1)
+            (
+                dof_positions,
+                dof_velocities,
+                body_positions,
+                body_rotations,
+                body_linear_velocities,
+                body_angular_velocities,
+            ) = self.sample(mini_batch_size, idx)
+            
+            this_obs = compute_obs(
+                dof_positions,
+                dof_velocities,
+                body_positions,
+                body_rotations,
+                body_linear_velocities,
+                body_angular_velocities,
+            )
+            
+            (
+                dof_positions,
+                dof_velocities,
+                body_positions,
+                body_rotations,
+                body_linear_velocities,
+                body_angular_velocities,
+            ) = self.sample(mini_batch_size, next_idx)
+            
+            next_obs = compute_obs(
+                dof_positions,
+                dof_velocities,
+                body_positions,
+                body_rotations,
+                body_linear_velocities,
+                body_angular_velocities,
+            )
+
+            yield this_obs, next_obs
