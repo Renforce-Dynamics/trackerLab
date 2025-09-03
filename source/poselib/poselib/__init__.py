@@ -40,7 +40,7 @@ def config_dir(*args):
 
 # Dirs that containing data
 POSELIB_REPO_DIR            = os.path.dirname(os.path.abspath(__file__))
-POSELIB_DATA_DIR            = os.path.join(POSELIB_REPO_DIR, "..", "..","data")
+POSELIB_DATA_DIR            = os.path.join(POSELIB_REPO_DIR, "..", "..", "..", "data")
 POSELIB_AMASS_DIR           = os.path.join(POSELIB_DATA_DIR, "amass")
 POSELIB_SCRIPT_DIR          = os.path.join(POSELIB_REPO_DIR, "scripts")
 POSELIB_RETARGETED_DATA_DIR = config_dir(POSELIB_DATA_DIR, "retargeted")
