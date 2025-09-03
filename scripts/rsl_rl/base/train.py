@@ -32,6 +32,12 @@ parser.add_argument("--max_iterations", type=int, default=None, help="RL Policy 
 parser.add_argument(
     "--distributed", action="store_true", default=False, help="Run training with multiple GPUs or nodes."
 )
+parser.add_argument(
+    "--style_reward_weight", type=float, default=None, help="Weight of the style reward (if applicable)."
+)
+parser.add_argument(
+    "--task_reward_weight", type=float, default=None, help="Weight of the style reward (if applicable)."
+)
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
@@ -141,9 +147,22 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=getattr(agent_cfg, "clip_actions", None))
-
+    agent_cfg.device = args_cli.device 
     # create runner from rsl-rl
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    if args_cli.amp:
+        
+        agent_cfg.style_reward_weight = (
+            args_cli.style_reward_weight if args_cli.style_reward_weight is not None else agent_cfg.style
+        )
+        agent_cfg.task_reward_weight = (
+            args_cli.task_reward_weight if args_cli.task_reward_weight is not None else agent_cfg.task
+        )
+        
+        from amp_rsl_rl.runners import AMPOnPolicyRunner
+        runner: OnPolicyRunner = AMPOnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    else:
+        from rsl_rl.runners import OnPolicyRunner
+        runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
     # write git state to logs
     runner.add_git_repo_to_log(__file__)
     # load the checkpoint
