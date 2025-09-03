@@ -94,8 +94,8 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-            "static_friction_range": (0.3, 1.0),
-            "dynamic_friction_range": (0.3, 1.0),
+            "static_friction_range": (0.3, 2.0),
+            "dynamic_friction_range": (0.3, 2.0),
             "restitution_range": (0.0, 0.0),
             "num_buckets": 64,
         },
@@ -126,14 +126,14 @@ class EventCfg:
         func=mdp.reset_root_state_uniform,
         mode="reset",
         params={
-            "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
+            "pose_range": {"x": (-2.5, 2.5), "y": (-2.5, 2.5), "yaw": (-3.14, 3.14)},
             "velocity_range": {
-                "x": (0.0, 0.0),
-                "y": (0.0, 0.0),
-                "z": (0.0, 0.0),
-                "roll": (0.0, 0.0),
-                "pitch": (0.0, 0.0),
-                "yaw": (0.0, 0.0),
+                "x": (-1.0, 1.0),
+                "y": (-1.0, 1.0),
+                "z": (-1.0, 1.0),
+                "roll": (-0.5, 0.5),
+                "pitch": (-0.5, 0.5),
+                "yaw": (-0.5, 0.5),
             },
         },
     )
@@ -152,7 +152,7 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
+        params={"velocity_range": {"x": (-1.0, 1.0), "y": (-1.0, 1.0), "z": (-0.5, 0.5)}},
     )
     
 @configclass
@@ -175,12 +175,12 @@ class K1_HumanoidRewardsCfg:
     dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
     dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
     energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
-    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.15)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.20)
     dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
     alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
 
     # contact rewards
-    undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-2.0,
+    undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-1.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", 
                                             body_names=[".*shoulder.*", 
                                                         ".*elbow.*", 
@@ -192,18 +192,18 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 1.0})
     
     # gravity rewards
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-1.0)
-    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-2.0,
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
+    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-5.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names="torso_link")})
 
     # termination rewards
     termination_penalty = RewTerm(func=mdp.is_terminated,       weight=-200.0)
 
     # humanoid specific rewards
-    feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-1.50,
+    feet_slide          = RewTerm(func=mdp.feet_slide,          weight=-1.00,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
-    feet_force          = RewTerm(func=mdp.body_force,          weight=-1e-2,
+    feet_force          = RewTerm(func=mdp.body_force,          weight=-1e-3,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "threshold": 400, "max_reward": 500})
     feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
@@ -211,12 +211,12 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 0.2})
     feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
-    # feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-2.0,
-    #                               params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
-    #                                       "n_dt": 2.0})
+    feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "n_dt": 3.0})
     
     # joint deviation rewards
-    waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.1,
+    waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*waist.*"])})
     arms_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*shoulder.*", ".*elbow.*", ".*wrist.*"])})
@@ -229,11 +229,12 @@ class K1_HumanoidRewardsCfg:
         self.feet_force.params["sensor_cfg"].body_names = names
         self.feet_too_near.params["asset_cfg"].body_names = names
         self.feet_stumble.params["sensor_cfg"].body_names = names
+        self.feet_async_stable.params["sensor_cfg"].body_names = names
 
 @configclass
 class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
     
-    scene: RobotSceneCfg = RobotSceneCfg(num_envs=4096, env_spacing=2.5)
+    scene: RobotSceneCfg = RobotSceneCfg(num_envs=4096, env_spacing=5.0)
     events: EventCfg = EventCfg()
     rewards: K1_HumanoidRewardsCfg = K1_HumanoidRewardsCfg()
     
@@ -262,6 +263,11 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.waists_deviation.weight = 0
         self.rewards.arms_deviation.weight = 0
         self.rewards.legs_deviation.weight = 0
+        self.rewards.feet_async_stable.weight = 0
+        
+        self.motion.speed_scale = 1.0
+        self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
+        
         self.disable_zero_weight_rewards()
         
     def disable_zero_weight_rewards(self):
