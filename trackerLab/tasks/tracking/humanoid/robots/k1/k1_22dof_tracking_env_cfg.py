@@ -116,7 +116,7 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names="^(?!Trunk$).*"),
-            "mass_distribution_params": (0.9, 1.1),
+            "mass_distribution_params": (0.8, 1.2),
             "operation": "scale",
         },
     )
@@ -162,7 +162,7 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.8, 1.2)}},
+        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.8, 2.0)}},
     )
     
 @configclass
@@ -308,7 +308,6 @@ class Booster_K1_TrackingWalk(Booster_K1_TrackingEnvCfg):
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 
-
 @configclass
 class Booster_K1_TrackingWalk_Play(Booster_K1_TrackingWalk):
     def __post_init__(self):
@@ -316,4 +315,44 @@ class Booster_K1_TrackingWalk_Play(Booster_K1_TrackingWalk):
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+
+
+
+@configclass
+class Booster_K1_TrackingWalk_Full(Booster_K1_TrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/cmu_walk_full.yaml"
+        self.motion.motion_buffer_cfg.motion_type = "GMR"
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+
+@configclass
+class Booster_K1_TrackingWalk_Full_Play(Booster_K1_TrackingWalk_Full):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
+
+
+@configclass
+class Booster_K1_TrackingRun(Booster_K1_TrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_type = "GMR"
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+
+
+@configclass
+class Booster_K1_TrackingRun_Play(Booster_K1_TrackingRun):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
+
+
         
