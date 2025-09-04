@@ -218,15 +218,15 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 400, "max_reward": 500})
     feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
-                                          "threshold": 0.24})
+                                          "threshold": 0.30})
     feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
     feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "n_dt": 3.0})
-    feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
-                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
-                                          "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
+    # feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
+    #                               params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+    #                                       "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
 
     # joint deviation rewards
     waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
@@ -283,6 +283,7 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.feet_async_stable.weight = 0
 
         self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
+        self.rewards.legs_deviation.weight = -1.0
         self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
         
         self.motion.speed_scale = 1.0
