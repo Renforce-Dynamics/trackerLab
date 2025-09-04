@@ -162,7 +162,7 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-1.0, 1.0), "y": (-1.0, 1.0), "z": (-0.5, 0.5)}},
+        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.8, 1.2)}},
     )
     
 @configclass
@@ -224,9 +224,9 @@ class K1_HumanoidRewardsCfg:
     feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "n_dt": 3.0})
-    # feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
-    #                               params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
-    #                                       "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
+    feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
 
     # joint deviation rewards
     waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
@@ -281,6 +281,7 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.waists_deviation.weight = 0
         self.rewards.arms_deviation.weight = 0
         self.rewards.feet_async_stable.weight = 0
+        self.rewards.feet_flat_ankle.weight = 0
 
         self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
         self.rewards.legs_deviation.weight = -1.0
