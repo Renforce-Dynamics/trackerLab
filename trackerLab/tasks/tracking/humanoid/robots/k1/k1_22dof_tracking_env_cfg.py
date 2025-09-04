@@ -208,7 +208,7 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 400, "max_reward": 500})
     feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
-                                          "threshold": 0.2})
+                                          "threshold": 0.3})
     feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
     feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,

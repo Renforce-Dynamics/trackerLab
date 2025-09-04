@@ -32,8 +32,8 @@ BOOSTER_K1SERIAL_22DOF_CFG = ArticulationCfg(
         "Head": ImplicitActuatorCfg(
             joint_names_expr=["AAHead_yaw", "Head_pitch"],
             effort_limit_sim=7.0,
-            stiffness=20.0,
-            damping=1.0,
+            stiffness=50.0,
+            damping=2.0,
             armature=0.01,
         ),
         "Arms": ImplicitActuatorCfg(
