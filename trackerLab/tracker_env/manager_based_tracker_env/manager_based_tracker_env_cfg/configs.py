@@ -178,7 +178,7 @@ class ObservationsCfg:
 
 
         # observation terms (order preserved)
-        # base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1), clip=(-100, 100))
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1), clip=(-100, 100))
         base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2), clip=(-100, 100))
         projected_gravity = ObsTerm(
             func=mdp.projected_gravity,
@@ -206,18 +206,8 @@ class ObservationsCfg:
             self.joint_pos.scale = 1.0
             self.joint_vel.scale = 0.05
             self.actions.scale = 1.0
-            
-        # def set_history(self, history_len):
-        #     # self.dofpos_command.history_length = history_len
-        #     # self.root_vel_command.history_length = history_len
-            
-        #     self.base_lin_vel.history_length = history_len
-        #     self.base_ang_vel.history_length = history_len
-        #     self.projected_gravity.history_length = history_len
-        #     self.joint_pos.history_length = history_len
-        #     self.joint_vel.history_length = history_len
-        #     self.actions.history_length = history_len
-            
+
+
         def set_no_noise(self):
             def make_zero(tar):
                 tar.noise.n_min = 0
@@ -262,6 +252,9 @@ class ObservationsCfg:
             
     # privileged observations
     critic: CriticCfg = CriticCfg()
+    
+    def disable_lin_vel(self):
+            self.policy.base_lin_vel = None
 
 
 @configclass
