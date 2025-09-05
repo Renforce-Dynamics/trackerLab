@@ -11,8 +11,8 @@ def event_push_robot_levels(
     env: ManagerBasedRLEnv,
     env_ids: Sequence[int],
     velocity_range: dict[str, tuple[float, float]],
-    rise_thresh: float = 0.8,
-    fall_thresh: float = 0.7,
+    rise_threshold: float = 0.9,
+    fall_threshold: float = 0.7,
     event_term_name: str = "push_robot",
     reward_term_name: str = "alive",
 ) -> torch.Tensor:
@@ -23,7 +23,7 @@ def event_push_robot_levels(
     reward = torch.mean(env.reward_manager._episode_sums[reward_term_name][env_ids]) / env.max_episode_length_s
 
     if env.common_step_counter % env.max_episode_length == 0:
-        if reward > reward_term.weight * rise_thresh:
+        if reward > reward_term.weight * rise_threshold:
             delta_range = torch.tensor([-0.1, 0.1], device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(
                 torch.tensor(event_term.params["velocity_range"]['x'], device=env.device) + delta_range,
@@ -36,12 +36,12 @@ def event_push_robot_levels(
                 velocity_range['y'][1],
             ).tolist()
             event_term.params["velocity_range"]['z'] = torch.clamp(
-                torch.tensor(event_term.params["velocity_range"]['z'], device=env.device) + delta_range,
+                torch.tensor(event_term.params["velocity_range"]['z'], device=env.device) + 0.5*delta_range,
                 velocity_range['z'][0],
                 velocity_range['z'][1],
             ).tolist()
                 
-        elif reward < reward_term.weight * fall_thresh:
+        elif reward < reward_term.weight * fall_threshold:
             # lower the event level
             delta_range = torch.tensor([0.1, -0.1], device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(
@@ -55,7 +55,7 @@ def event_push_robot_levels(
                 velocity_range['y'][1],
             ).tolist()
             event_term.params["velocity_range"]['z'] = torch.clamp(
-                torch.tensor(event_term.params["velocity_range"]['z'], device=env.device) + delta_range,
+                torch.tensor(event_term.params["velocity_range"]['z'], device=env.device) + 0.5*delta_range,
                 velocity_range['z'][0],
                 velocity_range['z'][1],
             ).tolist()
