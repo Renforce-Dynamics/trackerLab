@@ -162,7 +162,7 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.8, 2.0)}},
+        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.5, 1.0)}},
     )
     
 @configclass
