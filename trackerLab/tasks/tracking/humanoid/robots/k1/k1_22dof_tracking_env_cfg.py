@@ -210,8 +210,8 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 1.0})
     
     # gravity rewards
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-5.0,
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-10.0)
+    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-10.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names="torso_link")})
 
     # termination rewards
@@ -241,7 +241,7 @@ class K1_HumanoidRewardsCfg:
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*waist.*"])})
     arms_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*shoulder.*", ".*elbow.*", ".*wrist.*"])})
-    legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.1,
+    legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-1.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
     head_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.1,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*head.*"])})
@@ -266,37 +266,25 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
     
     def __post_init__(self):
         self.set_no_scanner()
-        # self.set_plane()
-        # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.set_motion_align_cfg(K1_MOTION_ALIGN_CFG)
         self.motion.robot_type = "k1"
         
-        self.observations.policy.base_lin_vel.scale = 1.0
-        self.observations.policy.base_ang_vel.scale = 0.25
-        self.observations.policy.projected_gravity.scale = 1.0
-        self.observations.policy.joint_pos.scale = 1.0
-        self.observations.policy.joint_vel.scale = 0.05
-        self.observations.policy.actions.scale = 1.0
-        self.actions.joint_pos.scale = 0.5
         self.observations.policy.history_length = 5
+        self.observations.critic.history_length = 5
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
         
         self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*Ankle).*$"
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = "Trunk"
+        self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
+        self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
         self.rewards.set_feet(".*Ankle_Roll")
         
         self.rewards.waists_deviation.weight = 0
         self.rewards.arms_deviation.weight = 0
         self.rewards.feet_async_stable.weight = 0
         self.rewards.feet_flat_ankle.weight = 0
-
-        self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
-        self.rewards.legs_deviation.weight = -1.0
-        self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
-        
-        self.motion.speed_scale = 1.0
         
         self.disable_zero_weight_rewards()
         
