@@ -109,15 +109,15 @@ class SkillManager(MotionManager):
         return f0l, f1l, blend
 
     def calc_loc_terms(self, frame):
-        loc_trans_base  = self.skill_buffer.trans_base[self.env_ids_all, frame]
+        loc_trans_base  = self.skill_buffer.ltbs[self.env_ids_all, frame]
         loc_root_rot    = self.skill_buffer.grs[self.env_ids_all, frame, 0]
         loc_root_pos    = self.skill_buffer.gts[self.env_ids_all, frame, 0]
         loc_local_rot   = self.skill_buffer.lrs[self.env_ids_all, frame]
         loc_dof_vel     = self.skill_buffer.dvs[self.env_ids_all, frame]
         # loc_dof_pos     = self.skill_buffer.dof_pos[frame]
         loc_dof_pos     = None
-        loc_root_vel    = self.skill_buffer.vels_base[self.env_ids_all, frame]
-        loc_ang_vel     = self.skill_buffer.ang_vels_base[self.env_ids_all, frame]
+        loc_root_vel    = self.skill_buffer.lvbs[self.env_ids_all, frame]
+        loc_ang_vel     = self.skill_buffer.avbs[self.env_ids_all, frame]
         # self.loc_roll, self.loc_pitch, _ = euler_from_quaternion(self.loc_root_rot)
         loc_dof_pos, loc_dof_vel = \
             self._motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)

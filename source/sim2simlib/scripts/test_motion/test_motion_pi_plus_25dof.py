@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
-from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
+from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 
 from sim2simlib.utils.config import load_from_py, load_from_yaml
@@ -16,7 +16,7 @@ config = Sim2Sim_Config(
     motion_cfg=MotionManagerCfg(
         motion_buffer_cfg = MotionBufferCfg(
             motion = MotionBufferCfg.MotionCfg(
-                motion_name="amass/pi_plus_25dof/simple_walk.yaml",
+                motion_name="amass/pi_plus_25dof/simple_run.yaml",
                 regen_pkl=True,
             )
         ),

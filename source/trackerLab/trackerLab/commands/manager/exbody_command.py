@@ -139,3 +139,32 @@ class RootAngVelCommand(BaseCommand):
     def command(self):
         return self._env.motion_manager.loc_ang_vel
     
+from trackerLab.utils.torch_utils import euler_from_quaternion
+    
+class RootPoseCommand(BaseCommand):
+    def __init__(self, cfg, env):
+        super().__init__(cfg, env)
+        
+        env = self._env
+        asset: Articulation = env.scene["robot"]
+        self.robot = asset
+        # demo_roll, demo_pitch, demo_yaw = euler_from_quaternion(env.motion_manager.loc_root_rot)
+
+    def __str__(self) -> str:
+        msg = "Root angular vel command from motion."
+        return msg
+
+    def _update_metrics(self):
+
+        diff = self.robot.data.root_ang_vel_b - self._env.motion_manager.loc_ang_vel
+        self.metrics["diff_root_ang_vel"] = torch.abs(diff)
+
+    def _set_debug_vis_impl(self, debug_vis):
+        super()._set_debug_vis_impl(debug_vis)
+
+    def _debug_vis_callback(self, event):
+        super()._debug_vis_callback(event)
+
+    @property
+    def command(self):
+        return self._env.motion_manager.loc_ang_vel

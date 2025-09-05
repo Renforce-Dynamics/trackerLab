@@ -1,7 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2Sim_Motion_Model
-from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
+from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DC_Motor, PID_Motor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from sim2simlib import MUJOCO_ASSETS

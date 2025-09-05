@@ -144,11 +144,9 @@ class MotionLib():
         root_rot = self.grs[:, 0:1, :]
         num_joints = self.gts.shape[1]
         rel_pos = self.gts - root_pos
-        self.vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.grvs.view(-1, 3)).view(self.grvs.shape)
-        self.trans_base = quat_rotate_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
-        self.ang_vels_base = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
-
-        # self.dof_pos = self._local_rotation_to_dof(self.lrs)
+        self.lvbs = quat_rotate_inverse(root_rot.reshape(-1, 4), self.grvs.view(-1, 3)).view(self.grvs.shape)
+        self.ltbs = quat_rotate_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
+        self.avbs = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
     # Utility functions
     def _fill_motions(self, curr_motion, curr_dt):
@@ -190,20 +188,8 @@ class MotionLib():
     def get_motion_difficulty(self, motion_ids):
         return self._motion_difficulty[motion_ids]
     
-    def get_motion_files(self, motion_ids):
-        return [self._motion_files[motion_id] for motion_id in motion_ids]
-    
     def get_motion_length(self, motion_ids):
         return self._motion_lengths[motion_ids]
-
-    def get_motion_fps(self, motion_ids):
-        return self._motion_fps[motion_ids]
-    
-    def get_motion_num_frames(self, motion_ids):
-        return self._motion_num_frames[motion_ids]
-    
-    def get_motion_description(self, motion_id):
-        return self.motion_description[motion_id]
     
     def get_frame_idx(self, motion_ids, motion_times):
         motion_len = self._motion_lengths[motion_ids]
@@ -351,18 +337,6 @@ class MotionLib():
             motion_difficulty.append(curr_difficulty)
             motion_description.append(curr_description)
         return motion_files, motion_weights, motion_difficulty, motion_description
-
-    def _fetch_single_motion_file(motion_file):
-        motion_files = [motion_file]
-        motion_weights = [1.0]
-        motion_difficulty = [0]
-        motion_description = ["None"]
-        return motion_files, motion_weights, motion_difficulty, motion_description
-
-    def _get_num_bodies(self):
-        motion = self.get_motion(0)
-        num_bodies = motion.num_joints
-        return num_bodies
 
     def _dof_pos_to_dof_vel(self, local_dof, motion_dt, pad=True):
         # Compute velocity from finite difference

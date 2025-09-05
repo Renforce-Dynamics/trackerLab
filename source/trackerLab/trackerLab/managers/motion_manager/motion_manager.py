@@ -134,14 +134,14 @@ class MotionManager(ManagerBase):
         """
         Calc terms at certain frame.
         """
-        loc_trans_base  = self.motion_lib.trans_base[frame]
+        loc_trans_base  = self.motion_lib.ltbs[frame]
         loc_root_rot    = self.motion_lib.grs[frame, 0]
         loc_root_pos    = self.motion_lib.gts[frame, 0]
         loc_local_rot   = self.motion_lib.lrs[frame]
         loc_dof_vel     = self.motion_lib.dvs[frame]
         loc_dof_pos     = self.motion_lib.dps[frame]
-        loc_root_vel    = self.motion_lib.vels_base[frame]
-        loc_ang_vel     = self.motion_lib.ang_vels_base[frame]
+        loc_root_vel    = self.motion_lib.lvbs[frame]
+        loc_ang_vel     = self.motion_lib.avbs[frame]
         return loc_trans_base, loc_root_rot, loc_root_pos, \
             loc_dof_pos, loc_dof_vel, loc_root_vel, loc_ang_vel, loc_local_rot
     

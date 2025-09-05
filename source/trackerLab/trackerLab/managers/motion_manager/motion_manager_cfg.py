@@ -1,4 +1,4 @@
-from isaaclab.utils import configclass
+from trackerLab.utils import configclass
 from trackerLab.motion_buffer import MotionBufferCfg
 from dataclasses import MISSING
 from typing import Union

@@ -40,9 +40,9 @@ class SkillBuffer(object):
         dvs: torch.Tensor = None
         
         def __init__(self, num_envs: int, patch_size: int, comps: List[torch.Tensor]):
-            self.trans_base = torch.empty((num_envs, patch_size, *comps[0].shape[1:]), device=comps[0].device)
-            self.vels_base = torch.empty((num_envs, patch_size, *comps[1].shape[1:]), device=comps[1].device)
-            self.ang_vels_base = torch.empty((num_envs, patch_size, *comps[2].shape[1:]), device=comps[2].device)
+            self.ltbs = torch.empty((num_envs, patch_size, *comps[0].shape[1:]), device=comps[0].device)
+            self.lvbs = torch.empty((num_envs, patch_size, *comps[1].shape[1:]), device=comps[1].device)
+            self.avbs = torch.empty((num_envs, patch_size, *comps[2].shape[1:]), device=comps[2].device)
             self.lrs = torch.empty((num_envs, patch_size, *comps[3].shape[1:]), device=comps[3].device)
             self.gts = torch.empty((num_envs, patch_size, *comps[4].shape[1:]), device=comps[4].device)
             self.grs = torch.empty((num_envs, patch_size, *comps[5].shape[1:]), device=comps[5].device)
@@ -104,7 +104,7 @@ class SkillBuffer(object):
     def init_buffer(self):
         # Initialize the buffer
         target_list = [
-            self.motion_lib.trans_base, self.motion_lib.vels_base, self.motion_lib.ang_vels_base,
+            self.motion_lib.ltbs, self.motion_lib.lvbs, self.motion_lib.avbs,
             self.motion_lib.lrs, self.motion_lib.gts, self.motion_lib.grs, self.motion_lib.dvs]
         
         comps = self.alloc_comp(target_list)
@@ -187,11 +187,11 @@ class SkillBuffer(object):
     def patch_size(self): return self.skill_graph.cfg.patch_size
         
     @property
-    def trans_base(self):       return self.cache_curr.trans_base
+    def trans_base(self):       return self.cache_curr.ltbs
     @property
-    def vels_base(self):        return self.cache_curr.vels_base
+    def vels_base(self):        return self.cache_curr.lvbs
     @property
-    def ang_vels_base(self):    return self.cache_curr.ang_vels_base
+    def ang_vels_base(self):    return self.cache_curr.avbs
     @property
     def lrs(self):              return self.cache_curr.lrs
     @property

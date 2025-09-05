@@ -1,10 +1,10 @@
 import torch
 import numpy as np
 import gymnasium as gym
-from trackerLab.managers import AMPManager
+from trackerLab.managers.amp_manager import AMPManager
 from ..manager_based_tracker_env import ManagerBasedTrackerEnv
 
-import trackerLab.tracker_env.mdp.amp as amp_mdp
+import trackerLab.managers.amp_manager.utils.amp_mdp as amp_mdp
 
 class ManagerBasedAMPEnv(ManagerBasedTrackerEnv):
     def __init__(self, cfg, render_mode=None, **kwargs):

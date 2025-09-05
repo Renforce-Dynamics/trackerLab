@@ -52,20 +52,23 @@ class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.undesired_contacts.params["sensor_cfg"].body_names = [
             ".*shoulder.*", ".*arm.*", "base_link", "waist.*", ".*hip.*", ".*knee.*"
         ]
-        
-        self.terminations.base_contact = None
 
 @configclass
 class R2TrackingWalk(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
         
-        # self.rewards.flat_orientation_l2.weight = -5.0
-        # self.rewards.body_orientation_l2.weight = -5.0
-        self.rewards.action_rate_l2.weight = -0.5
+        self.rewards.feet_slide.weight = -0.5
+        self.rewards.feet_too_near.weight = -0.05
+        self.rewards.feet_stumble.weight = -0.01
+        self.rewards.motion_whb_dof_pos.weight = 3.0
+        self.rewards.motion_base_ang_vel.weight = 0.5
+        self.rewards.motion_base_lin_vel.weight = 3.0
+        self.rewards.alive.weight = 3.0
         
-        # self.align_friction()
+        self.align_friction()
+        self.domain_randomization()
         # self.events.set_event_determine()
         
 @configclass
@@ -73,6 +76,15 @@ class R2TrackingRun(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
+        self.rewards.feet_slide.weight = -0.5
+        self.rewards.feet_too_near.weight = -0.05
+        self.rewards.feet_stumble.weight = -0.01
+        self.rewards.motion_whb_dof_pos.weight = 3.0
+        self.rewards.motion_base_ang_vel.weight = 0.5
+        self.rewards.motion_base_lin_vel.weight = 3.0
+        self.rewards.alive.weight = 3.0
+        self.align_friction()
+        self.domain_randomization()
         
 
 @configclass

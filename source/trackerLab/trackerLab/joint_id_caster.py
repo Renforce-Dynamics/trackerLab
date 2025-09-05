@@ -82,24 +82,27 @@ class JointIdCaster(object):
     def init_gym_motion_offset(self):
         config = self.align_cfg
         dof_body_ids = config["dof_body_ids"]
-        
         gym_joint_names = config["gym_joint_names"]
         
-        dof_offsets = torch.Tensor(config["dof_offsets"]).long().to(self.device)
-        dof_indices_sim = torch.Tensor(config["dof_indices_sim"]).long().to(self.device)
-        dof_indices_motion = torch.Tensor(config["dof_indices_motion"]).long().to(self.device)
+        def config2tensor(key):
+            data = config.get(key, None)
+            return torch.Tensor(data).long().to(self.device) if data is not None else data
+        
+        dof_offsets         = config2tensor("dof_offsets")
+        dof_indices_sim     = config2tensor("dof_indices_sim")
+        dof_indices_motion  = config2tensor("dof_indices_motion")
         
         invalid_dof_id = config["invalid_dof_id"]
         valid_dof_body_ids = torch.ones(dof_offsets[-1], device=self.device, dtype=torch.bool)
         for idx in invalid_dof_id: valid_dof_body_ids[idx] = 0
         
-        self.dof_body_ids = dof_body_ids
-        self.gym_joint_names = gym_joint_names
-        self.dof_offsets = dof_offsets
-        self.dof_indices_sim = dof_indices_sim
-        self.dof_indices_motion = dof_indices_motion
-        self.invalid_dof_id = invalid_dof_id
-        self.valid_dof_body_ids = valid_dof_body_ids
+        self.dof_body_ids           = dof_body_ids
+        self.gym_joint_names        = gym_joint_names
+        self.dof_offsets            = dof_offsets
+        self.dof_indices_sim        = dof_indices_sim
+        self.dof_indices_motion     = dof_indices_motion
+        self.invalid_dof_id         = invalid_dof_id
+        self.valid_dof_body_ids     = valid_dof_body_ids
     
     # Utils
     

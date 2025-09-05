@@ -36,13 +36,20 @@ class HumanoidRewardsCfgV2:
     motion_base_lin_vel_punish = RewTerm(func=mdp.punish_motion_l1_lin_vel, weight=-0.6)
     motion_base_ang_vel_punish = RewTerm(func=mdp.punish_motion_l1_ang_vel, weight=-0.6)
     
-    motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
-                                  params={"std": 0.5, "vel_scale": 1.0},
-                                  weight=1.0)
+    motion_base_lin_vel = RewTerm(
+        func=mdp.motion_lin_vel_xy_yaw_frame_exp,
+        params={"std": 0.5, "vel_scale": 1.0}, weight=1.0
+    )
     
-    motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
-                                  params={"std": 0.5},
-                                  weight=0.5)
+    motion_base_ang_vel = RewTerm(
+        func=mdp.motion_ang_vel_z_world_exp,
+        params={"std": 0.5}, weight=0.5
+    )
+    motion_roll_pitch_world_exp = RewTerm(
+        func=mdp.motion_roll_pitch_world_exp,
+        params={"std": 1}, weight=3
+    )
+    
     # base rewards
     lin_vel_z_l2        = RewTerm(func=mdp.lin_vel_z_l2,        weight=-1.0)
     ang_vel_xy_l2       = RewTerm(func=mdp.ang_vel_xy_l2,       weight=-0.05)

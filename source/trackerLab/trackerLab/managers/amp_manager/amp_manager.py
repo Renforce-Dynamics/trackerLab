@@ -44,8 +44,8 @@ class AMPManager(MotionManager):
         dof_vel         = _interpolate(self.motion_lib.dvs, blend=blend, start=index_0, end=index_1)
         body_pos        = _interpolate(self.motion_lib.gts, blend=blend, start=index_0, end=index_1)
         body_rot        = _slerp(      self.motion_lib.grs, blend=blend, start=index_0, end=index_1)
-        body_vel        = _interpolate(self.motion_lib.vels_base, blend=blend, start=index_0, end=index_1)
-        body_ang_vel    = _interpolate(self.motion_lib.ang_vels_base, blend=blend, start=index_0, end=index_1)
+        body_vel        = _interpolate(self.motion_lib.lvbs, blend=blend, start=index_0, end=index_1)
+        body_ang_vel    = _interpolate(self.motion_lib.avbs, blend=blend, start=index_0, end=index_1)
 
         
         _body_pos = body_pos[:, 0, :]

@@ -152,10 +152,6 @@ class MotionLibDofPos(MotionLib):
             objects = pickle.load(inp)
         self._motions = []
         for motion in objects[0]:
-            # motion.tensor = motion.tensor.to(self._device)
-            # motion._skeleton_tree._parent_indices = motion._skeleton_tree._parent_indices.to(self._device)
-            # motion._skeleton_tree._local_translation = motion._skeleton_tree._local_translation.to(self._device)
-            # motion._rotation = motion._rotation.to(self._device)
             self._motions.append(motion)
         self._motion_lengths = objects[1].to(self._device)
         self._motion_weights = objects[2].to(self._device)
