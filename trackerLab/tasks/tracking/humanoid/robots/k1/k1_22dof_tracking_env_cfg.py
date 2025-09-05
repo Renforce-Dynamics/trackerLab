@@ -162,7 +162,7 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.5, 1.0)}},
+        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "z": (-0.0, 0.0)}},
     )
     
 @configclass
@@ -275,11 +275,11 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
         
-        self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*Ankle).*$"
+        self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*foot).*$"
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = "Trunk"
         self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
         self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
-        self.rewards.set_feet(".*Ankle_Roll")
+        self.rewards.set_feet(".*foot.*")
         
         self.rewards.waists_deviation.weight = 0
         self.rewards.arms_deviation.weight = 0

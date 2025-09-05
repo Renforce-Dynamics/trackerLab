@@ -18,7 +18,7 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.k1_22dof_tracking_env_cfg:Booster_K1_TrackingWalk_Full",
         "play_env_cfg_entry_point": f"{__name__}.k1_22dof_tracking_env_cfg:Booster_K1_TrackingWalk_Full_Play",
-        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:Booster_K1_Walk_PPOCfg",
+        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:Booster_K1_Walk_Full_PPOCfg",
     },
 )
 
@@ -29,7 +29,7 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.k1_22dof_tracking_env_cfg:Booster_K1_TrackingRun",
         "play_env_cfg_entry_point": f"{__name__}.k1_22dof_tracking_env_cfg:Booster_K1_TrackingRun_Play",
-        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:Booster_K1_Walk_PPOCfg",
+        "rsl_rl_cfg_entry_point": f"{__name__}.agents.rsl_rl_ppo_cfg:Booster_K1_Run_PPOCfg",
     },
 )
 
