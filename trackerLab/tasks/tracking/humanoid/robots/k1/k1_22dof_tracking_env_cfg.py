@@ -166,6 +166,14 @@ class EventCfg:
     )
     
 @configclass
+class CurriculumCfg:
+    event_push_robot_levels = CurrTerm(
+        func=mdp.event_push_robot_levels,
+        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.5, 1.0)}}
+    )
+
+
+@configclass
 class K1_HumanoidRewardsCfg:
     # task rewards
     motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
@@ -254,6 +262,7 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
     scene: RobotSceneCfg = RobotSceneCfg(num_envs=4096, env_spacing=5.0)
     events: EventCfg = EventCfg()
     rewards: K1_HumanoidRewardsCfg = K1_HumanoidRewardsCfg()
+    curriculum: CurriculumCfg = CurriculumCfg()
     
     def __post_init__(self):
         self.set_no_scanner()
