@@ -181,7 +181,7 @@ class K1_HumanoidRewardsCfg:
                                   weight=5.0)
     
     motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
-                                  params={"std": 0.5, "vel_scale": 1.0},
+                                  params={"std": 0.5},
                                   weight=1.0)
     
     motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
@@ -297,7 +297,6 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
         
         self.motion.speed_scale = 1.0
-        self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
         
         self.disable_zero_weight_rewards()
         
@@ -349,6 +348,8 @@ class Booster_K1_TrackingWalk_Full_Play(Booster_K1_TrackingWalk_Full):
 class Booster_K1_TrackingRun(Booster_K1_TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
+        self.motion.speed_scale = 0.5
+        self.rewards.motion_base_lin_vel.params["std"] = 1.0
         self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/simple_run.yaml"
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"

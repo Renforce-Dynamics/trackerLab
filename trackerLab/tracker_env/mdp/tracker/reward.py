@@ -150,13 +150,13 @@ def motion_ang_vel_z_world_exp(
     return reward
 
 def motion_lin_vel_xy_yaw_frame_exp(
-    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), vel_scale: float = 1.0
+    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
 ) -> torch.Tensor:
     """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
     asset = env.scene[asset_cfg.name]
     vel_yaw = quat_apply_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
     lin_vel_error = torch.sum(
-        torch.square(env.motion_manager.loc_root_vel[:, :2] * vel_scale - vel_yaw[:, :2]), dim=1
+        torch.square(env.motion_manager.loc_root_vel[:, :2] - vel_yaw[:, :2]), dim=1
     )
     return torch.exp(-lin_vel_error / std**2)
 
