@@ -23,7 +23,7 @@ def event_push_robot_levels(
     reward_term = env.reward_manager.get_term_cfg(reward_term_name)
     reward = torch.mean(env.reward_manager._episode_sums[reward_term_name][env_ids]) / env.max_episode_length_s
 
-    if env.common_step_counter % env.max_episode_length == 0:
+    if env.common_step_counter % (4 * env.max_episode_length) == 0:
         if reward > reward_term.weight * rise_threshold:
             delta_range = torch.tensor(delta_range, device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(

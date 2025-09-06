@@ -169,8 +169,8 @@ class EventCfg:
 class CurriculumCfg:
     event_push_robot_levels = CurrTerm(
         func=mdp.event_push_robot_levels,
-        params={"velocity_range": {"x": (-2.0, 2.0), "y": (-2.0, 2.0), "z": (-0.5, 1.0)},
-                "rise_threshold": 0.9, "fall_threshold": 0.5,}
+        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.4, 0.8)},
+                "rise_threshold": 0.9, "fall_threshold": 0.5, "delta_range": [-0.1, 0.1]}
     )
 
 
@@ -244,7 +244,7 @@ class K1_HumanoidRewardsCfg:
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*shoulder.*", ".*elbow.*", ".*wrist.*"])})
     legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-1.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
-    head_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.1,
+    head_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-1.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*head.*"])})
 
     def set_feet(self, names):
@@ -345,7 +345,23 @@ class Booster_K1_TrackingWalk_Full_Deploy_Play(Booster_K1_TrackingWalk_Full_Depl
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+        self.curriculum.event_push_robot_levels = None
 
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory(Booster_K1_TrackingWalk_Full_Deploy):
+    def __post_init__(self):
+        super().__post_init__()
+        self.observations.policy.history_length = 1
+        self.observations.critic.history_length = 1
+        
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory_Play(Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+        self.curriculum.event_push_robot_levels = None
 
 @configclass
 class Booster_K1_TrackingRun(Booster_K1_TrackingEnvCfg):
