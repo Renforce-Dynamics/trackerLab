@@ -1,17 +1,22 @@
-import numpy as np
+import os
 import argparse
+import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
 from sim2simlib.motion.motion_manager import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 from sim2simlib.utils.config import load_from_py, load_from_yaml
 from sim2simlib import SIM2SIMLIB_MUJOCO_ASSETS
+from sim2simlib import SIM2SIMLIB_MUJOCO_ASSETS, SIM2SIMLIB_LOGS_DIR, SIM2SIMLIB_CHECKPOINTS
+
+default_ckpt_dir = os.path.join(SIM2SIMLIB_LOGS_DIR, SIM2SIMLIB_CHECKPOINTS['booster_k1_rev_withouthistory'])
 
 argparser = argparse.ArgumentParser()
+argparser.add_argument("--ckpt_dir", type=str, default=default_ckpt_dir, help="Checkpoint directory path.")
 argparser.add_argument('--fk', action='store_true', help='Only do forward kinematics visualization.')
 args = argparser.parse_args()
 
-ckpt_dir = "/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/tracking_booster_k1_walk_full_deploy_without_history/2025-09-06_16-33-05"
+ckpt_dir = args.ckpt_dir
 
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
