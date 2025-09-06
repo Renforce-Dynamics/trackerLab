@@ -13,6 +13,7 @@ def event_push_robot_levels(
     velocity_range: dict[str, tuple[float, float]],
     rise_threshold: float = 0.9,
     fall_threshold: float = 0.7,
+    delta_range: list[float] = [-0.1, 0.1],
     event_term_name: str = "push_robot",
     reward_term_name: str = "alive",
 ) -> torch.Tensor:
@@ -24,7 +25,7 @@ def event_push_robot_levels(
 
     if env.common_step_counter % env.max_episode_length == 0:
         if reward > reward_term.weight * rise_threshold:
-            delta_range = torch.tensor([-0.1, 0.1], device=env.device)
+            delta_range = torch.tensor(delta_range, device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(
                 torch.tensor(event_term.params["velocity_range"]['x'], device=env.device) + delta_range,
                 velocity_range['x'][0],
@@ -43,7 +44,7 @@ def event_push_robot_levels(
                 
         elif reward < reward_term.weight * fall_threshold:
             # lower the event level
-            delta_range = torch.tensor([0.1, -0.1], device=env.device)
+            delta_range = torch.tensor(delta_range, device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(
                 torch.tensor(event_term.params["velocity_range"]['x'], device=env.device) + delta_range,
                 velocity_range['x'][0],
