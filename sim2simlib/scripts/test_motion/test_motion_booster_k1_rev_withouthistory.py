@@ -11,7 +11,7 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument('--fk', action='store_true', help='Only do forward kinematics visualization.')
 args = argparser.parse_args()
 
-ckpt_dir = "/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/tracking_booster_k1_walk_full_deploy/2025-09-06_17-01-31"
+ckpt_dir = "/home/ac/Desktop/2025/project_isaac/trackerLab_private/logs/rsl_rl/tracking_booster_k1_walk_full_deploy_without_history/2025-09-06_16-33-05"
 
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
@@ -64,8 +64,8 @@ config = Sim2Sim_Config(
                                  'joint_pos', 
                                  'joint_vel',
                                  'last_action'],
-        using_base_obs_history=True,
-        base_obs_his_length=5,
+        using_base_obs_history=False,
+        base_obs_his_length=1,
         scale={ 
                 'base_lin_vel': 1.0,
                 'base_ang_vel': 0.25,
@@ -78,8 +78,8 @@ config = Sim2Sim_Config(
             'loc_dof_pos',
             'loc_root_vel'
             ],
-        using_motion_obs_history=True,
-        motion_obs_his_length=5,
+        using_motion_obs_history=False,
+        motion_obs_his_length=1,
     ),
     action_cfg=Actions_Config(
         action_clip=(-6.0, 6.0), # CHECK
