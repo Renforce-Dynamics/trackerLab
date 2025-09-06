@@ -169,7 +169,7 @@ class EventCfg:
 class CurriculumCfg:
     event_push_robot_levels = CurrTerm(
         func=mdp.event_push_robot_levels,
-        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.4, 0.8)},
+        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.3, 0.6)},
                 "rise_threshold": 0.9, "fall_threshold": 0.5, "delta_range": [-0.1, 0.1]}
     )
 
