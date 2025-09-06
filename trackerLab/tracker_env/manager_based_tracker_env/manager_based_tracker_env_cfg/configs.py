@@ -254,7 +254,7 @@ class ObservationsCfg:
     critic: CriticCfg = CriticCfg()
     
     def disable_lin_vel(self):
-            self.policy.base_lin_vel = None
+        self.policy.base_lin_vel = None
 
 
 @configclass
