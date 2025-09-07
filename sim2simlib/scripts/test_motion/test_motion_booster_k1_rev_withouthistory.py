@@ -14,6 +14,7 @@ default_ckpt_dir = os.path.join(SIM2SIMLIB_LOGS_DIR, SIM2SIMLIB_CHECKPOINTS['boo
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--ckpt_dir", type=str, default=default_ckpt_dir, help="Checkpoint directory path.")
 argparser.add_argument('--fk', action='store_true', help='Only do forward kinematics visualization.')
+argparser.add_argument('--camera', type=str, default=None, help='Camera tracking body name.')
 args = argparser.parse_args()
 
 ckpt_dir = args.ckpt_dir
@@ -147,6 +148,9 @@ config = Sim2Sim_Config(
 
     default_pos=np.array([0.0, 0.0, 0.53], dtype=np.float32),
     default_angles={".*": 0.0},
+    
+    camera_tracking=True if args.camera else False,
+    camera_tracking_body=args.camera
 )
 
 mujoco_model = Sim2SimMotionModel(config)

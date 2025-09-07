@@ -95,3 +95,7 @@ class Sim2Sim_Config:
     motion_id: int = 0
     motion_update_rise: bool = False
     """motion manager configuration"""
+    
+    camera_tracking: bool = False
+    camera_tracking_body: str = "torso"
+    """Camera tracking configuration"""

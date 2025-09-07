@@ -131,12 +131,23 @@ class Sim2Sim(ABC):
             time_until_next_step = self.mj_data.opt.timestep - (time.time() - step_start)
             if time_until_next_step > 0:
                 time.sleep(time_until_next_step)
-            
+
+    def setup_follow_camera(self, viewer, body_name="torso", offset=[-3, 0, 1]):
+        body_id = mujoco.mj_name2id(self.mj_model, mujoco.mjtObj.mjOBJ_BODY, body_name)
+
+        viewer.cam.trackbodyid = body_id
+        viewer.cam.distance = offset[0] 
+        viewer.cam.lookat = np.array([0, 0, 0]) 
+        viewer.cam.elevation = offset[2]        
     
     def view_run(self):
         counter = 0
         joint_pos_action = self.init_angles
         with mujoco.viewer.launch_passive(self.mj_model, self.mj_data) as viewer:
+            if self._cfg.camera_tracking:
+                viewer.cam.type = mujoco.mjtCamera.mjCAMERA_TRACKING
+                viewer.cam.fixedcamid = -1
+                self.setup_follow_camera(viewer, self._cfg.camera_tracking_body, offset=[3.0, 0, 1.5])
             while viewer.is_running():
                 step_start = time.time()
 
