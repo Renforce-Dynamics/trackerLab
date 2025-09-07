@@ -13,6 +13,7 @@ def event_push_robot_levels(
     velocity_range: dict[str, tuple[float, float]],
     rise_threshold: float = 0.9,
     fall_threshold: float = 0.7,
+    min_learning_episode: int = 4,
     delta_range: list[float] = [-0.1, 0.1],
     event_term_name: str = "push_robot",
     reward_term_name: str = "alive",
@@ -23,7 +24,7 @@ def event_push_robot_levels(
     reward_term = env.reward_manager.get_term_cfg(reward_term_name)
     reward = torch.mean(env.reward_manager._episode_sums[reward_term_name][env_ids]) / env.max_episode_length_s
 
-    if env.common_step_counter % (4 * env.max_episode_length) == 0:
+    if env.common_step_counter % (min_learning_episode * env.max_episode_length) == 0:
         if reward > reward_term.weight * rise_threshold:
             delta_range = torch.tensor(delta_range, device=env.device)
             event_term.params["velocity_range"]['x'] = torch.clamp(
