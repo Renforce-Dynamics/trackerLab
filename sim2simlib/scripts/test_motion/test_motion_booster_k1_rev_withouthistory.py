@@ -14,6 +14,7 @@ default_ckpt_dir = os.path.join(SIM2SIMLIB_LOGS_DIR, SIM2SIMLIB_CHECKPOINTS['boo
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--ckpt_dir", type=str, default=default_ckpt_dir, help="Checkpoint directory path.")
 argparser.add_argument('--fk', action='store_true', help='Only do forward kinematics visualization.')
+argparser.add_argument('--float_grav', action='store_true', help='Use floating gravity direction.')
 argparser.add_argument('--camera', type=str, default=None, help='Camera tracking body name.')
 args = argparser.parse_args()
 
@@ -89,7 +90,8 @@ config = Sim2Sim_Config(
     ),
     action_cfg=Actions_Config(
         action_clip=(-6.0, 6.0), # CHECK
-        scale=0.5 # CHECK
+        scale=0.5, # CHECK
+        smooth_filter=True
     ),            
     motor_cfg=Motor_Config(
         motor_type=PIDMotor,
@@ -110,50 +112,99 @@ config = Sim2Sim_Config(
             ".*Ankle_Up.*":         20.0,
             ".*Ankle_Down.*":       20.0,
         },
+        # stiffness={
+        #     # Head
+        #     ".*Head_Yaw.*":         50.0,
+        #     ".*Head_Pitch.*":       50.0,
+        #     # Arms
+        #     ".*Shoulder_Pitch.*":   50.0,
+        #     ".*Shoulder_Roll.*":    50.0,
+        #     ".*Shoulder_Yaw.*":     50.0,
+        #     ".*Elbow.*":            50.0,
+        #     # Legs
+        #     ".*Hip_Pitch.*":        200.0,
+        #     ".*Hip_Roll.*":         200.0,
+        #     ".*Hip_Yaw.*":          200.0,
+        #     ".*Knee.*":             200.0,
+        #     ".*Ankle_Up.*":         200.0,
+        #     ".*Ankle_Down.*":       200.0,
+        # },
+        # damping={
+        #     # Head
+        #     ".*Head_Yaw.*":         2.0,
+        #     ".*Head_Pitch.*":       2.0,
+        #     # Arms
+        #     ".*Shoulder_Pitch.*":   2.0,
+        #     ".*Shoulder_Roll.*":    2.0,
+        #     ".*Shoulder_Yaw.*":     2.0,
+        #     ".*Elbow.*":            2.0,
+        #     # Legs
+        #     ".*Hip_Pitch.*":        10.0,
+        #     ".*Hip_Roll.*":         10.0,
+        #     ".*Hip_Yaw.*":          10.0,
+        #     ".*Knee.*":             10.0,
+        #     ".*Ankle_Up.*":         10.0,
+        #     ".*Ankle_Down.*":       10.0,
+        # },
         stiffness={
             # Head
-            ".*Head_Yaw.*":         50.0,
-            ".*Head_Pitch.*":       50.0,
+            ".*Head_Yaw.*":         10.0,
+            ".*Head_Pitch.*":       10.0,
             # Arms
-            ".*Shoulder_Pitch.*":   50.0,
-            ".*Shoulder_Roll.*":    50.0,
-            ".*Shoulder_Yaw.*":     50.0,
-            ".*Elbow.*":            50.0,
+            ".*Shoulder_Pitch.*":   10.0,
+            ".*Shoulder_Roll.*":    10.0,
+            ".*Shoulder_Yaw.*":     10.0,
+            ".*Elbow.*":            10.0,
             # Legs
-            ".*Hip_Pitch.*":        200.0,
-            ".*Hip_Roll.*":         200.0,
-            ".*Hip_Yaw.*":          200.0,
-            ".*Knee.*":             200.0,
-            ".*Ankle_Up.*":         200.0,
-            ".*Ankle_Down.*":       200.0,
+            ".*Hip_Pitch.*":        20.0,
+            ".*Hip_Roll.*":         20.0,
+            ".*Hip_Yaw.*":          20.0,
+            ".*Knee.*":             20.0,
+            ".*Ankle_Up.*":         20.0,
+            ".*Ankle_Down.*":       20.0,
         },
         damping={
             # Head
-            ".*Head_Yaw.*":         2.0,
-            ".*Head_Pitch.*":       2.0,
+            ".*Head_Yaw.*":         0.5,
+            ".*Head_Pitch.*":       0.5,
             # Arms
-            ".*Shoulder_Pitch.*":   2.0,
-            ".*Shoulder_Roll.*":    2.0,
-            ".*Shoulder_Yaw.*":     2.0,
-            ".*Elbow.*":            2.0,
+            ".*Shoulder_Pitch.*":   0.5,
+            ".*Shoulder_Roll.*":    0.5,
+            ".*Shoulder_Yaw.*":     0.5,
+            ".*Elbow.*":            0.5,
             # Legs
-            ".*Hip_Pitch.*":        10.0,
-            ".*Hip_Roll.*":         10.0,
-            ".*Hip_Yaw.*":          10.0,
-            ".*Knee.*":             10.0,
-            ".*Ankle_Up.*":         10.0,
-            ".*Ankle_Down.*":       10.0,
+            ".*Hip_Pitch.*":        1.0,
+            ".*Hip_Roll.*":         1.0,
+            ".*Hip_Yaw.*":          1.0,
+            ".*Knee.*":             1.0,
+            ".*Ankle_Up.*":         1.0,
+            ".*Ankle_Down.*":       1.0,
         },
     ),
 
     default_pos=np.array([0.0, 0.0, 0.53], dtype=np.float32),
-    default_angles={".*": 0.0},
+    default_angles={
+                ".*Shoulder_Pitch.*": 0.25,
+                ".*Left_Shoulder_Roll.*": -1.4,
+                ".*Right_Shoulder_Roll.*": 1.4,
+                ".*Left_Elbow.*": -0.5,
+                ".*Right_Elbow.*": 0.5,
+                ".*Hip_Pitch.*": -0.1,
+                ".*Knee.*": 0.2,
+                ".*Ankle_Up.*": -0.1,
+            },
     
     camera_tracking=True if args.camera else False,
     camera_tracking_body=args.camera
 )
 
 mujoco_model = Sim2SimMotionModel(config)
+
+if args.float_grav:
+    mujoco_model.mj_model.opt.gravity[0] = 0.0
+    mujoco_model.mj_model.opt.gravity[1] = 0.0
+    mujoco_model.mj_model.opt.gravity[2] = 0.0
+    print("Using floating gravity direction.")
 
 if args.fk:
     mujoco_model.motion_fk_view()

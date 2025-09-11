@@ -26,6 +26,8 @@ class Actions():
 class Actions_Config:
     scale: float
     action_clip: tuple[float, float]
+    smooth_filter: bool = False
+    """using simple low-pass filter to smooth the action input"""
 
 @dataclass
 class Observations_Config:

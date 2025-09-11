@@ -187,7 +187,10 @@ def main():
     print(f"[INFO] Joint orders: {env.unwrapped.scene['robot'].joint_names}")
 
     dt = env.unwrapped.step_dt
-
+    
+    import numpy as np
+    action_list = []
+    obs_list = []
     # reset environment
     obs, _ = env.get_observations()
     timestep = 0
@@ -198,6 +201,19 @@ def main():
         with torch.inference_mode():
             # agent stepping
             actions = policy(obs)
+            action_list.append(actions.tolist())
+            obs_list.append(obs.tolist())
+            if len(action_list) % 1000 == 0:
+                actions_data = np.array(action_list)
+                np.save(f'logs/action_{len(action_list)}.npy', actions_data)
+                print(f'saved {len(action_list)} actions')
+                action_list = []
+                
+                obs_data = np.array(obs_list)
+                np.save(f'logs/obs_{len(obs_list)}.npy', obs_data)
+                print(f'saved {len(obs_list)} obs')
+                obs_list = []
+                
             # actions = torch.zeros_like(actions)
             # env stepping
             obs, _, _, _ = env.step(actions)

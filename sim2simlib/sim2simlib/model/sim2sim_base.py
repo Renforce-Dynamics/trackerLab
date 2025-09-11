@@ -191,6 +191,7 @@ class Sim2SimBaseModel(Sim2Sim):
                         self.mj_data.qpos[i + 7] = angle
         self.init_qpos = self.mj_data.qpos.copy()
         self.init_angles = self.mj_data.qpos[7:].copy()
+        self.filtered_dof_target = self.init_angles.copy()
         rich.print("[INFO] Initial qpos: ", self.init_qpos)
         rich.print("[INFO] Initial angles: ", self.init_angles)
         rich.print("[INFO] Initial angles mapped: ", self.maped_qpos)
@@ -271,7 +272,12 @@ class Sim2SimBaseModel(Sim2Sim):
         joint_pos_action = np.zeros_like(self.init_angles, dtype=np.float32)
         joint_pos_action[self.act_maps] = action
         joint_pos_action += self.init_angles
-        return joint_pos_action
+        if self._cfg.action_cfg.smooth_filter:
+            # Apply simple low-pass filter
+            self.filtered_dof_target = self.filtered_dof_target * 0.2 + joint_pos_action * 0.8
+        else:
+            self.filtered_dof_target = joint_pos_action
+        return self.filtered_dof_target
 
     def apply_action(self, joint_pos_action: np.ndarray):
         tau = self.dc_motor.compute(

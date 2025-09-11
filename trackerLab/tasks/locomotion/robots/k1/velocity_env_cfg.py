@@ -18,7 +18,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
-from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG
+from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
 from trackerLab.tasks.locomotion import mdp
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
@@ -62,7 +62,7 @@ class RobotSceneCfg(InteractiveSceneCfg):
         debug_vis=False,
     )
     # robots
-    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_POSREV_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
     # sensors
     height_scanner = RayCasterCfg(
@@ -241,11 +241,11 @@ class RewardsCfg:
     # -- task
     track_lin_vel_xy = RewTerm(
         func=mdp.track_lin_vel_xy_yaw_frame_exp,
-        weight=1.0,
-        params={"command_name": "base_velocity", "std": math.sqrt(0.25)},
+        weight=2.0,
+        params={"command_name": "base_velocity", "std": math.sqrt(0.75)},
     )
     track_ang_vel_z = RewTerm(
-        func=mdp.track_ang_vel_z_exp, weight=0.5, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
+        func=mdp.track_ang_vel_z_exp, weight=1.0, params={"command_name": "base_velocity", "std": math.sqrt(0.25)}
     )
 
     alive = RewTerm(func=mdp.is_alive, weight=0.15)
@@ -257,9 +257,27 @@ class RewardsCfg:
     base_angular_velocity = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.05)
     joint_vel = RewTerm(func=mdp.joint_vel_l2, weight=-0.001)
     joint_acc = RewTerm(func=mdp.joint_acc_l2, weight=-2.5e-7)
-    action_rate = RewTerm(func=mdp.action_rate_l2, weight=-0.05)
+    action_rate = RewTerm(func=mdp.action_rate_l2, weight=-0.1)
     dof_pos_limits = RewTerm(func=mdp.joint_pos_limits, weight=-5.0)
     energy = RewTerm(func=mdp.energy, weight=-2e-5)
+    # action_l2 = RewTerm(func=mdp.action_l2, weight=-1e-3)
+    action_limits = RewTerm(func=mdp.joint_position_action_limit, weight=-1.0)
+
+    feet_air = RewTerm(
+        func=mdp.feet_air_time,
+        weight=0.5,
+        params={
+            "command_name": "base_velocity",
+            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*foot.*"),
+            "threshold": 0.5,
+            # "command_name": "base_velocity",
+            # "asset_cfg": SceneEntityCfg("robot", body_names=".*foot.*"),
+            # "mode_time": 0.5,
+            # "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*foot.*"),
+            # "velocity_threshold": 0.3,
+            # "command_threshold": 0.3,
+        },
+    )
 
     joint_deviation_arms = RewTerm(
         func=mdp.joint_deviation_l1,
@@ -287,20 +305,31 @@ class RewardsCfg:
     #         )
     #     },
     # )
+    joint_deviation_head = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*Head.*"])},
+    )
     joint_deviation_legs = RewTerm(
         func=mdp.joint_deviation_l1,
         weight=-0.1,
-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*Hip_Roll.*", ".*Hip_Yaw.*", ".*Ankle.*"])},
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*Hip_Roll.*", ".*Hip_Yaw.*"])},
+    )
+    
+    joint_deviation_ankles = RewTerm(
+        func=mdp.joint_deviation_l1,
+        weight=-0.1,
+        params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*Ankle.*"])},
     )
 
     # -- robot
     flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    base_height = RewTerm(func=mdp.base_height_l2, weight=-10, params={"target_height": 0.78})
+    base_height = RewTerm(func=mdp.base_height_l2, weight=-10, params={"target_height": 0.4})
 
     # -- feet
     gait = RewTerm(
         func=mdp.feet_gait,
-        weight=0.5,
+        weight=0.25,
         params={
             "period": 0.8,
             "offset": [0.0, 0.5],
@@ -323,7 +352,7 @@ class RewardsCfg:
         params={
             "std": 0.05,
             "tanh_mult": 2.0,
-            "target_height": 0.1,
+            "target_height": 0.15,
             "asset_cfg": SceneEntityCfg("robot", body_names=".*foot.*"),
         },
     )

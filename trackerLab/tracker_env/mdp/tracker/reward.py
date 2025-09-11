@@ -240,3 +240,19 @@ def feet_flat_ankle(env,  asset_cfg: SceneEntityCfg, sensor_cfg: SceneEntityCfg)
     )
     reward = torch.sum(torch.square(foot_orientation[:, :, :2]), dim=(1, 2)) * contact.float()
     return reward
+
+def action_limit(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Penalize JointPositionAction that exceed the specified limit."""
+    asset: Articulation = env.scene[asset_cfg.name]
+    
+    soft_joint_pos_limits = asset.data.soft_joint_pos_limits[:, asset_cfg.joint_ids, :] # (num_envs, num_joints, 2)
+    init_joint_pos = asset.data.default_joint_pos[:, asset_cfg.joint_ids] # (num_envs, num_joints)
+    action_limit = soft_joint_pos_limits - init_joint_pos.unsqueeze(-1) # (num_envs, num_joints, 2)
+    
+    action = env.action_manager.action
+    exceed_lower_limit = (action < action_limit[:, :, 0]).float() * (action_limit[:, :, 0] - action)
+    exceed_upper_limit = (action > action_limit[:, :, 1]).float() * (action - action_limit[:, :, 1])
+
+    return torch.sum(exceed_lower_limit + exceed_upper_limit, dim=1)

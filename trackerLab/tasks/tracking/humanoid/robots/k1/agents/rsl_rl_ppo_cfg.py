@@ -14,12 +14,12 @@ class Booster_K1_Walk_Full_PPOCfg(BasePPORunnerCfg):
 @configclass
 class Booster_K1_Walk_Full_Deploy_PPOCfg(BasePPORunnerCfg):
     experiment_name = "tracking_booster_k1_walk_full_deploy"
-    max_iterations = 7500
+    max_iterations = 30000
 
 @configclass
 class Booster_K1_Walk_Full_Deploy_WithoutHistory_PPOCfg(BasePPORunnerCfg):
     experiment_name = "tracking_booster_k1_walk_full_deploy_without_history"
-    max_iterations = 7500
+    max_iterations = 30000
 
 @configclass
 class Booster_K1_Run_PPOCfg(BasePPORunnerCfg):

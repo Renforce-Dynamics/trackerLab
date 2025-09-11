@@ -18,7 +18,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 
 import trackerLab.tracker_env.mdp as mdp
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG
+from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
 from .motion_align_cfg import K1_MOTION_ALIGN_CFG
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
@@ -62,7 +62,7 @@ class RobotSceneCfg(InteractiveSceneCfg):
         debug_vis=False,
     )
     # robots
-    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
     # sensors
     height_scanner = RayCasterCfg(
@@ -195,9 +195,10 @@ class K1_HumanoidRewardsCfg:
     dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
     dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
     energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
-    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.10)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.15)
     dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
     alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
+    action_limits       = RewTerm(func=mdp.action_limit,        weight=-1.0)
 
     # contact rewards
     undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-1.0,
@@ -276,6 +277,8 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.observations.critic.history_length = 5
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
+        
+        self.actions.joint_pos.clip={".*": (-2.0, 2.0)}
         
         self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*foot).*$"
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = "Trunk"
