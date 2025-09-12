@@ -92,7 +92,7 @@ class RootVelCommand(BaseCommand):
         return msg
 
     def _update_metrics(self):
-        diff = self.robot.data.root_lin_vel_b - self._env.motion_manager.loc_root_vel
+        diff = self.robot.data.root_lin_vel_b - self._env.motion_manager.loc_root_vel * self._env.motion_manager.speed_scale
         self.metrics["diff_root_vel"] = torch.norm(diff, dim=1)
 
     def _set_debug_vis_impl(self, debug_vis):
@@ -106,11 +106,11 @@ class RootVelCommand(BaseCommand):
         super()._debug_vis_callback(event)
         if self.vel_drawer is not None:
             self.vel_drawer.visualize_self_vel(self.robot)
-            self.vel_drawer.visualize_ref_vel(self.robot, self._env.motion_manager.loc_root_vel)
+            self.vel_drawer.visualize_ref_vel(self.robot, self._env.motion_manager.loc_root_vel * self._env.motion_manager.speed_scale)
 
     @property
     def command(self):
-        return self._env.motion_manager.loc_root_vel
+        return self._env.motion_manager.loc_root_vel * self._env.motion_manager.speed_scale
     
 class RootAngVelCommand(BaseCommand):
     def __init__(self, cfg, env):
@@ -126,7 +126,7 @@ class RootAngVelCommand(BaseCommand):
 
     def _update_metrics(self):
 
-        diff = self.robot.data.root_ang_vel_b - self._env.motion_manager.loc_ang_vel
+        diff = self.robot.data.root_ang_vel_b - self._env.motion_manager.loc_ang_vel * self._env.motion_manager.speed_scale
         self.metrics["diff_root_ang_vel"] = torch.abs(diff)
 
     def _set_debug_vis_impl(self, debug_vis):
@@ -168,3 +168,4 @@ class RootPoseCommand(BaseCommand):
     @property
     def command(self):
         return self._env.motion_manager.loc_ang_vel
+    

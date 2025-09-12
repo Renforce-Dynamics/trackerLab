@@ -9,12 +9,17 @@ ckpt_dir = ""
 
 config = Sim2Sim_Config(
     robot_name='Go2',
-    simulation_dt=0.005,
-    slowdown_factor=1.0,
-    control_decimation=4,
+    simulation_dt=0.001,
+    slowdown_factor=10.0,
+    control_decimation=20,
     xml_path=f"{SIM2SIMLIB_ASSETS_DIR}/unitree_go2/mjcf/scene_go2.xml",
-    policy_path=f"{ckpt_dir}/exported/policy.pt",
-    policy_joint_names=['FL_hip_joint', 'FR_hip_joint', 'RL_hip_joint', 'RR_hip_joint', 'FL_thigh_joint', 'FR_thigh_joint', 'RL_thigh_joint', 'RR_thigh_joint', 'FL_calf_joint', 'FR_calf_joint', 'RL_calf_joint', 'RR_calf_joint'],
+    policy_path=f"",
+    policy_joint_names=[ 
+            "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+            "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+            "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
+            "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",   
+        ],
     observation_cfg=Observations_Config(
         base_observations_terms=['base_ang_vel', 
                              'gravity_orientation', 
@@ -31,7 +36,7 @@ config = Sim2Sim_Config(
                 'last_action': 1.0
             },
         ),
-    cmd=[1,0,0],
+    cmd=[0.1,0,0],
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0),
         scale=0.25
@@ -39,6 +44,8 @@ config = Sim2Sim_Config(
     motor_cfg=Motor_Config(
         motor_type=PIDMotor,
         effort_limit=23.5,
+        saturation_effort=23.5,
+        velocity_limit=30.0,
         stiffness=25.0,
         damping=0.5,
     ),

@@ -201,17 +201,13 @@ class ObservationsCfg:
             self.enable_corruption = True
             self.concatenate_terms = True
             
-        def set_history(self, history_len):
-            # self.dofpos_command.history_length = history_len
-            # self.root_vel_command.history_length = history_len
-            
-            self.base_lin_vel.history_length = history_len
-            self.base_ang_vel.history_length = history_len
-            self.projected_gravity.history_length = history_len
-            self.joint_pos.history_length = history_len
-            self.joint_vel.history_length = history_len
-            self.actions.history_length = history_len
-            
+            self.base_ang_vel.scale = 0.25
+            self.projected_gravity.scale = 1.0
+            self.joint_pos.scale = 1.0
+            self.joint_vel.scale = 0.05
+            self.actions.scale = 1.0
+
+
         def set_no_noise(self):
             def make_zero(tar):
                 tar.noise.n_min = 0
@@ -224,6 +220,41 @@ class ObservationsCfg:
             
     # observation groups
     policy: PolicyCfg = PolicyCfg()
+    
+    @configclass
+    class CriticCfg(ObsGroup):
+        """Observations for critic group."""
+        
+        dofpos_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "dofpos_command"})
+        root_vel_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "root_vel_command"})
+
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1), clip=(-100, 100))
+        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2), clip=(-100, 100))
+        projected_gravity = ObsTerm(
+            func=mdp.projected_gravity,
+            noise=Unoise(n_min=-0.05, n_max=0.05),
+            clip=(-100, 100)
+        )
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01), clip=(-100, 100))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-1.5, n_max=1.5), clip=(-100, 100))
+        actions = ObsTerm(func=mdp.last_action, clip=(-100, 100))
+
+        def __post_init__(self):
+            self.enable_corruption = True
+            self.concatenate_terms = True
+            
+            self.base_lin_vel.scale = 1.0
+            self.base_ang_vel.scale = 0.25
+            self.projected_gravity.scale = 1.0
+            self.joint_pos.scale = 1.0
+            self.joint_vel.scale = 0.05
+            self.actions.scale = 1.0
+            
+    # privileged observations
+    critic: CriticCfg = CriticCfg()
+    
+    def disable_lin_vel(self):
+        self.policy.base_lin_vel = None
 
 
 @configclass

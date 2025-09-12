@@ -1,0 +1,68 @@
+motions:
+  '09/09_01_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_02_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_03_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_04_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_05_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_06_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_07_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_08_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_09_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_10_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  '09/09_11_stageii.pkl':
+    description: "walk episode"
+    difficulty: 4
+    trim_beg: -1
+    trim_end: -1
+    weight: 1.0
+  root: "GMR/booster_k1/CMU"

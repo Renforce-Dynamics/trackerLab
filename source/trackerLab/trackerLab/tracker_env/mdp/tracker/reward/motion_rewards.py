@@ -105,13 +105,13 @@ def motion_ang_vel_z_world_exp(
     return reward
 
 def motion_lin_vel_xy_yaw_frame_exp(
-    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), vel_scale: float = 1.0
+    env, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
 ) -> torch.Tensor:
     """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
     asset = env.scene[asset_cfg.name]
     vel_yaw = quat_apply_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
     lin_vel_error = torch.sum(
-        torch.square(env.motion_manager.loc_root_vel[:, :2] * vel_scale - vel_yaw[:, :2]), dim=1
+        torch.square(env.motion_manager.loc_root_vel[:, :2] - vel_yaw[:, :2]), dim=1
     )
     return torch.exp(-lin_vel_error / std**2)
 
@@ -138,7 +138,76 @@ def motion_roll_pitch_world_exp(
     demo_roll, demo_pitch, demo_yaw = euler_from_quaternion(env.motion_manager.loc_root_rot)
     demo_roll_pitch = torch.stack((demo_roll, demo_pitch), dim=1)
     asset: Articulation = env.scene[asset_cfg.name]
-    roll, pitch, yaw = euler_from_quaternion(asset.data.root_quat_w.roll(shifts=-1, dims=-1))
-    cur_roll_pitch = torch.stack((roll, pitch), dim=1)
-    rew = torch.exp(- torch.norm(cur_roll_pitch - demo_roll_pitch, dim=1) / std**2)
-    return rew
+    body_orientation = quat_apply_inverse(
+        asset.data.body_quat_w[:, asset_cfg.body_ids[0], :], asset.data.GRAVITY_VEC_W
+    )
+    return torch.sum(torch.square(body_orientation[:, :2]), dim=1)
+
+def body_force(
+    env, sensor_cfg: SceneEntityCfg, threshold: float = 500, max_reward: float = 400
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    reward = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2].norm(dim=-1)
+    reward[reward < threshold] = 0
+    reward[reward > threshold] -= threshold
+    reward = reward.clamp(min=0, max=max_reward)
+    return reward
+
+# 
+
+def feet_too_near(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"), threshold: float = 0.2
+) -> torch.Tensor:
+    assert len(asset_cfg.body_ids) == 2
+    asset: Articulation = env.scene[asset_cfg.name]
+    feet_pos = asset.data.body_pos_w[:, asset_cfg.body_ids, :]
+    distance = torch.norm(feet_pos[:, 0] - feet_pos[:, 1], dim=-1)
+    return (threshold - distance).clamp(min=0)
+
+
+def feet_stumble(
+    env, sensor_cfg: SceneEntityCfg
+) -> torch.Tensor:
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    return torch.any(
+        torch.norm(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :2], dim=2)
+        > 5 * torch.abs(contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, 2]),
+        dim=1,
+    )
+
+def feet_async_stable(env, sensor_cfg: SceneEntityCfg, n_dt: float = 1.25
+) -> torch.Tensor:
+    """Reward for stable foot placement during asynchronous control."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids] # (N, 2)
+    is_unstable_mode = contact_time < n_dt * env.step_dt
+    # if both feet are unstable, then the reward is 1
+    reward = torch.all(is_unstable_mode, dim=-1).float()  # (N,)
+    return reward
+
+def feet_flat_ankle(env,  asset_cfg: SceneEntityCfg, sensor_cfg: SceneEntityCfg) -> torch.Tensor:
+    """Reward for keeping feet flat on the ground when in contact."""
+    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
+    asset: Articulation = env.scene[asset_cfg.name]
+    contact = contact_sensor.data.net_forces_w[:, sensor_cfg.body_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+    foot_orientation = quat_apply_inverse(
+        asset.data.body_quat_w[:, asset_cfg.body_ids, :], asset.data.GRAVITY_VEC_W.unsqueeze(1).expand(-1, len(asset_cfg.body_ids), -1)
+    )
+    reward = torch.sum(torch.square(foot_orientation[:, :, :2]), dim=(1, 2)) * contact.float()
+    return reward
+
+def action_limit(
+    env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Penalize JointPositionAction that exceed the specified limit."""
+    asset: Articulation = env.scene[asset_cfg.name]
+    
+    soft_joint_pos_limits = asset.data.soft_joint_pos_limits[:, asset_cfg.joint_ids, :] # (num_envs, num_joints, 2)
+    init_joint_pos = asset.data.default_joint_pos[:, asset_cfg.joint_ids] # (num_envs, num_joints)
+    action_limit = soft_joint_pos_limits - init_joint_pos.unsqueeze(-1) # (num_envs, num_joints, 2)
+    
+    action = env.action_manager.action
+    exceed_lower_limit = (action < action_limit[:, :, 0]).float() * (action_limit[:, :, 0] - action)
+    exceed_upper_limit = (action > action_limit[:, :, 1]).float() * (action - action_limit[:, :, 1])
+
+    return torch.sum(exceed_lower_limit + exceed_upper_limit, dim=1)

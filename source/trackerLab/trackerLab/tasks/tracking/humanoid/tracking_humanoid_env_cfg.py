@@ -49,6 +49,9 @@ class HumanoidRewardsCfgV2:
         func=mdp.motion_roll_pitch_world_exp,
         params={"std": 1}, weight=3
     )
+    motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
+                                  params={"std": 0.5},
+                                  weight=1.0)
     
     # base rewards
     lin_vel_z_l2        = RewTerm(func=mdp.lin_vel_z_l2,        weight=-1.0)

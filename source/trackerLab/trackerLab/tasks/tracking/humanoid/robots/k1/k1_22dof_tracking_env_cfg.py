@@ -18,7 +18,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 
 import trackerLab.tracker_env.mdp as mdp
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG
+from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
 from .motion_align_cfg import K1_MOTION_ALIGN_CFG
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
@@ -62,7 +62,7 @@ class RobotSceneCfg(InteractiveSceneCfg):
         debug_vis=False,
     )
     # robots
-    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot: ArticulationCfg = BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
     # sensors
     height_scanner = RayCasterCfg(
@@ -111,6 +111,16 @@ class EventCfg:
         },
     )
 
+    scale_body_mass = EventTerm(
+        func=mdp.randomize_rigid_body_mass,
+        mode="startup",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", body_names="^(?!Trunk$).*"),
+            "mass_distribution_params": (0.8, 1.2),
+            "operation": "scale",
+        },
+    )
+
     # reset
     base_external_force_torque = EventTerm(
         func=mdp.apply_external_force_torque,
@@ -152,22 +162,32 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(5.0, 5.0),
-        params={"velocity_range": {"x": (-1.0, 1.0), "y": (-1.0, 1.0), "z": (-0.5, 0.5)}},
+        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "z": (-0.0, 0.0)}},
     )
     
+@configclass
+class CurriculumCfg:
+    event_push_robot_levels = CurrTerm(
+        func=mdp.event_push_robot_levels,
+        params={"velocity_range": {"x": (-1.5, 1.5), "y": (-1.5, 1.5), "z": (-0.3, 0.6)},
+                "rise_threshold": 0.9, "fall_threshold": 0.5, "delta_range": [-0.1, 0.1],
+                "min_learning_episode": 6}
+    )
+
+
 @configclass
 class K1_HumanoidRewardsCfg:
     # task rewards
     motion_whb_dof_pos  = RewTerm(func=mdp.motion_whb_dof_pos_subset_exp, 
-                                  params={"std": math.sqrt(2)},
+                                  params={"std": 2},
                                   weight=5.0)
     
     motion_base_lin_vel = RewTerm(func=mdp.motion_lin_vel_xy_yaw_frame_exp,
-                                  params={"std": 0.5, "vel_scale": 1.0},
+                                  params={"std": 0.5},
                                   weight=1.0)
     
     motion_base_ang_vel = RewTerm(func=mdp.motion_ang_vel_z_world_exp,
-                                  params={"std": 0.5},
+                                  params={"std": 1.0},
                                   weight=0.5)
     # base rewards
     lin_vel_z_l2        = RewTerm(func=mdp.lin_vel_z_l2,        weight=-1.0)
@@ -175,9 +195,10 @@ class K1_HumanoidRewardsCfg:
     dof_vel_l2          = RewTerm(func=mdp.joint_vel_l2,        weight=-0.001)
     dof_acc_l2          = RewTerm(func=mdp.joint_acc_l2,        weight=-2.5e-7)
     energy              = RewTerm(func=mdp.energy,              weight=-2e-5)
-    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.20)
+    action_rate_l2      = RewTerm(func=mdp.action_rate_l2,      weight=-0.15)
     dof_pos_limits      = RewTerm(func=mdp.joint_pos_limits,    weight=-2.0)
     alive               = RewTerm(func=mdp.is_alive,            weight=0.05)
+    action_limits       = RewTerm(func=mdp.action_limit,        weight=-1.0)
 
     # contact rewards
     undesired_contacts  = RewTerm(func=mdp.undesired_contacts,  weight=-1.0,
@@ -192,8 +213,8 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 1.0})
     
     # gravity rewards
-    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-5.0)
-    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-5.0,
+    flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-10.0)
+    body_orientation_l2 = RewTerm(func=mdp.body_orientation_l2, weight=-10.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names="torso_link")})
 
     # termination rewards
@@ -208,20 +229,25 @@ class K1_HumanoidRewardsCfg:
                                           "threshold": 400, "max_reward": 500})
     feet_too_near       = RewTerm(func=mdp.feet_too_near,       weight=-2.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", body_names=".*ankle_roll.*"), 
-                                          "threshold": 0.2})
+                                          "threshold": 0.30})
     feet_stumble        = RewTerm(func=mdp.feet_stumble,        weight=-2.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*")})
     feet_async_stable   = RewTerm(func=mdp.feet_async_stable,   weight=-1.0,
                                   params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
                                           "n_dt": 3.0})
-    
+    feet_flat_ankle     = RewTerm(func=mdp.feet_flat_ankle,     weight=-1.0,
+                                  params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*ankle_roll.*"),
+                                          "asset_cfg":  SceneEntityCfg("robot", body_names=".*ankle_roll.*"),},)
+
     # joint deviation rewards
     waists_deviation    = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*waist.*"])})
     arms_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*shoulder.*", ".*elbow.*", ".*wrist.*"])})
-    legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-0.01,
+    legs_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-1.0,
                                   params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*hip.*", ".*knee.*", ".*ankle.*"])})
+    head_deviation      = RewTerm(func=mdp.joint_deviation_l1,  weight=-1.0,
+                                  params={"asset_cfg": SceneEntityCfg("robot", joint_names=[".*head.*"])})
 
     def set_feet(self, names):
         self.feet_slide.params["sensor_cfg"].body_names = names
@@ -230,6 +256,8 @@ class K1_HumanoidRewardsCfg:
         self.feet_too_near.params["asset_cfg"].body_names = names
         self.feet_stumble.params["sensor_cfg"].body_names = names
         self.feet_async_stable.params["sensor_cfg"].body_names = names
+        self.feet_flat_ankle.params["sensor_cfg"].body_names = names
+        self.feet_flat_ankle.params["asset_cfg"].body_names = names
 
 @configclass
 class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
@@ -237,36 +265,31 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
     scene: RobotSceneCfg = RobotSceneCfg(num_envs=4096, env_spacing=5.0)
     events: EventCfg = EventCfg()
     rewards: K1_HumanoidRewardsCfg = K1_HumanoidRewardsCfg()
+    curriculum: CurriculumCfg = CurriculumCfg()
     
     def __post_init__(self):
         self.set_no_scanner()
-        # self.set_plane()
-        # self.adjust_scanner("base_link")
         super().__post_init__()
         self.motion.set_motion_align_cfg(K1_MOTION_ALIGN_CFG)
         self.motion.robot_type = "k1"
         
-        self.observations.policy.base_lin_vel.scale = 1.0
-        self.observations.policy.base_ang_vel.scale = 0.25
-        self.observations.policy.projected_gravity.scale = 1.0
-        self.observations.policy.joint_pos.scale = 1.0
-        self.observations.policy.joint_vel.scale = 0.05
-        self.observations.policy.actions.scale = 1.0
-        self.actions.joint_pos.scale = 0.5
         self.observations.policy.history_length = 5
+        self.observations.critic.history_length = 5
         self.terminations.base_contact = None
         self.episode_length_s = 20.0
         
-        self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*Ankle).*$"
+        self.actions.joint_pos.clip={".*": (-2.0, 2.0)}
+        
+        self.rewards.undesired_contacts.params["sensor_cfg"].body_names = "^(?!.*foot).*$"
         self.rewards.body_orientation_l2.params["asset_cfg"].body_names = "Trunk"
-        self.rewards.set_feet(".*Ankle_Roll")
+        self.rewards.legs_deviation.params["asset_cfg"].joint_names = [".*Ankle.*", ".*Hip_Roll.*", ".*Hip_Yaw.*"]
+        self.rewards.head_deviation.params["asset_cfg"].joint_names = [".*Head.*"]
+        self.rewards.set_feet(".*foot.*")
+        
         self.rewards.waists_deviation.weight = 0
         self.rewards.arms_deviation.weight = 0
-        self.rewards.legs_deviation.weight = 0
         self.rewards.feet_async_stable.weight = 0
-        
-        self.motion.speed_scale = 1.0
-        self.rewards.motion_base_lin_vel.params["vel_scale"] = self.motion.speed_scale
+        self.rewards.feet_flat_ankle.weight = 0
         
         self.disable_zero_weight_rewards()
         
@@ -286,7 +309,6 @@ class Booster_K1_TrackingWalk(Booster_K1_TrackingEnvCfg):
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 
-
 @configclass
 class Booster_K1_TrackingWalk_Play(Booster_K1_TrackingWalk):
     def __post_init__(self):
@@ -294,4 +316,76 @@ class Booster_K1_TrackingWalk_Play(Booster_K1_TrackingWalk):
         self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
+
+
+
+@configclass
+class Booster_K1_TrackingWalk_Full(Booster_K1_TrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/cmu_walk_full.yaml"
+        self.motion.motion_buffer_cfg.motion_type = "GMR"
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+
+@configclass
+class Booster_K1_TrackingWalk_Full_Play(Booster_K1_TrackingWalk_Full):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
+
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy(Booster_K1_TrackingWalk_Full):
+    def __post_init__(self):
+        super().__post_init__()
+        self.observations.disable_lin_vel()
+        
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy_Play(Booster_K1_TrackingWalk_Full_Deploy):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+        self.curriculum.event_push_robot_levels = None
+
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory(Booster_K1_TrackingWalk_Full_Deploy):
+    def __post_init__(self):
+        super().__post_init__()
+        self.observations.policy.history_length = 1
+        self.observations.critic.history_length = 1
+        
+@configclass
+class Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory_Play(Booster_K1_TrackingWalk_Full_Deploy_WithoutHistory):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+        self.curriculum.event_push_robot_levels = None
+
+@configclass
+class Booster_K1_TrackingRun(Booster_K1_TrackingEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.motion.speed_scale = 0.5
+        self.rewards.motion_base_lin_vel.params["std"] = 1.0
+        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_type = "GMR"
+        self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
+
+
+@configclass
+class Booster_K1_TrackingRun_Play(Booster_K1_TrackingRun):
+    def __post_init__(self):
+        super().__post_init__()
+        self.scene.num_envs = 32
+        self.scene.terrain.terrain_generator.num_rows = 2
+        self.scene.terrain.terrain_generator.num_cols = 1
+
+
+
         
