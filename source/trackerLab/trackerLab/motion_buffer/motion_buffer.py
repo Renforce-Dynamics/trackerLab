@@ -37,10 +37,10 @@ class MotionBuffer(object):
             motion_lib_type = MotionLib
 
         self._motion_lib = motion_lib_type(
-            motion_file=self.cfg.motion.motion_name,
+            motion_file=self.cfg.motion_name,
             id_caster=self.id_caster,
             device=self.device, 
-            regen_pkl=self.cfg.motion.regen_pkl,
+            regen_pkl=self.cfg.regen_pkl,
             motion_type=self.cfg.motion_type)
 
     def init_motion_buffers(self):

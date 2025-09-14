@@ -26,6 +26,8 @@ class Actions():
 class Actions_Config:
     scale: float
     action_clip: tuple[float, float]
+    smooth_filter: bool = False
+    """using simple low-pass filter to smooth the action input"""
 
 @dataclass
 class Observations_Config:
@@ -91,9 +93,11 @@ class Sim2Sim_Config:
     cmd: list[float] = None
     """base sim2sim command for velocity task"""
     
-    motion_float_grav: bool = False
-    motion_id: float = 0
     motion_cfg: MotionManagerCfg = None
     motion_id: int = 0
     motion_update_rise: bool = False
     """motion manager configuration"""
+    
+    camera_tracking: bool = False
+    camera_tracking_body: str = "torso"
+    """Camera tracking configuration"""

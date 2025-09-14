@@ -1,7 +1,7 @@
 import os
 import json
 
-from poselib import TrackerLab_LABJOINTS_DIR
+# from poselib import TrackerLab_LABJOINTS_DIR
 
 def get_lab_joint_names(robot_type: str) -> list:
     """

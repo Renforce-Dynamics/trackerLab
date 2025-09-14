@@ -11,10 +11,8 @@ mujoco_joint_names = get_mujoco_joint_names(robot_type)
 
 cfg = MotionBufferCfg(
     regen_pkl=False,
-    motion=MotionBufferCfg.MotionCfg(
-        motion_type="yaml",
-        motion_name="amass/pi_plus_27dof/simple_walk.yaml"
-    )
+    motion_type="yaml",
+    motion_name="amass/pi_plus_27dof/simple_walk.yaml"
 )
 # manager.step()
 

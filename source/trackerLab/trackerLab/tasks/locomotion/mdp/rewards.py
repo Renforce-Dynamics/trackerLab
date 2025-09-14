@@ -224,3 +224,20 @@ def joint_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_joint
         )
     reward *= 1 / len(mirror_joints) if len(mirror_joints) > 0 else 0
     return reward
+
+def joint_position_action_limit(
+    env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
+) -> torch.Tensor:
+    """Penalize JointPositionAction that exceed the specified limit."""
+    asset: Articulation = env.scene[asset_cfg.name]
+    
+    soft_joint_pos_limits = asset.data.soft_joint_pos_limits[:, asset_cfg.joint_ids, :] # (num_envs, num_joints, 2)
+    init_joint_pos = asset.data.default_joint_pos[:, asset_cfg.joint_ids] # (num_envs, num_joints)
+    action_limit = soft_joint_pos_limits - init_joint_pos.unsqueeze(-1) # (num_envs, num_joints, 2)
+    
+    action = env.action_manager.action
+    exceed_lower_limit = (action < action_limit[:, :, 0]).float() * (action_limit[:, :, 0] - action)
+    exceed_upper_limit = (action > action_limit[:, :, 1]).float() * (action - action_limit[:, :, 1])
+
+    return torch.sum(exceed_lower_limit + exceed_upper_limit, dim=1)
+

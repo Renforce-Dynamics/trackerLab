@@ -12,7 +12,6 @@ from .transforms.rot_2_dof import _local_rotation_to_dof
 
 from trackerLab import TRACKERLAB_MOTION_CFG_DIR, TRACKERLAB_BUFFER_DIR, TRACKERLAB_RETARGETED_DATA_DIR
 from .motion_lib import MotionLib
-from .transforms.hdf5_loader import load_trajectories_from_hdf5
 
 from dataclasses import dataclass
 
@@ -78,6 +77,7 @@ class MotionLibDofPos(MotionLib):
         print("Loaded {:d} motions with a total length of {:.3f}s.".format(num_motions, total_len))
 
     def load_from_replayed_hdf5(self, curr_file: str, locs):
+        from .transforms.hdf5_loader import load_trajectories_from_hdf5
         fps = locs["motion_fps"]
         dt = locs["curr_dt"]
         

@@ -83,7 +83,9 @@ class Sim2SimMotionModel(Sim2SimBaseModel):
             else:
                 raise ValueError(f"Motion observation term '{term}' not implemented.")
         if torch.any(is_update):
-            print(f"[INFO] Motion updated at step")
+            old_motion_id = self.motion_id
+            self.motion_id = (self.motion_id + 1) % self.num_motions
+            print(f"[INFO] Motion updated from ID {old_motion_id} to {self.motion_id}") 
             self.motion_manager.set_finite_state_machine_motion_ids(
                 motion_ids=torch.tensor([self.motion_id], device="cpu", dtype=torch.long))
         return motion_observations
@@ -127,11 +129,6 @@ class Sim2SimMotionModel(Sim2SimBaseModel):
     def get_obs(self) -> dict[str, np.ndarray]:
         base_observations = self.get_base_observations()
         motion_command = self.get_motion_command()
-        
-        # # dummy motion 
-        # for key in motion_command:
-        #     motion_command[key] = np.zeros_like(motion_command[key])
-        
         return  motion_command | base_observations
 
     def motion_fk_view(self):
