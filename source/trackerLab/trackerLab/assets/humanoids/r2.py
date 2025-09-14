@@ -71,7 +71,12 @@ STIFFNESS_REAL={
     "left_arm_pitch_joint": 300.0,
     "right_shoulder_pitch_joint": 300.0,
     "right_shoulder_roll_joint": 300.0,
-    "right_arm_pitch_joint": 300.0
+    "right_arm_pitch_joint": 300.0,
+
+    "waist_yaw_joint":          90.0,
+    "waist_pitch_joint":        90.0,
+    "left_shoulder_yaw_joint":  90.0,
+    "right_shoulder_yaw_joint": 90.0,
 }
 
 DAMPING_REAL={
@@ -95,7 +100,12 @@ DAMPING_REAL={
     "left_arm_pitch_joint": 3.0,
     "right_shoulder_pitch_joint": 3.0,
     "right_shoulder_roll_joint": 3.0,
-    "right_arm_pitch_joint": 3.0
+    "right_arm_pitch_joint": 3.0,
+    
+    "waist_yaw_joint":          3.0,
+    "waist_pitch_joint":        3.0,
+    "left_shoulder_yaw_joint":  3.0,
+    "right_shoulder_yaw_joint": 3.0,
 }
 
 EFFORT_REAL={
@@ -119,7 +129,12 @@ EFFORT_REAL={
     "left_arm_pitch_joint": 36.0,
     "right_shoulder_pitch_joint": 36.0,
     "right_shoulder_roll_joint": 36.0,
-    "right_arm_pitch_joint": 36.0
+    "right_arm_pitch_joint": 36.0,
+    
+    "waist_yaw_joint":          90.0,
+    "waist_pitch_joint":        90.0,
+    "left_shoulder_yaw_joint":  30.0,
+    "right_shoulder_yaw_joint": 30.0,
 }
 
 ##

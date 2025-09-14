@@ -64,10 +64,10 @@ config = Sim2Sim_Config(
         # base_obs_his_length=5,
         scale={ 
                 'base_lin_vel': 1.0,
-                'base_ang_vel': 0.25, # CHECK
+                'base_ang_vel': 1.0, # CHECK
                 'gravity_orientation': 1.0,
                 'joint_pos': 1.0,
-                'joint_vel': 0.05, # CHECK
+                'joint_vel': 1.0, # CHECK
                 'last_action': 1.0
             },
         motion_observations_terms=[
@@ -77,7 +77,7 @@ config = Sim2Sim_Config(
         ),
     action_cfg=Actions_Config(
         action_clip=(-100.0, 100.0), # CHECK
-        scale=0.25 # CHECK
+        scale=0.5 # CHECK
     ),            
     motor_cfg=Motor_Config(
         motor_type=PIDMotor,
@@ -102,7 +102,12 @@ config = Sim2Sim_Config(
             "left_arm_pitch_joint": 36.0,
             "right_shoulder_pitch_joint": 36.0,
             "right_shoulder_roll_joint": 36.0,
-            "right_arm_pitch_joint": 36.0
+            "right_arm_pitch_joint": 36.0,
+            
+            "waist_yaw_joint":          90.0,
+            "waist_pitch_joint":        90.0,
+            "left_shoulder_yaw_joint":  30.0,
+            "right_shoulder_yaw_joint": 30.0,
         },
         stiffness={
             # left leg
@@ -125,7 +130,12 @@ config = Sim2Sim_Config(
             "left_arm_pitch_joint": 300.0,
             "right_shoulder_pitch_joint": 300.0,
             "right_shoulder_roll_joint": 300.0,
-            "right_arm_pitch_joint": 300.0
+            "right_arm_pitch_joint": 300.0,
+
+            "waist_yaw_joint":          90.0,
+            "waist_pitch_joint":        90.0,
+            "left_shoulder_yaw_joint":  90.0,
+            "right_shoulder_yaw_joint": 90.0,
         },
         damping={
             # left leg
@@ -148,13 +158,17 @@ config = Sim2Sim_Config(
             "left_arm_pitch_joint": 3.0,
             "right_shoulder_pitch_joint": 3.0,
             "right_shoulder_roll_joint": 3.0,
-            "right_arm_pitch_joint": 3.0
+            "right_arm_pitch_joint": 3.0,
+            
+            "waist_yaw_joint":          3.0,
+            "waist_pitch_joint":        3.0,
+            "left_shoulder_yaw_joint":  3.0,
+            "right_shoulder_yaw_joint": 3.0,
         },
     ),
 
     default_pos=np.array([0.0, 0.0, 0.8], dtype=np.float32),
-    default_angles={
-        },
+    default_angles={},
     
 )
 
