@@ -125,10 +125,8 @@ class CommandsCfg:
 @configclass
 class MotionCfg(MotionManagerCfg):
     motion_buffer_cfg = MotionBufferCfg(
-        motion = MotionBufferCfg.MotionCfg(
-            motion_name = None,
-            regen_pkl=True
-        ),
+        motion_name = None,
+        regen_pkl=True,
         motion_lib_type="MotionLib",
         motion_type="poselib"
     )

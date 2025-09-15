@@ -26,4 +26,4 @@ class G1AMPEnvCfg(G1FlatEnvCfg):
 class G1AMPWalk(G1AMPEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_23d/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/g1_23d/simple_walk.yaml"

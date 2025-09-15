@@ -42,12 +42,18 @@ class R2TrackingEnvCfg(TrackingHumanoidEnvCfg):
         self.rewards.undesired_contacts.params["sensor_cfg"].body_names = [
             ".*shoulder.*", ".*arm.*", "base_link", "waist.*", ".*hip.*", ".*knee.*"
         ]
+        
+        
+        self.actions.joint_pos.clip = {
+            ".*arm.*": (-0.5, 0.5),
+            ".*shoulder.*": (-0.5, 0.5)
+        }
 
 @configclass
 class R2TrackingWalk(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/r2b/simple_run.yaml"
         
         self.rewards.feet_slide.weight = -0.5
         self.rewards.feet_too_near.weight = -0.05
@@ -65,7 +71,7 @@ class R2TrackingWalk(R2TrackingEnvCfg):
 class R2TrackingRun(R2TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/r2b/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/r2b/simple_run.yaml"
         self.rewards.feet_slide.weight = -0.5
         self.rewards.feet_too_near.weight = -0.05
         self.rewards.feet_stumble.weight = -0.01

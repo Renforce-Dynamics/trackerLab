@@ -305,7 +305,7 @@ class Booster_K1_TrackingEnvCfg(TrackingHumanoidEnvCfg):
 class Booster_K1_TrackingWalk(Booster_K1_TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/booster_k1/simple_walk.yaml"
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 
@@ -323,7 +323,7 @@ class Booster_K1_TrackingWalk_Play(Booster_K1_TrackingWalk):
 class Booster_K1_TrackingWalk_Full(Booster_K1_TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/cmu_walk_full.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/booster_k1/cmu_walk_full.yaml"
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 
@@ -373,7 +373,7 @@ class Booster_K1_TrackingRun(Booster_K1_TrackingEnvCfg):
         super().__post_init__()
         self.motion.speed_scale = 0.5
         self.rewards.motion_base_lin_vel.params["std"] = 1.0
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/booster_k1/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/booster_k1/simple_run.yaml"
         self.motion.motion_buffer_cfg.motion_type = "GMR"
         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 

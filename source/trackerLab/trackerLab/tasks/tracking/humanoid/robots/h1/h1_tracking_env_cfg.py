@@ -24,7 +24,7 @@ class H1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 class H1TrackingWalk(H1TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/h1/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/h1/simple_walk.yaml"
         
 @configclass
 class H1TrackingWalk_Play(H1TrackingWalk):

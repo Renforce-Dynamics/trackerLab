@@ -42,19 +42,19 @@ class PiTrackingEnvCfg(TrackingHumanoidEnvCfg):
 class PiTrackingWalk(PiTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_27dof/simple_walk.yaml"
         
 @configclass
 class PiTrackingRun(PiTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_27dof/simple_run.yaml"
         
 @configclass
 class PiTrackingJump(PiTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_jump.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_27dof/simple_jump.yaml"
         
         
 @configclass

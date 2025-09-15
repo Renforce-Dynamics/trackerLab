@@ -69,7 +69,7 @@ class SMPLXTrackingEnvCfg(TrackingHumanoidEnvCfg):
 class SMPLXTrackingWalk(SMPLXTrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/smplx/GMR_simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/smplx/GMR_simple_walk.yaml"
         
         
         self.rewards.feet_slide.weight = -0.5
@@ -84,7 +84,7 @@ class SMPLXTrackingWalk(SMPLXTrackingEnvCfg):
 # class PiTrackingRun(PiTrackingEnvCfg):
 #     def __post_init__(self):
 #         super().__post_init__()
-#         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_run.yaml"
+#         self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_25dof/simple_run.yaml"
         
 #         self.rewards.feet_slide.weight = -1.0
 #         self.rewards.motion_whb_dof_pos.weight = 3.0
@@ -96,7 +96,7 @@ class SMPLXTrackingWalk(SMPLXTrackingEnvCfg):
 # class PiTrackingRun_Replay(PiTrackingRun):
 #     def __post_init__(self):
 #         super().__post_init__()
-#         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_run_replay.yaml"
+#         self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_25dof/simple_run_replay.yaml"
 #         self.motion.set_motion_align_cfg(PI_25D_MOTION_ALIGN_CFG_REPLAY)
 #         self.motion.motion_buffer_cfg.motion_lib_type = "MotionLibDofPos"
 #         self.motion.motion_buffer_cfg.motion_type = "replay"
@@ -106,7 +106,7 @@ class SMPLXTrackingWalk(SMPLXTrackingEnvCfg):
 # class PiTrackingJump(PiTrackingEnvCfg):
 #     def __post_init__(self):
 #         super().__post_init__()
-#         self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_25dof/simple_jump.yaml"
+#         self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_25dof/simple_jump.yaml"
         
         
 # @configclass

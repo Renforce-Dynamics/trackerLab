@@ -73,6 +73,7 @@ class TrajMotionRecordCfg(RecorderManagerBaseCfg):
     root_lin_vel_b          = RecorderTermCfg(class_type=RecordRootLinVelBase)
     root_ang_vel_b          = RecorderTermCfg(class_type=RecordRootAngVelBase)
     body_com_quat_b         = RecorderTermCfg(class_type=RecordBodyComQuatBase)
+    action                  = RecorderTermCfg(class_type=PreStepActionsRecorder)
     
     def __post_init__(self):
         self.dataset_export_mode = 1

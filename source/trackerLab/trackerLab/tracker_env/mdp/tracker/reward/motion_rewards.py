@@ -139,7 +139,7 @@ def motion_roll_pitch_world_exp(
     demo_roll_pitch = torch.stack((demo_roll, demo_pitch), dim=1)
     asset: Articulation = env.scene[asset_cfg.name]
     body_orientation = quat_apply_inverse(
-        asset.data.body_quat_w[:, asset_cfg.body_ids[0], :], asset.data.GRAVITY_VEC_W
+        asset.data.body_quat_w[:, 0, :], asset.data.GRAVITY_VEC_W
     )
     return torch.sum(torch.square(body_orientation[:, :2]), dim=1)
 

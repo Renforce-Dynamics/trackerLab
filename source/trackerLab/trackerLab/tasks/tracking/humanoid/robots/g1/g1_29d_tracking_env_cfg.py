@@ -36,7 +36,7 @@ class G1TrackingEnvCfg(TrackingHumanoidEnvCfg):
 class G1TrackingWalk(G1TrackingEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/g1_29d_loco/simple_walk.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/g1_29d_loco/simple_walk.yaml"
 
 
 @configclass

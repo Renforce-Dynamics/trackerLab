@@ -29,4 +29,4 @@ class PiAMPEnvCfg(PiFlatEnvCfg):
 class PiAMPRun(PiAMPEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.motion.motion_buffer_cfg.motion.motion_name = "amass/pi_plus_27dof/simple_run.yaml"
+        self.motion.motion_buffer_cfg.motion_name = "amass/pi_plus_27dof/simple_run.yaml"
