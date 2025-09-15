@@ -27,6 +27,9 @@ class Sim2Sim(ABC):
     cmd: list[float]
     last_action: np.ndarray
 
+
+    mj_model: mujoco.MjModel
+    mj_data: mujoco.MjData
     def __init__(self, cfg: Sim2Sim_Config):
         self._cfg = cfg
         self.xml_path = cfg.xml_path

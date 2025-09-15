@@ -14,11 +14,43 @@ config = Sim2Sim_Config(
     
     motion_cfg=MotionManagerCfg(
             motion_buffer_cfg = MotionBufferCfg(
-                motion_name="amass/r2b/simple_run.yaml",
+                motion_name="amass/r2b/replay.yaml",
                 regen_pkl=True,
+                motion_lib_type="MotionLibDofPos",
+                motion_type="replay"
             ),
             robot_type="r2b",
-            motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
+            motion_align_cfg={
+    "gym_joint_names": [
+        "left_hip_pitch_joint",
+        "right_hip_pitch_joint",
+        "waist_yaw_joint",
+        "left_hip_roll_joint",
+        "right_hip_roll_joint",
+        "waist_pitch_joint",
+        "left_hip_yaw_joint",
+        "right_hip_yaw_joint",
+        "left_shoulder_pitch_joint",
+        "right_shoulder_pitch_joint",
+        "left_knee_joint",
+        "right_knee_joint",
+        "left_shoulder_roll_joint",
+        "right_shoulder_roll_joint",
+        "left_ankle_pitch_joint",
+        "right_ankle_pitch_joint",
+        "left_shoulder_yaw_joint",
+        "right_shoulder_yaw_joint",
+        "left_ankle_roll_joint",
+        "right_ankle_roll_joint",
+        "left_arm_pitch_joint",
+        "right_arm_pitch_joint"
+    ],
+    "dof_body_ids": [],
+    "dof_offsets": [22],
+    "invalid_dof_id": [],
+    "dof_indices_sim": [0],
+    "dof_indices_motion": [0]
+}
         ),
     
     robot_name='r2b',

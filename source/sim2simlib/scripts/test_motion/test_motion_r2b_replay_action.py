@@ -1,6 +1,7 @@
 import numpy as np
 from sim2simlib.model.config import Sim2Sim_Config, Observations_Config, Actions_Config, Motor_Config
 from sim2simlib.model.sim2sim_motion import Sim2SimMotionModel
+from sim2simlib.model.sim2sim_replay import Sim2SimReplayModel
 from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 from sim2simlib.utils.config import load_from_yaml
@@ -11,15 +12,6 @@ ckpt_dir = ""
 env_cfg = load_from_yaml(f"{ckpt_dir}/params/env.yaml")
 
 config = Sim2Sim_Config(
-    
-    motion_cfg=MotionManagerCfg(
-            motion_buffer_cfg = MotionBufferCfg(
-                motion_name="amass/r2b/simple_run.yaml",
-                regen_pkl=True,
-            ),
-            robot_type="r2b",
-            motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
-        ),
     
     robot_name='r2b',
     simulation_dt=0.005,
@@ -170,7 +162,7 @@ config = Sim2Sim_Config(
     
 )
 
-mujoco_model = Sim2SimMotionModel(config)
+mujoco_model = Sim2SimReplayModel(config)
 
-mujoco_model.motion_fk_view()
-# mujoco_model.view_run()
+# mujoco_model.motion_fk_view()
+mujoco_model.view_run()

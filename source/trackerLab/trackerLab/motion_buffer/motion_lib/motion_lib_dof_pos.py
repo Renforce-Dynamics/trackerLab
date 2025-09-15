@@ -82,7 +82,6 @@ class MotionLibDofPos(MotionLib):
         dt = locs["curr_dt"]
         
         trajs: List[Dict[str, torch.Tensor]] = load_trajectories_from_hdf5(curr_file)
-
         for traj in trajs:
             motion = DofposMotion.from_replay(traj)
             frames = motion.frames

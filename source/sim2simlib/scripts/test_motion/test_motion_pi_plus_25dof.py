@@ -15,10 +15,8 @@ config = Sim2Sim_Config(
     
     motion_cfg=MotionManagerCfg(
         motion_buffer_cfg = MotionBufferCfg(
-            motion = MotionBufferCfg.MotionCfg(
-                motion_name="amass/pi_plus_25dof/simple_run.yaml",
-                regen_pkl=True,
-            )
+            motion_name="amass/pi_plus_25dof/simple_run.yaml",
+            regen_pkl=True,
         ),
         robot_type="pi_plus_25dof",
         motion_align_cfg=env_cfg["motion"]["motion_align_cfg"]
