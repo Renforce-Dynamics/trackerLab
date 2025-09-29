@@ -1,7 +1,7 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tracker_env.manager_based_tracker_env import ManagerBasedTrackerEnvCfg
-from trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
+from robotlib.trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
 
 from .g1_env_cfg import G1FlatEnvCfg
 

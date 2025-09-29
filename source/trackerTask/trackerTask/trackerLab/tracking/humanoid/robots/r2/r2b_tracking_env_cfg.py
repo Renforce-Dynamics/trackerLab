@@ -2,7 +2,7 @@ import torch
 import math
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg, HumanoidRewardsCfgV2
-from trackerLab.assets.humanoids.r2 import R2_CFG
+from robotlib.trackerLab.assets.humanoids.r2 import R2_CFG
 from .motion_align_cfg import R2B_MOTION_ALIGN_CFG_SUB, R2B_MOTION_ALIGN_CFG
 import trackerLab.tracker_env.mdp.tracker.reward as tracker_reward
 import trackerLab.tracker_env.mdp as mdp

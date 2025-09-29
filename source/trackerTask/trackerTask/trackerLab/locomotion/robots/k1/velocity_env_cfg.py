@@ -18,7 +18,7 @@ from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
-from trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
+from robotlib.trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
 from trackerLab.tasks.locomotion import mdp
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(

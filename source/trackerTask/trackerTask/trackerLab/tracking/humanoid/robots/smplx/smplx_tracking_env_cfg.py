@@ -1,8 +1,8 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-# from trackerLab.assets.humanoids.pi import PI_PLUS_25DOF_CFG
-from trackerLab.assets.humanoids.smplx_humanoid import SMPLX_CFG
+# from robotlib.trackerLab.assets.humanoids.pi import PI_PLUS_25DOF_CFG
+from robotlib.trackerLab.assets.humanoids.smplx_humanoid import SMPLX_CFG
 from .motion_align_cfg import (
     SMPLX_MOTION_ALIGN_CFG
 )

@@ -1,7 +1,7 @@
 import torch
 from isaaclab.utils import configclass
 from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
-from trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
+from robotlib.trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
 from .motion_align_cfg import PI_27D_MOTION_ALIGN_CFG
 
 

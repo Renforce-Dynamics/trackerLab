@@ -12,7 +12,7 @@ from trackerLab.tasks.amp_velocity.amp_velocity_env_cfg import LocomotionVelocit
 ##
 # Pre-defined configs
 ##
-from trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
+from robotlib.trackerLab.assets.humanoids.pi import PI_PLUS_27DOF_CFG
 
 @configclass
 class PiRewards(RewardsCfg):
