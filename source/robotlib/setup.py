@@ -3,7 +3,7 @@
 from setuptools import setup
 
 # Package metadata (hardcoded)
-PACKAGE_NAME = "beyondMimic"
+PACKAGE_NAME = "robotlib"
 VERSION = "0.1.0"
 AUTHOR = "zaterval"
 MAINTAINER = "Tsinghua University"

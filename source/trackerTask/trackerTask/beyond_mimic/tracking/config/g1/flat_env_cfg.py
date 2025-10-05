@@ -1,8 +1,8 @@
 from isaaclab.utils import configclass
 
 from robotlib.beyondMimic.robots.g1 import G1_ACTION_SCALE, G1_CYLINDER_CFG
-from trackerTask.beyondMimic.tracking.config.g1.agents.rsl_rl_ppo_cfg import LOW_FREQ_SCALE
-from trackerTask.beyondMimic.tracking.tracking_env_cfg import TrackingEnvCfg
+from trackerTask.beyond_mimic.tracking.config.g1.agents.rsl_rl_ppo_cfg import LOW_FREQ_SCALE
+from trackerTask.beyond_mimic.tracking.tracking_env_cfg import TrackingEnvCfg
 
 
 @configclass
