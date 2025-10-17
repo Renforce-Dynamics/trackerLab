@@ -1,5 +1,5 @@
 import torch
-from trackerLab.utils.torch_utils import quat_rotate, quat_rotate_inverse, euler_from_quaternion
+from trackerLab.utils.torch_utils import quat_rotate, quat_apply_inverse, euler_from_quaternion
 
 #####################################################################
 ###=========================jit functions=========================###
@@ -34,7 +34,7 @@ def global_to_local(quat, rigid_body_pos, root_pos):
     flat_heading_rot = heading_rot_expand.view(total_bodies, heading_rot_expand.shape[-1])
 
     flat_end_pos = (rigid_body_pos - root_pos[:, None, :3]).view(total_bodies, 3)
-    local_end_pos = quat_rotate_inverse(flat_heading_rot, flat_end_pos).view(num_envs, num_key_bodies, 3)
+    local_end_pos = quat_apply_inverse(flat_heading_rot, flat_end_pos).view(num_envs, num_key_bodies, 3)
     return local_end_pos
 
 @torch.jit.script

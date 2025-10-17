@@ -9,7 +9,7 @@ from isaaclab.managers import ManagerTermBase
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor, RayCaster
-from isaaclab.utils.math import quat_rotate_inverse, yaw_quat
+from isaaclab.utils.math import quat_apply_inverse, yaw_quat
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
@@ -50,7 +50,7 @@ def track_lin_vel_xy_yaw_frame_exp(
     """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
     # extract the used quantities (to enable type-hinting)
     asset = env.scene[asset_cfg.name]
-    vel_yaw = quat_rotate_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
+    vel_yaw = quat_apply_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
     lin_vel_error = torch.sum(
         torch.square(env.command_manager.get_command(command_name)[:, :2] - vel_yaw[:, :2]), dim=1
     )
@@ -427,10 +427,10 @@ def feet_height_body(
     ].unsqueeze(1)
     footvel_in_body_frame = torch.zeros(env.num_envs, len(asset_cfg.body_ids), 3, device=env.device)
     for i in range(len(asset_cfg.body_ids)):
-        footpos_in_body_frame[:, i, :] = math_utils.quat_rotate_inverse(
+        footpos_in_body_frame[:, i, :] = math_utils.quat_apply_inverse(
             asset.data.root_quat_w, cur_footpos_translated[:, i, :]
         )
-        footvel_in_body_frame[:, i, :] = math_utils.quat_rotate_inverse(
+        footvel_in_body_frame[:, i, :] = math_utils.quat_apply_inverse(
             asset.data.root_quat_w, cur_footvel_translated[:, i, :]
         )
     foot_z_target_error = torch.square(footpos_in_body_frame[:, :, 2] - target_height).view(env.num_envs, -1)
@@ -463,7 +463,7 @@ def feet_slide(
     ].unsqueeze(1)
     footvel_in_body_frame = torch.zeros(env.num_envs, len(asset_cfg.body_ids), 3, device=env.device)
     for i in range(len(asset_cfg.body_ids)):
-        footvel_in_body_frame[:, i, :] = math_utils.quat_rotate_inverse(
+        footvel_in_body_frame[:, i, :] = math_utils.quat_apply_inverse(
             asset.data.root_quat_w, cur_footvel_translated[:, i, :]
         )
     foot_leteral_vel = torch.sqrt(torch.sum(torch.square(footvel_in_body_frame[:, :, :2]), dim=2)).view(

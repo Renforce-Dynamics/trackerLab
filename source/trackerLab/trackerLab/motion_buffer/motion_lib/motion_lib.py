@@ -6,7 +6,7 @@ import pickle
 from typing import List
 
 from poselib.skeleton.skeleton3d import SkeletonMotion
-from trackerLab.utils.torch_utils.isaacgym import quat_rotate_inverse
+from trackerLab.utils.torch_utils.isaacgym import quat_apply_inverse
 from trackerLab.joint_id_caster import JointIdCaster
 from .transforms.rot_2_dof import _local_rotation_to_dof
 
@@ -144,9 +144,9 @@ class MotionLib():
         root_rot = self.grs[:, 0:1, :]
         num_joints = self.gts.shape[1]
         rel_pos = self.gts - root_pos
-        self.lvbs = quat_rotate_inverse(root_rot.reshape(-1, 4), self.grvs.view(-1, 3)).view(self.grvs.shape)
-        self.ltbs = quat_rotate_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
-        self.avbs = quat_rotate_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
+        self.lvbs = quat_apply_inverse(root_rot.reshape(-1, 4), self.grvs.view(-1, 3)).view(self.grvs.shape)
+        self.ltbs = quat_apply_inverse(root_rot.expand(-1, num_joints, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(self.gts.shape)
+        self.avbs = quat_apply_inverse(root_rot.reshape(-1, 4), self.gravs.view(-1, 3)).view(self.grvs.shape)
 
     # Utility functions
     def _fill_motions(self, curr_motion, curr_dt):

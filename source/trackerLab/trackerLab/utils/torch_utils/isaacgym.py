@@ -92,7 +92,7 @@ def quat_rotate(q, v):
 
 
 @torch.jit.script
-def quat_rotate_inverse(q, v):
+def quat_apply_inverse(q, v):
     shape = q.shape
     q_w = q[:, -1]
     q_vec = q[:, :3]

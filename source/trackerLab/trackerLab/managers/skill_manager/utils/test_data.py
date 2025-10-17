@@ -12,7 +12,7 @@ from poselib import POSELIB_DATA_DIR
 from typing import Tuple
 
 from dataclasses import dataclass
-from trackerLab.utils.torch_utils.isaacgym import quat_rotate, quat_rotate_inverse
+from trackerLab.utils.torch_utils.isaacgym import quat_rotate, quat_apply_inverse
 
 def skill_test_get_motion():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -64,7 +64,7 @@ class NormedMotion:
         root_pos = gts[:, 0:1, :]
         root_rot = grs[:, 0:1, :]
         rel_pos = gts - root_pos
-        tar = quat_rotate_inverse(root_rot.expand(-1, 14, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(gts.shape)
-        vels = quat_rotate_inverse(root_rot.reshape(-1, 4), grvs.view(-1, 3)).view(grvs.shape)
+        tar = quat_apply_inverse(root_rot.expand(-1, 14, -1).reshape(-1, 4), rel_pos.view(-1, 3)).view(gts.shape)
+        vels = quat_apply_inverse(root_rot.reshape(-1, 4), grvs.view(-1, 3)).view(grvs.shape)
         tar[..., -1:] += root_pos[..., -1:]
         return cls(tar=tar, vels=vels)

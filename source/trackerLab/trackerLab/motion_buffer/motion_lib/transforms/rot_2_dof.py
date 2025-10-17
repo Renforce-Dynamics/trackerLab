@@ -1,7 +1,7 @@
 import torch
 from trackerLab.joint_id_caster import JointIdCaster
 from trackerLab.utils import torch_utils
-from trackerLab.utils.torch_utils.isaacgym import normalize_angle, quat_rotate_inverse
+from trackerLab.utils.torch_utils.isaacgym import normalize_angle, quat_apply_inverse
 from poselib.core.rotation3d import quat_mul_norm, quat_inverse, quat_angle_axis
 
 

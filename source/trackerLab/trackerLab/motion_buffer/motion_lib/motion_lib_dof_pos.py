@@ -6,7 +6,7 @@ import pickle
 from typing import List, Dict, Union, Any
 
 from poselib.skeleton.skeleton3d import SkeletonMotion
-from trackerLab.utils.torch_utils.isaacgym import quat_rotate_inverse
+from trackerLab.utils.torch_utils.isaacgym import quat_apply_inverse
 from trackerLab.joint_id_caster import JointIdCaster
 from .transforms.rot_2_dof import _local_rotation_to_dof
 
