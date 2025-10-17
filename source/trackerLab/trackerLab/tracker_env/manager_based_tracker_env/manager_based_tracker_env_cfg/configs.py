@@ -26,7 +26,7 @@ import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from trackerLab.commands.base_command import SelfTransCommandCfg
 import trackerLab.commands.manager.commands_cfg as cmd
 
-from trackerLab.tasks.playground import ROUGH_TERRAINS_CFG, FLAT_TERRAINS_CFG
+from trackerTask.trackerLab.playground import ROUGH_TERRAINS_CFG, FLAT_TERRAINS_CFG
 
 import trackerLab.tracker_env.mdp.tracker.reward as tracker_reward
 import trackerLab.tracker_env.mdp.tracker.observation as tracker_obs

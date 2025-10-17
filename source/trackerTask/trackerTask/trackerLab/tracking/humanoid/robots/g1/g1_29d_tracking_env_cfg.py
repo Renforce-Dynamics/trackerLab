@@ -1,6 +1,6 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
+from trackerTask.trackerLab.tracking.humanoid import TrackingHumanoidEnvCfg
 from robotlib.trackerLab.assets.unitree import UNITREE_G1_29DOF_CFG
 from .motion_align_cfg import G1_29D_MOTION_ALIGN_CFG
 

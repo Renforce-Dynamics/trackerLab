@@ -39,8 +39,8 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 ##
 # Pre-defined configs
 ##
-from whole_body_tracking.robots.g1 import G1_CYLINDER_CFG
-from whole_body_tracking.tasks.tracking.mdp import MotionLoader
+from robotlib.beyondMimic.robots.g1 import G1_CYLINDER_CFG
+from beyondMimic.mdp import MotionLoader
 
 
 @configclass

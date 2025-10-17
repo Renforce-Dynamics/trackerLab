@@ -8,7 +8,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
-from trackerLab.tasks.amp_velocity.amp_velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg
+from trackerTask.trackerLab.amp_velocity.amp_velocity_env_cfg import LocomotionVelocityRoughEnvCfg, RewardsCfg
 ##
 # Pre-defined configs
 ##

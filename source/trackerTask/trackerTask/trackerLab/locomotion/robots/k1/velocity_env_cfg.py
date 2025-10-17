@@ -19,7 +19,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 from robotlib.trackerLab.assets.humanoids.k1 import BOOSTER_K1SERIAL_22DOF_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_CFG, BOOSTER_K1SERIAL_22DOF_POSREV_V3_CFG
-from trackerLab.tasks.locomotion import mdp
+from trackerTask.trackerLab.locomotion import mdp
 
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
     size=(8.0, 8.0),

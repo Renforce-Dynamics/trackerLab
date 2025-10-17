@@ -1,6 +1,6 @@
 import torch
 from isaaclab.utils import configclass
-from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
+from trackerTask.trackerLab.tracking.humanoid import TrackingHumanoidEnvCfg
 from isaaclab_assets.robots.unitree import H1_MINIMAL_CFG
 from .motion_align_cfg import H1_MOTION_ALIGN_CFG
 

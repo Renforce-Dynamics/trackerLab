@@ -13,7 +13,7 @@ from isaaclab.managers import SceneEntityCfg
 
 import trackerLab.tracker_env.mdp as mdp
 
-from trackerLab.tasks.playground import COBBLESTONE_ROAD_CFG
+from trackerTask.trackerLab.playground import COBBLESTONE_ROAD_CFG
 
 @configclass
 class HumanoidTerminationCfg(TerminationsCfg):

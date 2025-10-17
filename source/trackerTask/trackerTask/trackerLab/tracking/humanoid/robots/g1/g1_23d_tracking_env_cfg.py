@@ -15,8 +15,8 @@ from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
 
-from trackerLab.tasks.locomotion import mdp
-from trackerLab.tasks.tracking.humanoid import TrackingHumanoidEnvCfg
+from trackerTask.trackerLab.locomotion import mdp
+from trackerTask.trackerLab.tracking.humanoid import TrackingHumanoidEnvCfg
 from robotlib.trackerLab.assets.unitree import UNITREE_G1_23DOF_CFG
 from .motion_align_cfg import G1_23D_MOTION_ALIGN_CFG, G1_23D_MOTION_ALIGN_CFG_REPLAY
 from trackerLab import TRACKERLAB_RECORDINGS_DIR
