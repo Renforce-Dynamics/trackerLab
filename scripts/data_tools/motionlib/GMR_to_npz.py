@@ -61,11 +61,11 @@ from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 
 # from robotlib.beyondMimic.robots.g1 import G1_CYLINDER_CFG
 from robotlib.trackerLab.assets.humanoids.r2 import R2_CFG
+from trackerTask.trackerLab.tracking.humanoid.robots.r2.motion_align_cfg import R2B_MOTION_ALIGN_CFG_GMR
 
 robot_cfg = R2_CFG
 robot_type = "r2b"
 
-from trackerTask.trackerLab.tracking.humanoid.robots.r2.motion_align_cfg import R2B_MOTION_ALIGN_CFG_GMR
 motion_cfg = MotionManagerCfg(
     MotionBufferCfg(
         motion_name="GMR/test.yaml",
@@ -74,6 +74,9 @@ motion_cfg = MotionManagerCfg(
     ),
     motion_align_cfg=R2B_MOTION_ALIGN_CFG_GMR
 )
+
+REGISTRY = "mocap_datas"
+COLLECTION = args_cli.output_name
 
 
 @configclass
@@ -210,18 +213,18 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             ):
                 log[k] = np.stack(log[k], axis=0)
 
-            np.savez("./motion.npz", **log)
+            np.savez(f"./motion_{motion.manager.motion_buffer._motion_ids[0]}.npz", **log)
 
             import wandb
 
-            COLLECTION = args_cli.output_name
             run = wandb.init(project="GMR_to_npz_r2", name=COLLECTION)
 
             print(f"[INFO]: Logging motion to wandb: {COLLECTION}")
-            REGISTRY = "mocap_datas"
             logged_artifact = run.log_artifact(artifact_or_path="/tmp/motion.npz", name=COLLECTION, type=REGISTRY)
             run.link_artifact(artifact=logged_artifact, target_path=f"wandb-registry-{REGISTRY}/{COLLECTION}")
             print(f"[INFO]: Motion saved to wandb registry: {REGISTRY}/{COLLECTION}")
+            
+        motion.manager.add_finite_state_machine_motion_ids()
 
 
 def main():

@@ -162,7 +162,7 @@ R2_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 1.665),
+        pos=(0.0, 0.0, 0.665),
         joint_pos=INIT_POS,
         joint_vel={".*": 0.0},
     ),
@@ -179,3 +179,15 @@ R2_CFG = ArticulationCfg(
 
 """Configuration for the R2 Humanoid Robot."""
 
+R2_ACTION_SCALE = {}
+for a in R2_CFG.actuators.values():
+    e = a.effort_limit_sim
+    s = a.stiffness
+    names = a.joint_names_expr
+    if not isinstance(e, dict):
+        e = {n: e for n in names}
+    if not isinstance(s, dict):
+        s = {n: s for n in names}
+    for n in names:
+        if n in e and n in s and s[n]:
+            R2_ACTION_SCALE[n] = 0.25 * e[n] / s[n]

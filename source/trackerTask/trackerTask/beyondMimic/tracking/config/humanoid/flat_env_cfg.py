@@ -1,7 +1,7 @@
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.utils import configclass
 
-from whole_body_tracking.assets import ASSET_DIR
+# from trackerTask.beyondMimic.assets import ASSET_DIR
 from robotlib.beyondMimic.robots.smpl import SMPL_HUMANOID
 from trackerTask.beyondMimic.tracking.tracking_env_cfg import TrackingEnvCfg
 

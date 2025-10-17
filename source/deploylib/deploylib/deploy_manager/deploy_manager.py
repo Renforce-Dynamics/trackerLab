@@ -51,6 +51,10 @@ class DeployManager(object):
         self.motion_buffer._motion_ids = motion_ids.to(self.device, dtype=torch.long)
         self.motion_buffer._motion_times = torch.zeros_like(self.motion_buffer._motion_times, dtype=torch.float, device=self.device)
         
+    def add_finite_state_machine_motion_ids(self):
+        self.motion_buffer._motion_ids += 1
+        self.motion_buffer._motion_ids %= self.motion_lib.num_motions()
+        
     def step(self):
         """
         Step the motion buffer and update the motion library.

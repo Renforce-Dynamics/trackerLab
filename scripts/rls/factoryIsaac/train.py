@@ -58,8 +58,9 @@ import factoryIsaac
 # TODO this loading should be in the factory way
 
 import isaaclab_tasks
-import factoryIsaac.tasks
+# import factoryIsaac.tasks
 import trackerTask.trackerLab
+import trackerTask.beyondMimic
 
 def main():
     if args_cli.replicate is not None:
