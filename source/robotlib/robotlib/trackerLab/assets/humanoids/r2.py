@@ -3,7 +3,7 @@ from isaaclab.actuators import ActuatorNetMLPCfg, DCMotorCfg, ImplicitActuatorCf
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
-from robotlib import TRACKERLAB_USD_DIR
+from robotlib import TRACKERLAB_USD_DIR, TRACKERLAB_ASSETLIB_DIR
 
 JOINT_NAMES = [
     "left_hip_pitch_joint",
