@@ -176,6 +176,7 @@ data/npy
 data/pkl_buffer
 data/retargeted
 data/amass
+data/datasets
 data/**/*.png
 data/**/*.bak
 data/assets
