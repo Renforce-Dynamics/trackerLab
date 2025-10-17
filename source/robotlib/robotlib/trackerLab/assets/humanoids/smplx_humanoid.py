@@ -2,7 +2,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets import ArticulationCfg
 
-from trackerLab import TRACKERLAB_USD_DIR
+from robotlib import TRACKERLAB_USD_DIR
 SMPLX_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
         usd_path=f"{TRACKERLAB_USD_DIR}/smplx/smplx_humanoid.usda",

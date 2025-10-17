@@ -5,7 +5,7 @@ from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 from sim2simlib.model.actuator_motor import DCMotor, PIDMotor
 
 from sim2simlib.utils.config import load_from_py, load_from_yaml
-from trackerLab import TRACKERLAB_ASSETS_DIR
+from robotlib import TRACKERLAB_ASSETS_DIR
 
 ckpt_dir = ""
 

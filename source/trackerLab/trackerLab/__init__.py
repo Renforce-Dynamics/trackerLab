@@ -11,9 +11,6 @@ def config_dir(*args):
 TRACKERLAB_REPO_DIR                 = os.path.dirname(os.path.abspath(__file__))
 TRACKERLAB_DATA_DIR                 = os.path.join(TRACKERLAB_REPO_DIR, "..", "..", "..", "data")
 
-TRACKERLAB_ASSETS_DIR               = os.path.join(TRACKERLAB_DATA_DIR, "assets")
-TRACKERLAB_USD_DIR                  = os.path.join(TRACKERLAB_ASSETS_DIR, "usd")
-
 TRACKERLAB_RETARGETED_DATA_DIR      = os.path.join(TRACKERLAB_DATA_DIR, "retargeted")
 TRACKERLAB_MOTION_CFG_DIR           = os.path.join(TRACKERLAB_DATA_DIR, "configs")
 
@@ -22,5 +19,5 @@ TRACKERLAB_LABJOINTS_DIR            = config_dir(TRACKERLAB_DATA_DIR, "lab_joint
 
 TRACKERLAB_TASKS_DIR                = os.path.join(TRACKERLAB_REPO_DIR, "tasks", "tracking")
 TRACKERLAB_RECORDINGS_DIR           = config_dir(TRACKERLAB_DATA_DIR, "recordings")
-TRACKERLAB_ASSETLIB_DIR             = os.path.join(TRACKERLAB_ASSETS_DIR, "assetlib")
+
 

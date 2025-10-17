@@ -5,7 +5,7 @@ from isaaclab.actuators import IdealPDActuatorCfg, ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
 
-from trackerLab import TRACKERLAB_USD_DIR
+from robotlib import TRACKERLAB_USD_DIR
 
 PI_PLUS_21DOF_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(

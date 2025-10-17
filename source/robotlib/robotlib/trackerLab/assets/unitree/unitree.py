@@ -16,7 +16,7 @@ from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
 
 from . import unitree_actuators
-from trackerLab import TRACKERLAB_ASSETLIB_DIR
+from robotlib import TRACKERLAB_ASSETLIB_DIR
 
 @configclass
 class UnitreeArticulationCfg(ArticulationCfg):

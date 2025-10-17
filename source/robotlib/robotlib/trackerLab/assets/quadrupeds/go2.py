@@ -3,7 +3,7 @@ from isaaclab.actuators import ActuatorNetMLPCfg, DCMotorCfg, ImplicitActuatorCf
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
-from trackerLab import TRACKERLAB_USD_DIR, TRACKERLAB_ASSETS_DIR
+from robotlib import TRACKERLAB_USD_DIR
 
 UNITREE_GO2_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(

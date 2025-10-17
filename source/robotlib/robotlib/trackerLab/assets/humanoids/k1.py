@@ -2,7 +2,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.actuators import ActuatorNetMLPCfg, DCMotorCfg, ImplicitActuatorCfg, IdealPDActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
-from trackerLab import TRACKERLAB_USD_DIR
+from robotlib import TRACKERLAB_USD_DIR
 
 BOOSTER_K1SERIAL_22DOF_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
