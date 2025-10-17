@@ -22,5 +22,5 @@ TRACKERLAB_LABJOINTS_DIR            = config_dir(TRACKERLAB_DATA_DIR, "lab_joint
 
 TRACKERLAB_TASKS_DIR                = os.path.join(TRACKERLAB_REPO_DIR, "tasks", "tracking")
 TRACKERLAB_RECORDINGS_DIR           = config_dir(TRACKERLAB_DATA_DIR, "recordings")
-TRACKERLAB_UNIFY_ASSETS_DIR         = os.path.join(TRACKERLAB_ASSETS_DIR, "mujoco_sim2sim_assets")
+TRACKERLAB_ASSETLIB_DIR         = os.path.join(TRACKERLAB_ASSETS_DIR, "mujoco_sim2sim_assets")
 
