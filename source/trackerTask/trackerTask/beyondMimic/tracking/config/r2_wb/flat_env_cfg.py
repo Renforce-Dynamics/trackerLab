@@ -26,10 +26,14 @@ class R2FlatEnvCfg(TrackingEnvCfg):
             "right_shoulder_roll_link",
             "right_arm_pitch_link",
         ]
+        self.commands.motion.debug_vis = False
         
-        self.commands.motion.motion_file = ""
+        self.commands.motion.motion_file = "./motion.npz"
         
-        self.events.base_com.params["asset_cfg"].body_names = ".*"
+        self.events.base_com.params["asset_cfg"].body_names = "base_link"
+        
+        self.observations.policy.motion_anchor_pos_b = None
+        self.observations.policy.base_lin_vel = None
 
 
 @configclass

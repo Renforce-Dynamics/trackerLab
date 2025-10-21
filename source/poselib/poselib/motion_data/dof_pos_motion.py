@@ -61,8 +61,11 @@ class DofposMotion:
         fps = data["fps"]
         root_pos = torch.tensor(data["root_pos"])
         root_rot = torch.tensor(data["root_rot"])
+        # TODO
         dof_pos = torch.tensor(data["dof_pos"])
         local_body_pos = torch.tensor(data["local_body_pos"])
+        
+        local_body_pos += root_pos.unsqueeze(1)
         
         F, J = dof_pos.shape[:2]
         

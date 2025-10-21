@@ -7,7 +7,8 @@ class R2FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 30000
     save_interval = 500
-    experiment_name = "g1_flat"
+    experiment_name = "beyond_r2"
+    run_name = ""
     empirical_normalization = True
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
@@ -29,6 +30,8 @@ class R2FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+    
+    init_weight = "/home/ununtu/code/trackerLab/logs/rsl_rl/beyond_r2/2025-10-20_13-36-21/model_29999.pt"
 
 
 LOW_FREQ_SCALE = 0.5

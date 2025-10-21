@@ -16,21 +16,7 @@ from isaaclab.app import AppLauncher
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Replay motion from csv file and output to npz file.")
-# parser.add_argument("--input_file", type=str, required=True, help="The path to the input motion csv file.")
-# parser.add_argument("--input_fps", type=int, default=30, help="The fps of the input motion.")
-parser.add_argument(
-    "--frame_range",
-    nargs=2,
-    type=int,
-    metavar=("START", "END"),
-    help=(
-        "frame range: START END (both inclusive). The frame index starts from 1. If not provided, all frames will be"
-        " loaded."
-    ),
-)
-parser.add_argument("--output_name", type=str, required=True, help="The name of the motion npz file.")
 parser.add_argument("--output_fps", type=int, default=50, help="The fps of the output motion.")
-
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
@@ -45,7 +31,7 @@ simulation_app = app_launcher.app
 import torch
 
 import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg, Articulation
 from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
 from isaaclab.sim import SimulationContext
 from isaaclab.utils import configclass
@@ -60,7 +46,7 @@ from deploylib.deploy_manager import DeployManager
 from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
 
 # from robotlib.beyondMimic.robots.g1 import G1_CYLINDER_CFG
-from robotlib.trackerLab.assets.humanoids.r2 import R2_CFG
+from robotlib.trackerLab.assets.humanoids.r2 import R2_CFG, R2_ACTION_SCALE
 from trackerTask.trackerLab.tracking.humanoid.robots.r2.motion_align_cfg import R2B_MOTION_ALIGN_CFG_GMR
 
 robot_cfg = R2_CFG
@@ -68,7 +54,7 @@ robot_type = "r2b"
 
 motion_cfg = MotionManagerCfg(
     MotionBufferCfg(
-        motion_name="GMR/7504.yaml",
+        motion_name="GMR/test.yaml",
         motion_type="GMR",
         motion_lib_type="MotionLibDofPos",
         regen_pkl=True,
@@ -77,7 +63,6 @@ motion_cfg = MotionManagerCfg(
 )
 
 REGISTRY = "mocap_datas"
-COLLECTION = args_cli.output_name
 
 
 @configclass
@@ -100,7 +85,6 @@ class ReplayMotionsSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = robot_cfg.replace(prim_path="{ENV_REGEX_NS}/Robot")
     
     
-
 class MotionLoader():
     def __init__(self, lab_joint_names, sim, fps, cfg:MotionManagerCfg):
         
@@ -133,8 +117,25 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
 
 
     # Extract scene entities
-    robot = scene["robot"]
+    robot:Articulation = scene["robot"]
     
+    info_dict = {
+        "joint_names": robot.data.joint_names,
+        "body_names": robot.data.body_names,
+        "default_joint_pos": robot.data.default_joint_pos,
+        "joint_damping": robot.data.joint_damping,
+        "joint_stiffness": robot.data.joint_stiffness,
+        "joint_effort_limits": robot.data.joint_effort_limits,
+        "action_scale": R2_ACTION_SCALE,
+    }
+    
+    for k, v in info_dict.items():
+        if isinstance(v, torch.Tensor):
+            info_dict[k] = v[0].numpy().tolist()
+    
+    import json
+    with open("./temp.json", "wt") as f:
+        json.dump(info_dict, f, indent=4)
     
     # Load motion
     motion = MotionLoader(
@@ -157,13 +158,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         "body_ang_vel_w": [],
     }
     file_saved = False
-    files_to_save = motion.manager.motion_lib.num_motions()
     # --------------------------------------------------------------------------
-
-        # pos_lookat = root_states[0, :3].cpu().numpy()
-        # sim.set_camera_view(pos_lookat + np.array([2.0, 2.0, 0.5]), pos_lookat)
-
-    motion.manager.init_finite_state_machine()
 
     # Simulation loop
     while simulation_app.is_running():
@@ -179,12 +174,10 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             reset_flag,
         ) = motion.get_next_state()
 
-
-        # TODO
         motion_base_rot[:, :4] = motion_base_rot[:, [3, 0, 1, 2]]  # fix base rotation
         
         # print(motion_base_pos)
-        # motion_base_pos += 0.05
+        motion_base_pos += 0.05
 
         # set root state
         root_states = robot.data.default_root_state.clone()
@@ -204,6 +197,8 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         sim.render()  # We don't want physic (sim.step())
         scene.update(sim.get_physics_dt())
 
+        pos_lookat = root_states[0, :3].cpu().numpy()
+        sim.set_camera_view(pos_lookat + np.array([2.0, 2.0, 0.5]), pos_lookat)
 
         if not file_saved:
             log["joint_pos"].append(robot.data.joint_pos[0, :].cpu().numpy().copy())
@@ -226,20 +221,10 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
                 log[k] = np.stack(log[k], axis=0)
 
 
-            res_file = f"./motion.npz"
+            res_file = f"./motion_{motion.manager.motion_buffer._motion_ids[0]}.npz"
             np.savez(res_file, **log)
-
-            # import wandb
-
-            # run = wandb.init(project="GMR_to_npz_r2", name=COLLECTION)
-
-            # print(f"[INFO]: Logging motion to wandb: {COLLECTION}")
-            # logged_artifact = run.log_artifact(artifact_or_path=res_file, name=COLLECTION, type=REGISTRY)
-            # run.link_artifact(artifact=logged_artifact, target_path=f"wandb-registry-{REGISTRY}/{COLLECTION}")
-            # print(f"[INFO]: Motion saved to wandb registry: {REGISTRY}/{COLLECTION}")
-
-        if reset_flag:
-            motion.manager.add_finite_state_machine_motion_ids()
+            
+        motion.manager.add_finite_state_machine_motion_ids()
 
 
 def main():

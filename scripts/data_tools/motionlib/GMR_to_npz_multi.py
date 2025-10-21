@@ -68,7 +68,7 @@ robot_type = "r2b"
 
 motion_cfg = MotionManagerCfg(
     MotionBufferCfg(
-        motion_name="GMR/7504.yaml",
+        motion_name="GMR/test.yaml",
         motion_type="GMR",
         motion_lib_type="MotionLibDofPos",
         regen_pkl=True,
@@ -160,11 +160,6 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
     files_to_save = motion.manager.motion_lib.num_motions()
     # --------------------------------------------------------------------------
 
-        # pos_lookat = root_states[0, :3].cpu().numpy()
-        # sim.set_camera_view(pos_lookat + np.array([2.0, 2.0, 0.5]), pos_lookat)
-
-    motion.manager.init_finite_state_machine()
-
     # Simulation loop
     while simulation_app.is_running():
         (
@@ -179,12 +174,10 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             reset_flag,
         ) = motion.get_next_state()
 
-
-        # TODO
         motion_base_rot[:, :4] = motion_base_rot[:, [3, 0, 1, 2]]  # fix base rotation
         
         # print(motion_base_pos)
-        # motion_base_pos += 0.05
+        motion_base_pos += 0.05
 
         # set root state
         root_states = robot.data.default_root_state.clone()
@@ -204,6 +197,8 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         sim.render()  # We don't want physic (sim.step())
         scene.update(sim.get_physics_dt())
 
+        pos_lookat = root_states[0, :3].cpu().numpy()
+        sim.set_camera_view(pos_lookat + np.array([2.0, 2.0, 0.5]), pos_lookat)
 
         if not file_saved:
             log["joint_pos"].append(robot.data.joint_pos[0, :].cpu().numpy().copy())
@@ -214,7 +209,9 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             log["body_ang_vel_w"].append(robot.data.body_ang_vel_w[0, :].cpu().numpy().copy())
 
         if reset_flag and not file_saved:
-            file_saved = True
+            # file_saved = True
+            files_to_save -= 1
+            print(f"remain: {files_to_save}")
             for k in (
                 "joint_pos",
                 "joint_vel",
@@ -226,8 +223,18 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
                 log[k] = np.stack(log[k], axis=0)
 
 
-            res_file = f"./motion.npz"
+            res_file = f"./data/datasets/motion_run_{motion.manager.motion_buffer._motion_ids[0]}.npz"
             np.savez(res_file, **log)
+
+            log = {
+                "fps": [args_cli.output_fps],
+                "joint_pos": [],
+                "joint_vel": [],
+                "body_pos_w": [],
+                "body_quat_w": [],
+                "body_lin_vel_w": [],
+                "body_ang_vel_w": [],
+            }
 
             # import wandb
 
@@ -237,6 +244,9 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
             # logged_artifact = run.log_artifact(artifact_or_path=res_file, name=COLLECTION, type=REGISTRY)
             # run.link_artifact(artifact=logged_artifact, target_path=f"wandb-registry-{REGISTRY}/{COLLECTION}")
             # print(f"[INFO]: Motion saved to wandb registry: {REGISTRY}/{COLLECTION}")
+            
+        if files_to_save == 0:
+            file_saved = True
 
         if reset_flag:
             motion.manager.add_finite_state_machine_motion_ids()
