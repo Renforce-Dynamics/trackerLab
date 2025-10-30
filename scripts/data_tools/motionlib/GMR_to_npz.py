@@ -68,7 +68,7 @@ robot_type = "r2b"
 
 motion_cfg = MotionManagerCfg(
     MotionBufferCfg(
-        motion_name="GMR/7504.yaml",
+        motion_name="/home/ununtu/code/trackerLab/data/configs/GMR/127_21.yaml",
         motion_type="GMR",
         motion_lib_type="MotionLibDofPos",
         regen_pkl=True,
