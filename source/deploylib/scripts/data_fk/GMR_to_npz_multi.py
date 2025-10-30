@@ -1,0 +1,206 @@
+import argparse
+import numpy as np
+import torch
+
+from isaaclab.app import AppLauncher
+import isaaclab.sim as sim_utils
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
+from isaaclab.sim import SimulationContext
+from isaaclab.utils import configclass
+from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
+
+from deploylib.deploy_manager import DeployManager
+from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
+from robotlib.loader import load_robot_cfg
+
+# -----------------------------------------------------------------------------
+# Argument Parsing
+# -----------------------------------------------------------------------------
+parser = argparse.ArgumentParser(description="Replay multiple motions and export each to NPZ.")
+parser.add_argument("--frame_range", nargs=2, type=int, metavar=("START", "END"),
+                    help="Frame range (inclusive). If not set, all frames are used.")
+parser.add_argument("--output_name", type=str, required=True,
+                    help="Base name of the output NPZ files.")
+parser.add_argument("--output_fps", type=int, default=50,
+                    help="Frame rate (fps) of the output motion.")
+AppLauncher.add_app_launcher_args(parser)
+args_cli = parser.parse_args()
+
+# -----------------------------------------------------------------------------
+# Launch Omniverse / IsaacSim
+# -----------------------------------------------------------------------------
+app_launcher = AppLauncher(args_cli)
+simulation_app = app_launcher.app
+
+# -----------------------------------------------------------------------------
+# Configurations
+# -----------------------------------------------------------------------------
+robot_type = "r2b"
+robot_cfg, motion_align_cfg = load_robot_cfg(robot_type)
+motion_name = "/home/ununtu/code/trackerLab/data/configs/GMR/127_21.yaml"
+BASE_NAME = args_cli.output_name
+
+motion_cfg = MotionManagerCfg(
+    MotionBufferCfg(
+        motion_name=motion_name,
+        motion_type="GMR",
+        motion_lib_type="MotionLibDofPos",
+        regen_pkl=True,
+    ),
+    motion_align_cfg=motion_align_cfg,
+)
+
+# -----------------------------------------------------------------------------
+# Scene Configuration
+# -----------------------------------------------------------------------------
+@configclass
+class ReplayMotionsSceneCfg(InteractiveSceneCfg):
+    """Scene configuration for motion replay."""
+
+    ground = AssetBaseCfg(prim_path="/World/defaultGroundPlane", spawn=sim_utils.GroundPlaneCfg())
+    sky_light = AssetBaseCfg(
+        prim_path="/World/skyLight",
+        spawn=sim_utils.DomeLightCfg(
+            intensity=750.0,
+            texture_file=f"{ISAAC_NUCLEUS_DIR}/Materials/Textures/Skies/PolyHaven/"
+                         f"kloofendal_43d_clear_puresky_4k.hdr",
+        ),
+    )
+    robot: ArticulationCfg = robot_cfg.replace(prim_path="{ENV_REGEX_NS}/Robot")
+
+# -----------------------------------------------------------------------------
+# Motion Loader
+# -----------------------------------------------------------------------------
+class MotionLoader:
+    """Handles motion replay via DeployManager."""
+
+    def __init__(self, lab_joint_names, sim, fps, cfg: MotionManagerCfg):
+        self.manager = DeployManager(
+            cfg.motion_buffer_cfg,
+            cfg.motion_align_cfg,
+            lab_joint_names,
+            robot_type,
+            dt=1 / fps,
+            device=sim.device,
+        )
+
+    def get_next_state(self):
+        """Return next motion state and reset flag."""
+        flag = self.manager.step()
+        return (
+            self.manager.loc_root_pos,
+            self.manager.loc_root_rot[:, [3, 0, 1, 2]],
+            self.manager.loc_root_vel_global,
+            self.manager.loc_ang_vel,
+            self.manager.loc_dof_pos,
+            self.manager.loc_dof_vel,
+        ), flag
+
+# -----------------------------------------------------------------------------
+# Utility: Save Motion Data
+# -----------------------------------------------------------------------------
+def save_npz(data_buffer, res_file="./motion.npz"):
+    """Save collected motion data to NPZ."""
+    for k in (
+        "joint_pos", "joint_vel",
+        "body_pos_w", "body_quat_w",
+        "body_lin_vel_w", "body_ang_vel_w",
+    ):
+        data_buffer[k] = np.stack(data_buffer[k], axis=0)
+    np.savez(res_file, **data_buffer)
+
+# -----------------------------------------------------------------------------
+# Simulation Loop (multi-motion support)
+# -----------------------------------------------------------------------------
+def run_simulator(sim: SimulationContext, scene: InteractiveScene):
+    """Run simulation loop for all available motions."""
+    robot = scene["robot"]
+    motion = MotionLoader(
+        lab_joint_names=robot.data.joint_names,
+        sim=sim,
+        fps=args_cli.output_fps,
+        cfg=motion_cfg,
+    )
+
+    total_motions = motion.manager.motion_lib.num_motions()
+    print(f"[INFO] Total motions to replay: {total_motions}")
+
+    motion.manager.init_finite_state_machine()
+
+    current_motion_id = 0
+    data_buffer = None
+    save_next = False
+
+    while simulation_app.is_running():
+        (base_pos, base_rot, base_lin_vel, base_ang_vel, dof_pos, dof_vel), reset_flag = motion.get_next_state()
+
+        # Initialize buffer for new motion
+        if data_buffer is None:
+            data_buffer = {
+                "fps": [args_cli.output_fps],
+                "joint_pos": [], "joint_vel": [],
+                "body_pos_w": [], "body_quat_w": [],
+                "body_lin_vel_w": [], "body_ang_vel_w": [],
+            }
+
+        # Update simulation
+        root_states = robot.data.default_root_state.clone()
+        root_states[:, :3] = base_pos
+        root_states[:, :2] += scene.env_origins[:, :2]
+        root_states[:, 3:7] = base_rot
+        root_states[:, 7:10] = base_lin_vel
+        root_states[:, 10:] = base_ang_vel
+        robot.write_root_state_to_sim(root_states)
+
+        joint_pos = robot.data.default_joint_pos.clone()
+        joint_vel = robot.data.default_joint_vel.clone()
+        joint_pos[:, :] = dof_pos
+        joint_vel[:, :] = dof_vel
+        robot.write_joint_state_to_sim(joint_pos, joint_vel)
+
+        sim.render()
+        scene.update(sim.get_physics_dt())
+
+        # Record motion data
+        data_buffer["joint_pos"].append(robot.data.joint_pos[0, :].cpu().numpy().copy())
+        data_buffer["joint_vel"].append(robot.data.joint_vel[0, :].cpu().numpy().copy())
+        data_buffer["body_pos_w"].append(robot.data.body_pos_w[0, :].cpu().numpy().copy())
+        data_buffer["body_quat_w"].append(robot.data.body_quat_w[0, :].cpu().numpy().copy())
+        data_buffer["body_lin_vel_w"].append(robot.data.body_lin_vel_w[0, :].cpu().numpy().copy())
+        data_buffer["body_ang_vel_w"].append(robot.data.body_ang_vel_w[0, :].cpu().numpy().copy())
+
+        # Motion finished: save file and prepare for next
+        if reset_flag:
+            file_name = f"./{BASE_NAME}_{current_motion_id:03d}.npz"
+            save_npz(data_buffer, res_file=file_name)
+            print(f"[INFO] Saved motion {current_motion_id + 1}/{total_motions}: {file_name}")
+            data_buffer = None  # reset buffer
+            current_motion_id += 1
+
+            # Queue next motion or terminate
+            if current_motion_id < total_motions:
+                motion.manager.add_finite_state_machine_motion_ids()
+            else:
+                print("[INFO] All motions processed.")
+                break
+
+# -----------------------------------------------------------------------------
+# Main Entry
+# -----------------------------------------------------------------------------
+def main():
+    """Main entry point."""
+    sim_cfg = sim_utils.SimulationCfg(device=args_cli.device)
+    sim_cfg.dt = 1.0 / args_cli.output_fps
+    sim = SimulationContext(sim_cfg)
+
+    scene_cfg = ReplayMotionsSceneCfg(num_envs=1, env_spacing=2.0)
+    scene = InteractiveScene(scene_cfg)
+
+    sim.reset()
+    print("[INFO] Setup complete. Starting multi-motion replay...")
+    run_simulator(sim, scene)
+
+if __name__ == "__main__":
+    main()
+    simulation_app.close()

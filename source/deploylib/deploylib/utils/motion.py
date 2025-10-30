@@ -23,3 +23,8 @@ def slerp(q0, q1, t):
     new_q = torch.where(torch.abs(cos_half_theta) >= 1, q0, new_q)
 
     return new_q
+
+@torch.jit.script
+def lerp(a, b, t):
+    # type: (Tensor, Tensor, Tensor) -> Tensor
+    return a * (1 - t) + b * t

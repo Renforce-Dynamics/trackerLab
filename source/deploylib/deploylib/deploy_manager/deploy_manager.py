@@ -8,7 +8,7 @@ from trackerLab.motion_buffer.motion_lib import MotionLib
 from trackerLab.motion_buffer.motion_buffer_cfg import MotionBufferCfg
 from trackerLab.managers.motion_manager import MotionManagerCfg
 
-from deploylib.utils.motion import slerp
+from deploylib.utils.motion import slerp, lerp
 
 class DeployManager(object):
     
@@ -33,7 +33,19 @@ class DeployManager(object):
         
         self.gym2lab_dof_ids = self.id_caster.gym2lab_dof_ids
         self.lab2gym_dof_ids = self.id_caster.lab2gym_dof_ids
-        pass
+        
+        self.interp_config = [
+            ("loc_trans_base", "lerp"),
+            ("loc_root_rot",   "slerp"),
+            ("loc_root_pos",   "lerp"),
+            ("loc_dof_pos",    "slerp"),
+            ("loc_dof_vel",    "lerp"),
+            ("loc_root_vel",   "lerp"),
+            ("loc_ang_vel",    "lerp"),
+            ("loc_local_rot",  "slerp"),
+            ("loc_root_vel_global", "lerp"),
+        ]
+        
 
     @classmethod
     def from_configclass(cls, cfg: MotionManagerCfg, lab_joint_names, dt, device):
@@ -69,6 +81,7 @@ class DeployManager(object):
     loc_dof_vel: torch.Tensor = None
     loc_root_rot: torch.Tensor = None
     loc_ang_vel: torch.Tensor = None
+    loc_root_vel_global: torch.Tensor = None
     
     loc_init_root_pos: torch.Tensor = None
     loc_init_demo_root_pos: torch.Tensor = None
@@ -78,42 +91,51 @@ class DeployManager(object):
         return self.loc_root_pos[:, 2]
 
     def calc_loc_terms(self, frame):
-        """
-        Calc terms at certain frame.
-        """
-        loc_trans_base  = self.motion_lib.ltbs[frame]
-        loc_root_rot    = self.motion_lib.grs[frame, 0]
-        loc_root_pos    = self.motion_lib.gts[frame, 0]
-        loc_local_rot   = self.motion_lib.lrs[frame]
-        loc_dof_vel     = self.motion_lib.dvs[frame]
-        loc_dof_pos     = self.motion_lib.dps[frame]
-        loc_root_vel    = self.motion_lib.lvbs[frame]
-        loc_ang_vel     = self.motion_lib.avbs[frame]
-        return loc_trans_base, loc_root_rot, loc_root_pos, \
-            loc_dof_pos, loc_dof_vel, loc_root_vel, loc_ang_vel, loc_local_rot
-    
-    def loc_gen_state(self, time, motion_ids):
-        f0l, f1l, blend = self.motion_lib.get_frame_idx(motion_ids, time)
-        
-        terms_0, terms_1 = self.calc_loc_terms(f0l), self.calc_loc_terms(f1l)
-        
-        terms = []
-        for term0, term1 in zip(terms_0, terms_1):
-            if term0 is not None:
-                terms.append((term0 + term1)/2)
-            else:
-                terms.append(term0)
-        
-        self.loc_trans_base, _, self.loc_root_pos, \
-            _, _, self.loc_root_vel, self.loc_ang_vel, _ = terms
-        
-        blend = blend.unsqueeze(-1)
-        self.loc_root_rot = slerp(terms_0[1], terms_1[1], blend)
-        # blend = blend
-        loc_dof_pos = slerp(terms_0[3], terms_1[3], blend)
-        loc_dof_vel = slerp(terms_0[4], terms_1[4], blend)
-        # loc_local_rot = slerp(terms_0[7], terms_1[7], blend)
+        return {
+            "loc_trans_base": self.motion_lib.ltbs[frame],
+            "loc_root_rot":   self.motion_lib.grs[frame, 0],
+            "loc_root_pos":   self.motion_lib.gts[frame, 0],
+            "loc_local_rot":  self.motion_lib.lrs[frame],
+            "loc_dof_vel":    self.motion_lib.dvs[frame],
+            "loc_dof_pos":    self.motion_lib.dps[frame],
+            "loc_root_vel":   self.motion_lib.lvbs[frame],
+            "loc_ang_vel":    self.motion_lib.avbs[frame],
+            "loc_root_vel_global": self.motion_lib.grvs[frame],
+        }
 
-        loc_dof_pos, loc_dof_vel = self.motion_buffer.reindex_dof_pos_vel(loc_dof_pos, loc_dof_vel)
-        self.loc_dof_pos, self.loc_dof_vel = loc_dof_pos[:, self.gym2lab_dof_ids], loc_dof_vel[:, self.gym2lab_dof_ids]
+    def interpolate_term(self, term0, term1, blend, mode):
+        if term0 is None or term1 is None:
+            return term0
+        if mode == "lerp":
+            return lerp(term0, term1, blend)
+        elif mode == "slerp":
+            return slerp(term0, term1, blend)
+        elif mode == "mean":
+            return 0.5 * (term0 + term1)
+        else:
+            raise ValueError(f"Unsupported interpolation mode: {mode}")
+
+    def loc_gen_state(self, time, motion_ids):
+        f0, f1, blend = self.motion_lib.get_frame_idx(motion_ids, time)
+        blend = blend.unsqueeze(-1)
+
+        terms_0 = self.calc_loc_terms(f0)
+        terms_1 = self.calc_loc_terms(f1)
+
+        results = {}
+        for name, mode in self.interp_config:
+            results[name] = self.interpolate_term(
+                terms_0[name], terms_1[name], blend, mode
+            )
+
+        dof_pos, dof_vel = self.motion_buffer.reindex_dof_pos_vel(
+            results["loc_dof_pos"], results["loc_dof_vel"]
+        )
+        results["loc_dof_pos"] = dof_pos[:, self.gym2lab_dof_ids]
+        results["loc_dof_vel"] = dof_vel[:, self.gym2lab_dof_ids]
+
+        for k, v in results.items():
+            setattr(self, k, v)
+
+        return results
         
