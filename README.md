@@ -114,7 +114,7 @@ Custom Gym environments are recursively registered, including `H1TrackAll`, and 
 Just add following lines into your train script:
 
 ```python
-import trackerLab.tasks
+import trackerTask.trackerLab
 ```
 
 We also provide a copy from the orginal repo, for which you could directly run:

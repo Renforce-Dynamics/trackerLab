@@ -111,7 +111,7 @@ python scripts/rsl_rl/base/train.py --task R2TrackWalk --headless
 
 对于使用官方或者是其他框架给的脚本，在训练脚本开始时，加上：
 ```python
-import trackerLab.tasks
+import trackerTask.trackerLab
 ```
 
 ```bash

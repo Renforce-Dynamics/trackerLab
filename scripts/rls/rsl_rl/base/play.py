@@ -67,7 +67,7 @@ from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkp
 from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper, export_policy_as_jit, export_policy_as_onnx
 from isaaclab_tasks.utils import get_checkpoint_path, parse_env_cfg
 
-import trackerLab.tasks  # noqa: F401
+import trackerTask.trackerLab  # noqa: F401
 
 
 def main():

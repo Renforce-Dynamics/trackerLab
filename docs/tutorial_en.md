@@ -110,7 +110,7 @@ python scripts/rsl_rl/base/train.py --task R2TrackWalk --headless
 
 If using other framework's training scripts, add
 ```
-import trackerLab.tasks
+import trackerTask.trackerLab
 ```
 
 ```bash

@@ -40,6 +40,6 @@ gym.register(
     kwargs={
         "env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk_Replay",
         "play_env_cfg_entry_point": f"{__name__}.g1_23d_tracking_env_cfg:G1TrackingWalk_Replay",
-        "rsl_rl_cfg_entry_point": f"trackerLab.tasks.tracking.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
+        "rsl_rl_cfg_entry_point": f"trackerTask.trackerLab.tracking.agents.rsl_rl_ppo_cfg:BasePPORunnerCfg",
     },
 )
