@@ -163,27 +163,15 @@ def load_cfgs(args_cli, modified=False):
 
 
 def prepare_wrapper(env, args_cli, agent_cfg):
-    try: 
-        from rsl_rl.runners import OnPolicyRunner
-        from factoryIsaac.utils.rsl_rl.wrapper import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
-        print("Using main branch.")
-        func_runner = OnPolicyRunner
-        env = RslRlVecEnvWrapper(env)
-        learn_cfg = {
-            "num_learning_iterations": agent_cfg.max_iterations,
-            "init_at_random_ep_len": True
-        }
-    except ImportError as e:
-        print("Not main branch, detect using alg branch.")
-        from factoryIsaac.utils.rsl_rl.agent import init_alg_agent
-        from factoryIsaac.utils.rsl_rl.agent import RslAlgEnvWrapper
-        func_runner = init_alg_agent
-        env = RslAlgEnvWrapper(env)
-        learn_cfg = {
-            "iterations": agent_cfg.max_iterations,
-            "timeout": None,
-            "return_epochs": 100,
-        }
+    from rsl_rl.runners import OnPolicyRunner
+    from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
+    print("Using main branch.")
+    func_runner = OnPolicyRunner
+    env = RslRlVecEnvWrapper(env)
+    learn_cfg = {
+        "num_learning_iterations": agent_cfg.max_iterations,
+        "init_at_random_ep_len": True
+    }
 
     if hasattr(agent_cfg, "runner_type"):
         func_runner = agent_cfg.runner_type
