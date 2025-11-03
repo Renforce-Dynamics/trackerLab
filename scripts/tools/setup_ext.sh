@@ -1,10 +1,59 @@
+#!/bin/bash
+set -e
 
-pip install -e ./source/deploylib
-pip install -e ./source/poselib
-pip install -e ./source/robotlib
-pip install -e ./source/sim2simlib
-pip install -e ./source/trackerLab
-pip install -e ./source/trackerTask
+# ============================================================
+# Utility functions
+# ============================================================
 
-pip install -e ./source/third_party/beyondMimic
-pip install -e ./source/third_party/locomotion_rl_lab
+# Clone a repository if it doesn't already exist
+clone_repo() {
+    local repo_url=$1
+    local target_dir=$2
+
+    if [ ! -d "$target_dir/.git" ]; then
+        echo "→ Cloning $repo_url to $target_dir ..."
+        mkdir -p "$(dirname "$target_dir")"
+        git clone "$repo_url" "$target_dir"
+    else
+        echo "✔ Repository already exists at $target_dir, skipping clone."
+    fi
+}
+
+# Check and install local editable Python packages
+install_modules() {
+    local modules=("$@")
+
+    echo "📦 Installing local editable modules..."
+    for module in "${modules[@]}"; do
+        if [ -d "$module" ]; then
+            echo "→ Installing $module ..."
+            pip install -e "$module"
+        else
+            echo "⚠ Skipped $module (directory not found)"
+        fi
+    done
+}
+
+# ============================================================
+# Main script
+# ============================================================
+
+echo "🧩 Checking and cloning required repositories..."
+
+clone_repo git@github.com:Renforce-Dynamics/assetslib.git ./data/assets/assetslib
+clone_repo git@github.com:Renforce-Dynamics/robotlib.git ./source/robotlib
+
+modules=(
+    "./source/deploylib"
+    "./source/poselib"
+    "./source/robotlib"
+    "./source/sim2simlib"
+    "./source/trackerLab"
+    "./source/trackerTask"
+    "./source/third_party/beyondMimic"
+    "./source/third_party/locomotion_rl_lab"
+)
+
+install_modules "${modules[@]}"
+
+echo "✅ All done!"
