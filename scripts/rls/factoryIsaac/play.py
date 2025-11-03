@@ -54,31 +54,15 @@ import torch
 import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils import get_checkpoint_path, parse_env_cfg
 from isaaclab.utils.dict import print_dict
-from factoryIsaac.utils.rsl_rl.wrapper import (
-    RslRlOnPolicyRunnerCfg,
-    RslRlVecEnvWrapper,
-    export_policy_as_onnx,
-)
 
 # Import extensions to set up environment tasks
-import factoryIsaac.tasks  # noqa: F401  TODO: import lab.<your_extension_name>
-from isaaclab_tasks.utils.parse_cfg import load_cfg_from_registry, set_determine_reset
-from factoryIsaac.utils.asset.web_asset import modify_matching_strings_deep, web2local, web2str, ASSET_LOCAL_DIR
+from isaaclab_tasks.utils.parse_cfg import load_cfg_from_registry
 
 def main():
     """Play with RSL-RL agent. base branch"""
     task_name = args_cli.task
     if args_cli.target is None:
         raise ValueError("Please using the target specified way.")
-        rslrl_cfg: RslRlOnPolicyRunnerCfg = load_cfg_from_registry(task_name, "rsl_rl_cfg_entry_point")
-        # specify directory for logging experiments
-        log_root_path = os.path.join("logs", "rsl_rl", rslrl_cfg.experiment_name)
-        log_root_path = os.path.abspath(log_root_path)
-        print(f"[INFO] Loading experiment from directory: {log_root_path}")
-        resume_path = get_checkpoint_path(log_root_path, args_cli.run, args_cli.ckpt)
-        print(f"[INFO]: Loading model checkpoint from: {resume_path}")
-        log_dir = os.path.dirname(resume_path)
-        run_path = os.path.dirname(resume_path)
     else:
         resume_path = os.path.abspath(args_cli.target)
         log_root_path = os.path.dirname(os.path.dirname(resume_path))
@@ -92,7 +76,7 @@ def main():
         output_file = os.path.join(sample_dir, "total_data.pkl")
     
     with open(os.path.join(run_path, "params", "agent.pkl"), "rb") as f:
-        agent_cfg: RslRlOnPolicyRunnerCfg = pickle.load(f)
+        agent_cfg = pickle.load(f)
         
     if task_name is None:
         assert os.path.exists(os.path.join(run_path, "params", "args.pkl")), "No task specified."
@@ -104,13 +88,6 @@ def main():
             env_cfg = pickle.load(f)
     else:
         env_cfg = load_cfg_from_registry(task_name, "env_cfg_entry_point")
-        
-        # env_cfg.scene.terrain.terrain_generator.num_cols = 2
-
-    if args_cli.local:
-        from factoryIsaac.utils.asset.web_asset import modify_matching_strings_deep, web2local
-        # Modify with your args
-        env_cfg = modify_matching_strings_deep(env_cfg, modifier_func=web2local)
 
     env_cfg.sim.device = args_cli.device
     env_cfg.seed = args_cli.seed
@@ -128,8 +105,8 @@ def main():
         asset_name = "robot",
     )
     
-    if args_cli.determine:
-        set_determine_reset(env_cfg)
+    # if args_cli.determine:
+    #     set_determine_reset(env_cfg)
     
     # env_cfg.commands.base_velocity.ranges.lin_vel_x = (-0.8, -0.8)
     # env_cfg.commands.base_velocity.ranges.lin_vel_y = (0.0, 0.0)
@@ -155,15 +132,6 @@ def main():
         print("[INFO] Recording videos during training.")
         # print_dict(video_kwargs, nesting=4)
         env = gym.wrappers.RecordVideo(env, **video_kwargs)
-    
-    if args_cli.web:
-        from factoryIsaac.utils.web_viewer.wrapper import RenderEnvWrapper
-
-        if not hasattr(env, "socketio_running"):
-            env = RenderEnvWrapper(env)
-            env.web_run()
-            env.socketio_running = True
-            print("[INFO] Running web viewer.")
 
     agent_cfg.seed = args_cli.seed
     agent_cfg.device = args_cli.rldevice
@@ -181,8 +149,8 @@ def main():
     # export policy
     export_model_dir = os.path.join(os.path.dirname(resume_path), "exported")
     os.makedirs(export_model_dir, exist_ok=True)
-    torch.save(runner.alg.actor_critic, os.path.join(export_model_dir, "policy.pth"))
-    export_policy_as_onnx(runner.alg.actor_critic, export_model_dir, filename="policy.onnx")
+    # torch.save(runner.alg.actor_critic, os.path.join(export_model_dir, "policy.pth"))
+    # export_policy_as_onnx(runner.alg.actor_critic, export_model_dir, filename="policy.onnx")
     print(f"[INFO]: Saving policy to: {export_model_dir}")
 
     # reset environment

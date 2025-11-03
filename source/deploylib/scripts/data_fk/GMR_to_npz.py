@@ -3,16 +3,6 @@ import numpy as np
 import torch
 
 from isaaclab.app import AppLauncher
-import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
-from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
-from isaaclab.sim import SimulationContext
-from isaaclab.utils import configclass
-from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
-
-from deploylib.deploy_manager import DeployManager
-from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
-from robotlib.loader import load_robot_cfg
 
 # -----------------------------------------------------------------------------
 # Argument Parsing
@@ -34,12 +24,23 @@ args_cli = parser.parse_args()
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
+import isaaclab.sim as sim_utils
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
+from isaaclab.sim import SimulationContext
+from isaaclab.utils import configclass
+from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
+
+from deploylib.deploy_manager import DeployManager
+from sim2simlib.motion import MotionBufferCfg, MotionManagerCfg
+from robotlib.loader import load_robot_cfg
+
 # -----------------------------------------------------------------------------
 # Configurations
 # -----------------------------------------------------------------------------
-robot_type = "r2b"
+robot_type = "g1_29d"
 robot_cfg, motion_align_cfg = load_robot_cfg(robot_type)
-motion_name = "/home/ununtu/code/trackerLab/data/configs/GMR/127_21.yaml"
+motion_name = "/home/ununtu/code/trackerLab/data/configs/GMR/temp.yaml"
 COLLECTION = args_cli.output_name
 
 motion_cfg = MotionManagerCfg(

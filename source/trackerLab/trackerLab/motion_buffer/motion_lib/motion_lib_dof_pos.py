@@ -47,7 +47,7 @@ class MotionLibDofPos(MotionLib):
                     self.load_from_replayed_hdf5(curr_file, locals())
                     is_load = True
             elif self.motion_type == "GMR":
-                if curr_file.endswith(".pkl"):
+                if curr_file.endswith(".pkl") or curr_file.endswith(".npz"):
                     print("Loading with pkl file.")
                     self.load_from_GMR_pkl(curr_file, locals())
                     is_load = True

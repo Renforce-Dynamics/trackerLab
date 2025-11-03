@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from dataclasses import dataclass
 import pickle
 from poselib.retarget import AMASSLoader
@@ -55,8 +56,12 @@ class DofposMotion:
     
     @classmethod
     def from_GMR(cls, file_path):
-        with open(file_path, "rb") as f:
-            data = pickle.load(f)
+        
+        if file_path.endswith(".pkl"):
+            with open(file_path, "rb") as f:
+                data = pickle.load(f)
+        elif file_path.endswith(".npz"):
+            data = np.load(file_path, allow_pickle=True)    
             
         fps = data["fps"]
         root_pos = torch.tensor(data["root_pos"])
