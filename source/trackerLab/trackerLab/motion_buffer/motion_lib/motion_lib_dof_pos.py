@@ -105,37 +105,44 @@ class MotionLibDofPos(MotionLib):
         self._motion_files.append(curr_file)
         self._motion_difficulty.append(locs["curr_difficulty"])
             
-    def _fetch_motion_files(self, motion_file):
+    def _fetch_motion_files(self, motion_file:str):
         motion_files = []
         motion_weights = []
         motion_difficulty = []
         motion_description = []
-        with open(os.path.join(motion_file), 'r') as f:
-            motion_config = yaml.load(f, Loader=yaml.SafeLoader)
-
-        dir_name = os.path.join(TRACKERLAB_RETARGETED_DATA_DIR, motion_config['motions']["root"])
-
         extras = {
             "fps": []
         }
+        
+        if motion_file.endswith("yaml"):
+            with open(os.path.join(motion_file), 'r') as f:
+                motion_config = yaml.load(f, Loader=yaml.SafeLoader)
 
-        motion_list = motion_config['motions']
-        for motion_entry in motion_list.keys():
-            if motion_entry == "root":
-                continue
-            curr_file = motion_entry
-            curr_weight = motion_config["motions"][motion_entry]['weight']
-            curr_difficulty = motion_config["motions"][motion_entry]['difficulty']
-            curr_description = motion_config["motions"][motion_entry]['description']
-            fps = motion_config["motions"][motion_entry].get("fps", 30.0)
-            assert(curr_weight >= 0)
+            dir_name = os.path.join(TRACKERLAB_RETARGETED_DATA_DIR, motion_config['motions']["root"])
 
-            curr_file = os.path.join(dir_name, curr_file)
-            motion_weights.append(curr_weight)
-            motion_files.append(os.path.normpath(curr_file))
-            motion_difficulty.append(curr_difficulty)
-            motion_description.append(curr_description)
-            extras["fps"].append(fps)
+            motion_list = motion_config['motions']
+            for motion_entry in motion_list.keys():
+                if motion_entry == "root":
+                    continue
+                curr_file = motion_entry
+                curr_weight = motion_config["motions"][motion_entry]['weight']
+                curr_difficulty = motion_config["motions"][motion_entry]['difficulty']
+                curr_description = motion_config["motions"][motion_entry]['description']
+                fps = motion_config["motions"][motion_entry].get("fps", 30.0)
+                assert(curr_weight >= 0)
+
+                curr_file = os.path.join(dir_name, curr_file)
+                motion_weights.append(curr_weight)
+                motion_files.append(os.path.normpath(curr_file))
+                motion_difficulty.append(curr_difficulty)
+                motion_description.append(curr_description)
+                extras["fps"].append(fps)
+        else:
+            motion_weights.append(-1)
+            motion_files.append(motion_file)
+            motion_difficulty.append(-1)
+            motion_description.append("single")
+            extras["fps"].append(-1)
             
         return motion_files, motion_weights, motion_difficulty, motion_description, extras
 

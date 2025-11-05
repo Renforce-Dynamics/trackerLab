@@ -49,7 +49,7 @@ torch.backends.cudnn.deterministic = False
 torch.backends.cudnn.benchmark = False
 
 from isaaclab.utils.dict import print_dict
-from isaaclab.utils.io import dump_pickle, dump_yaml
+from isaaclab.utils.io import dump_yaml
 
 # Import extensions to set up environment tasks
 import factoryIsaac
@@ -74,11 +74,6 @@ def main():
         else:
             from factoryIsaac.algorithms.configs.rsl_rl import HYPERPARAMETERS
             task_name, env_cfg, agent_cfg, log_dir = cli_rslarg.make_cfgs(args_cli, HYPERPARAMETERS, parse_env_cfg)
-    
-    if args_cli.local:
-        from factoryIsaac.utils.asset.web_asset import modify_matching_strings_deep, web2local
-        # Modify with your args
-        env_cfg = modify_matching_strings_deep(env_cfg, modifier_func=web2local)
         
     # env_cfg.scene.terrain.terrain_generator.num_cols = 2
     env_cfg.sim.device = args_cli.device
@@ -126,9 +121,9 @@ def main():
     dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)
     dump_yaml(os.path.join(log_dir, "params", "agent.yaml"), agent_cfg)
     dump_yaml(os.path.join(log_dir, "params", "args.yaml"), vars(args_cli))
-    dump_pickle(os.path.join(log_dir, "params", "env.pkl"), env_cfg)
-    dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
-    dump_pickle(os.path.join(log_dir, "params", "args.pkl"), args_cli)
+    # dump_pickle(os.path.join(log_dir, "params", "env.pkl"), env_cfg)
+    # dump_pickle(os.path.join(log_dir, "params", "agent.pkl"), agent_cfg)
+    # dump_pickle(os.path.join(log_dir, "params", "args.pkl"), args_cli)
 
     # run training
     runner.learn(**learn_cfg)
