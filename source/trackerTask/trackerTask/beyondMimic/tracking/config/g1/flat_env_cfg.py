@@ -37,6 +37,9 @@ class G1FlatWoStateEstimationEnvCfg(G1FlatEnvCfg):
         super().__post_init__()
         self.observations.policy.motion_anchor_pos_b = None
         self.observations.policy.base_lin_vel = None
+        
+        self.commands.motion.debug_vis = False
+        self.commands.motion.motion_file = "75_04_g1.npz"
 
 
 @configclass

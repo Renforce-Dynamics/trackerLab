@@ -9,7 +9,7 @@ from isaaclab import __version__ as omni_isaac_lab_version
 from isaaclab.app import AppLauncher
 
 # local imports
-import argtool as cli_rslarg  # isort: skip
+import argtool as rsl_arg_cli  # isort: skip
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Train an RL agent with RSL-RL.")
@@ -33,7 +33,7 @@ parser.add_argument("--local", action="store_true", default=False, help="Using a
 parser.add_argument("--determine",action="store_true", default=False, help="Clear reset terms" )
 
 # append RSL-RL cli arguments
-cli_rslarg.add_rsl_rl_args(parser)
+rsl_arg_cli.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
@@ -51,8 +51,8 @@ import gymnasium as gym
 import os
 import torch
 
+import trackerTask.trackerLab
 import trackerTask.beyondMimic
-import trackerTask.locomotion_rl_lab
 
 from isaaclab_tasks.utils import get_checkpoint_path, parse_env_cfg
 from isaaclab.utils.dict import print_dict
@@ -77,12 +77,10 @@ def main():
         os.makedirs(sample_dir, exist_ok=True)
         output_file = os.path.join(sample_dir, "total_data.pkl")
     
-
+    with open(os.path.join(run_path, "params", "agent.pkl"), "rb") as f:
+        agent_cfg = pickle.load(f)
         
     if task_name is None:
-        with open(os.path.join(run_path, "params", "agent.pkl"), "rb") as f:
-            agent_cfg = pickle.load(f)
-        
         assert os.path.exists(os.path.join(run_path, "params", "args.pkl")), "No task specified."
         with open(os.path.join(run_path, "params", "args.pkl"), "rb") as f:
             args_old = pickle.load(f)
@@ -91,7 +89,6 @@ def main():
         with open(os.path.join(run_path, "params", "env.pkl"), "rb") as f:
             env_cfg = pickle.load(f)
     else:
-        agent_cfg = cli_rslarg.parse_rsl_rl_cfg(args_cli.task, args_cli)
         env_cfg = load_cfg_from_registry(task_name, "env_cfg_entry_point")
 
     env_cfg.sim.device = args_cli.device
@@ -141,7 +138,7 @@ def main():
     agent_cfg.seed = args_cli.seed
     agent_cfg.device = args_cli.rldevice
 
-    env, func_runner, learn_cfg = cli_rslarg.prepare_wrapper(env, args_cli, agent_cfg)
+    env, func_runner, learn_cfg = rsl_arg_cli.prepare_wrapper(env, args_cli, agent_cfg)
 
     runner = func_runner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
 
@@ -151,26 +148,13 @@ def main():
     # obtain the trained policy for inference
     policy = runner.get_inference_policy(device=env.unwrapped.device)
 
-    from isaaclab_rl.rsl_rl import export_policy_as_jit, export_policy_as_onnx
-
     # export policy
     export_model_dir = os.path.join(os.path.dirname(resume_path), "exported")
     os.makedirs(export_model_dir, exist_ok=True)
-    torch.save(runner.alg.actor_critic, os.path.join(export_model_dir, "policy.pth"))
-    export_policy_as_jit(runner.alg.actor_critic, None, export_model_dir, filename="policy.pt")
-    export_policy_as_onnx(runner.alg.actor_critic, export_model_dir, filename="policy.onnx")
+    # torch.save(runner.alg.actor_critic, os.path.join(export_model_dir, "policy.pth"))
+    # export_policy_as_onnx(runner.alg.actor_critic, export_model_dir, filename="policy.onnx")
     print(f"[INFO]: Saving policy to: {export_model_dir}")
-
-    from beyondMimic.utils.exporter import export_motion_policy_as_onnx, attach_onnx_metadata
     
-    export_motion_policy_as_onnx(
-        env.unwrapped,
-        runner.alg.actor_critic,
-        normalizer=runner.obs_normalizer,
-        path=export_model_dir,
-        filename="beyond.onnx",
-    )
-    attach_onnx_metadata(env.unwrapped, "none", export_model_dir, "beyond.onnx")
 
     # reset environment
     obs, _ = env.get_observations()
