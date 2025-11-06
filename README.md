@@ -8,6 +8,11 @@
 
 ---
 
+> The project is restructed totally, where the tutorial and readme are not updated.
+> You could contact Ziang Zheng via vw: interval-package for more details
+> For usd/xml/urdf assets, please refer to [assetslib](https://github.com/Renforce-Dynamics/assetslib)
+> For robot configs (Directly import to isaaclab), please refer to [robotlib](https://github.com/Renforce-Dynamics/robotlib)
+
 ## 🦿 What is TrackerLab?
 
 **TrackerLab** is a cutting-edge modular framework for humanoid motion **retargeting**, **trajectory tracking**, and **skill-level control**, built on top of [IsaacLab](https://github.com/NVIDIA-Omniverse/IsaacLab).
