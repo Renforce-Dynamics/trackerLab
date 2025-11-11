@@ -16,7 +16,7 @@ from isaaclab.app import AppLauncher
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Replay motion from csv file and output to npz file.")
-parser.add_argument("--input_file", type=str, required=True, help="The path to the input motion csv file.")
+# parser.add_argument("--input_file", type=str, required=True, help="The path to the input motion csv file.")
 parser.add_argument("--input_fps", type=int, default=30, help="The fps of the input motion.")
 parser.add_argument(
     "--frame_range",
@@ -28,7 +28,7 @@ parser.add_argument(
         " loaded."
     ),
 )
-parser.add_argument("--output_name", type=str, required=True, help="The name of the motion npz file.")
+# parser.add_argument("--output_name", type=str, required=True, help="The name of the motion npz file.")
 parser.add_argument("--output_fps", type=int, default=50, help="The fps of the output motion.")
 
 # append AppLauncher cli args
@@ -55,7 +55,9 @@ from isaaclab.utils.math import axis_angle_from_quat, quat_conjugate, quat_mul, 
 ##
 # Pre-defined configs
 ##
-from whole_body_tracking.robots.g1 import G1_CYLINDER_CFG
+from robotlib.loader import load_robot_cfg
+robot_type = "g1_29d"
+robot_cfg, motion_align_cfg = load_robot_cfg(robot_type)
 
 
 @configclass
@@ -75,7 +77,7 @@ class ReplayMotionsSceneCfg(InteractiveSceneCfg):
     )
 
     # articulation
-    robot: ArticulationCfg = G1_CYLINDER_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot: ArticulationCfg = robot_cfg.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
 
 class MotionLoader:
@@ -215,16 +217,19 @@ class MotionLoader:
         return state, reset_flag
 
 
-def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene, joint_names: list[str]):
+def run_simulator(_args_cli, sim: sim_utils.SimulationContext, scene: InteractiveScene, joint_names: list[str]):
     """Runs the simulation loop."""
     # Load motion
     motion = MotionLoader(
-        motion_file=args_cli.input_file,
-        input_fps=args_cli.input_fps,
-        output_fps=args_cli.output_fps,
+        motion_file=_args_cli.input_file,
+        input_fps=_args_cli.input_fps,
+        output_fps=_args_cli.output_fps,
         device=sim.device,
-        frame_range=args_cli.frame_range,
+        frame_range=_args_cli.frame_range,
     )
+
+    import tqdm
+    pbar = tqdm.tqdm(range(motion.output_frames), desc=_args_cli.input_file)
 
     # Extract scene entities
     robot = scene["robot"]
@@ -232,7 +237,7 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene, joi
 
     # ------- data logger -------------------------------------------------------
     log = {
-        "fps": [args_cli.output_fps],
+        "fps": [_args_cli.output_fps],
         "joint_pos": [],
         "joint_vel": [],
         "body_pos_w": [],
@@ -286,6 +291,8 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene, joi
             log["body_lin_vel_w"].append(robot.data.body_lin_vel_w[0, :].cpu().numpy().copy())
             log["body_ang_vel_w"].append(robot.data.body_ang_vel_w[0, :].cpu().numpy().copy())
 
+        pbar.update(1)
+
         if reset_flag and not file_saved:
             file_saved = True
             for k in (
@@ -298,17 +305,10 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene, joi
             ):
                 log[k] = np.stack(log[k], axis=0)
 
-            np.savez("/tmp/motion.npz", **log)
-
-            import wandb
-
-            COLLECTION = args_cli.output_name
-            run = wandb.init(project="csv_to_npz", name=COLLECTION)
-            print(f"[INFO]: Logging motion to wandb: {COLLECTION}")
-            REGISTRY = "motions"
-            logged_artifact = run.log_artifact(artifact_or_path="/tmp/motion.npz", name=COLLECTION, type=REGISTRY)
-            run.link_artifact(artifact=logged_artifact, target_path=f"wandb-registry-{REGISTRY}/{COLLECTION}")
-            print(f"[INFO]: Motion saved to wandb registry: {REGISTRY}/{COLLECTION}")
+            fname = f"./{_args_cli.output_name}.npz"
+            np.savez(fname, **log)
+            print(f"save to {fname}")
+            break
 
 
 def main():
@@ -324,42 +324,59 @@ def main():
     sim.reset()
     # Now we are ready!
     print("[INFO]: Setup complete...")
-    # Run the simulator
-    run_simulator(
-        sim,
-        scene,
-        joint_names=[
-            "left_hip_pitch_joint",
-            "left_hip_roll_joint",
-            "left_hip_yaw_joint",
-            "left_knee_joint",
-            "left_ankle_pitch_joint",
-            "left_ankle_roll_joint",
-            "right_hip_pitch_joint",
-            "right_hip_roll_joint",
-            "right_hip_yaw_joint",
-            "right_knee_joint",
-            "right_ankle_pitch_joint",
-            "right_ankle_roll_joint",
-            "waist_yaw_joint",
-            "waist_roll_joint",
-            "waist_pitch_joint",
-            "left_shoulder_pitch_joint",
-            "left_shoulder_roll_joint",
-            "left_shoulder_yaw_joint",
-            "left_elbow_joint",
-            "left_wrist_roll_joint",
-            "left_wrist_pitch_joint",
-            "left_wrist_yaw_joint",
-            "right_shoulder_pitch_joint",
-            "right_shoulder_roll_joint",
-            "right_shoulder_yaw_joint",
-            "right_elbow_joint",
-            "right_wrist_roll_joint",
-            "right_wrist_pitch_joint",
-            "right_wrist_yaw_joint",
-        ],
-    )
+    
+    joint_names = [
+                "left_hip_pitch_joint",
+                "left_hip_roll_joint",
+                "left_hip_yaw_joint",
+                "left_knee_joint",
+                "left_ankle_pitch_joint",
+                "left_ankle_roll_joint",
+                "right_hip_pitch_joint",
+                "right_hip_roll_joint",
+                "right_hip_yaw_joint",
+                "right_knee_joint",
+                "right_ankle_pitch_joint",
+                "right_ankle_roll_joint",
+                "waist_yaw_joint",
+                "waist_roll_joint",
+                "waist_pitch_joint",
+                "left_shoulder_pitch_joint",
+                "left_shoulder_roll_joint",
+                "left_shoulder_yaw_joint",
+                "left_elbow_joint",
+                "left_wrist_roll_joint",
+                "left_wrist_pitch_joint",
+                "left_wrist_yaw_joint",
+                "right_shoulder_pitch_joint",
+                "right_shoulder_roll_joint",
+                "right_shoulder_yaw_joint",
+                "right_elbow_joint",
+                "right_wrist_roll_joint",
+                "right_wrist_pitch_joint",
+                "right_wrist_yaw_joint",
+    ]
+    
+    import os
+    input_dir = "./datasets/LAFAN1_Retargeting_Dataset/g1"
+    filenames = [
+        os.path.splitext(f)[0]
+        for f in os.listdir(input_dir)
+        if f.endswith(".csv")
+    ]
+    print(f"[INFO] Found {len(filenames)} files:", filenames)
+    
+    for filename in filenames:
+        args_cli.input_file = f"{input_dir}/{filename}.csv"
+        args_cli.output_name = "datasets/temp/" + filename
+
+        # Run the simulator
+        run_simulator(
+            args_cli,
+            sim,
+            scene,
+            joint_names=joint_names
+        )
 
 
 if __name__ == "__main__":
@@ -367,3 +384,4 @@ if __name__ == "__main__":
     main()
     # close sim app
     simulation_app.close()
+    exit()

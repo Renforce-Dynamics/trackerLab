@@ -14,6 +14,7 @@ class DofposMotion:
     global_root_angular_velocity: torch.Tensor
     dof_vels: torch.Tensor
     dof_poses: torch.Tensor
+    fps: int = None
     
     def tensorlize(self, device):
         self.global_translation             = torch.tensor(self.global_translation, device=device)
@@ -68,9 +69,11 @@ class DofposMotion:
         root_rot = torch.tensor(data["root_rot"])
         # TODO
         dof_pos = torch.tensor(data["dof_pos"])
-        local_body_pos = torch.tensor(data["local_body_pos"])
-        
-        local_body_pos += root_pos.unsqueeze(1)
+        if data["local_body_pos"] is not None:
+            local_body_pos = torch.tensor(data["local_body_pos"])
+            local_body_pos += root_pos.unsqueeze(1)
+        else:
+            local_body_pos = root_pos.unsqueeze(1)
         
         F, J = dof_pos.shape[:2]
         
@@ -85,6 +88,7 @@ class DofposMotion:
             global_root_velocity=root_lin_vel,
             global_root_angular_velocity=root_ang_vel,
             dof_vels=dof_vels,
-            dof_poses=dof_pos
+            dof_poses=dof_pos,
+            fps=fps
         )
         return motion

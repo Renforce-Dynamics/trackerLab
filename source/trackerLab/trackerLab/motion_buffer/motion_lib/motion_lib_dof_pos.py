@@ -34,11 +34,10 @@ class MotionLibDofPos(MotionLib):
         for idx in range(num_motion_files):
             curr_file:str = motion_files[idx]
             print("Loading {:d}/{:d} motion files: {:s}".format(idx + 1, num_motion_files, curr_file))
-            fps = extras["fps"][idx]
-            motion_fps = int(fps)
-            curr_dt = 1.0 / motion_fps
-            curr_difficulty = motion_difficulty[idx]
+            fps = int(extras["fps"][idx])
+            # motion_fps = int(fps)
             curr_weight = motion_weights[idx]
+            curr_difficulty = motion_difficulty[idx]
             
             is_load = False
             if self.motion_type == "replay":
@@ -90,9 +89,9 @@ class MotionLibDofPos(MotionLib):
             self._motion_difficulty.append(locs["curr_difficulty"])
 
     def load_from_GMR_pkl(self, curr_file: str, locs):
-        fps = locs["motion_fps"]
-        dt = locs["curr_dt"]
         motion = DofposMotion.from_GMR(curr_file)
+        fps = motion.fps
+        dt = 1 / fps
         frames = motion.frames
         motion.tensorlize(self._device)
         self._motions.append(motion)
