@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+authors:
+  - given-names: Ziang
+    family-names: Zheng
+    orcid: https://orcid.org/0009-0003-1320-7369
+title: "TrackerLab: One step unify IsaacLab with multi-mode whole-body control."
+url: "https://github.com/interval-package/trackerLab"
+repository-code: "https://github.com/interval-package/trackerLab"
+keywords:
+  - robotics
+  - control
+  - isaaclab
+  - whole-body control
+version: 1.0.0
+date-released: 2025-08-18
+type: software
+license: MIT
