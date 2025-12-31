@@ -167,7 +167,9 @@ If you find TrackerLab helpful for your work or research, please consider citing
 
 You can join the Wechat group for detialed contact!
 
-<!-- ![Wechat Group](https://youke1.picui.cn/s1/2025/08/20/68a568770e11f.jpg) -->
+| Renforce Dynamics | **Join our WeChat Group** |
+|:--|:--|
+| | <img src="https://github.com/Renforce-Dynamics/.github/blob/main/pics/wechat_group/group.jpg" alt="Renforce Dynamics WeChat Group" height="180"> |
 
 
 ## 📄 License
